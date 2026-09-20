@@ -171,7 +171,7 @@ struct ContentView: View {
             if closed { filterPanel.close() }
             else {
                 filterPanel.onClose = { session.cancelFilter() }
-                filterPanel.show(title: session.filterEdit?.kind.rawValue ?? "Filter", content: FilterSheet(session: session))
+                filterPanel.show(title: session.filterEdit?.kind.localizedName ?? localizedString("Filter"), content: FilterSheet(session: session))
             }
         }
         .onChange(of: session.document == nil) { _, empty in
@@ -258,12 +258,61 @@ struct ContentView: View {
                 ProgressView().controlSize(.mini)
                 Text("Importing images…")
             } else {
-                Text(session.tool == .marquee ? (session.marqueeKind == .ellipse ? "Drag an ellipse · Shift add · Option subtract · Shift again mid-drag circle · Drag inside to move · Delete clears · ⌘D deselect" : "Drag a rectangle · Shift add · Option subtract · Shift again mid-drag square · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect") : session.tool == .wand ? "Click to select similar colors · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect" : session.tool == .lasso ? (session.lassoKind == .freehand ? "Drag to select · Drag inside to move · Shift add · Option subtract · Delete clears · ⌥⌫/⌘⌫ fill · ⌘D deselect" : "Click corners · Click start, double-click or Enter to close · Delete removes corner · Escape cancel") : session.tool == .brush ? (session.brushMode == .erase ? "Drag to erase" : "Drag to paint") + " · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan" : session.tool == .blur ? (session.blurMode == .blur ? "Drag to soften" : session.blurMode == .smudge ? "Drag to smudge" : "Drag to push pixels") + " · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan" : session.tool == .cloneStamp ? "Option-click to set the source · Drag to clone · [ ] size · Shift-[ ] hardness · 1–0 opacity · Space to pan" : session.tool == .spotHealing ? "Drag over blemishes to heal · [ ] size · Shift-[ ] hardness · Escape cancel · Space to pan" : session.tool == .shape ? "Drag to draw a shape on a new layer · Shift \(session.shapeKind == .rectangle ? "square" : "circle") · Option from center · Shift-U \(session.shapeKind == .rectangle ? "ellipse" : "rectangle") · Escape cancel · Space to pan" : session.tool == .gradient ? "Drag to draw · Drag ends to adjust · Shift 45° · 1–0 opacity · Enter apply · Escape cancel" : session.tool == .crop ? "Drag to crop · Enter apply · Escape cancel · Space to pan" : session.tool == .move ? "Drag to move · Handles to resize · Circle to rotate · 1–0 layer opacity · Space to pan" : session.tool == .hand ? "Drag to pan · Pinch to zoom" : session.tool == .idle ? "No tool selected · Press a tool's key to pick one · Space to pan" : "Click to zoom in · Option-click to zoom out · Drag right or left to zoom smoothly · Space to pan")
+                Text(verbatim: toolStatusMessage)
             }
         }
         .font(.system(size: 11).monospacedDigit()).foregroundStyle(.secondary)
         .padding(.horizontal, 18).frame(height: 30)
         .accessibilityElement(children: .contain)
+    }
+
+    /// Status-bar instructions are selected at runtime, so each complete sentence must be
+    /// looked up explicitly instead of relying on SwiftUI's literal-string localization.
+    private var toolStatusMessage: String {
+        switch session.tool {
+        case .marquee:
+            return localizedString(session.marqueeKind == .ellipse
+                ? "Drag an ellipse · Shift add · Option subtract · Shift again mid-drag circle · Drag inside to move · Delete clears · ⌘D deselect"
+                : "Drag a rectangle · Shift add · Option subtract · Shift again mid-drag square · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect")
+        case .wand:
+            return localizedString("Click to select similar colors · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect")
+        case .lasso:
+            return localizedString(session.lassoKind == .freehand
+                ? "Drag to select · Drag inside to move · Shift add · Option subtract · Delete clears · ⌥⌫/⌘⌫ fill · ⌘D deselect"
+                : "Click corners · Click start, double-click or Enter to close · Delete removes corner · Escape cancel")
+        case .brush:
+            return localizedString(session.brushMode == .erase
+                ? "Drag to erase · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan"
+                : "Drag to paint · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan")
+        case .blur:
+            return localizedString(session.blurMode == .blur
+                ? "Drag to soften · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan"
+                : session.blurMode == .smudge
+                    ? "Drag to smudge · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan"
+                    : "Drag to push pixels · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan")
+        case .cloneStamp:
+            return localizedString("Option-click to set the source · Drag to clone · [ ] size · Shift-[ ] hardness · 1–0 opacity · Space to pan")
+        case .spotHealing:
+            return localizedString("Drag over blemishes to heal · [ ] size · Shift-[ ] hardness · Escape cancel · Space to pan")
+        case .shape:
+            return localizedString(session.shapeKind == .rectangle
+                ? "Drag to draw a shape on a new layer · Shift square · Option from center · Shift-U ellipse · Escape cancel · Space to pan"
+                : "Drag to draw a shape on a new layer · Shift circle · Option from center · Shift-U rectangle · Escape cancel · Space to pan")
+        case .gradient:
+            return localizedString("Drag to draw · Drag ends to adjust · Shift 45° · 1–0 opacity · Enter apply · Escape cancel")
+        case .crop:
+            return localizedString("Drag to crop · Enter apply · Escape cancel · Space to pan")
+        case .move:
+            return localizedString("Drag to move · Handles to resize · Circle to rotate · 1–0 layer opacity · Space to pan")
+        case .hand:
+            return localizedString("Drag to pan · Pinch to zoom")
+        case .idle:
+            return localizedString("No tool selected · Press a tool's key to pick one · Space to pan")
+        case .zoom:
+            return localizedString("Click to zoom in · Option-click to zoom out · Drag right or left to zoom smoothly · Space to pan")
+        case .eyedropper:
+            return localizedString("Click to sample a color · Space to pan")
+        }
     }
 }
 
