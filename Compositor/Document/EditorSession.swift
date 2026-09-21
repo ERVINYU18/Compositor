@@ -64,15 +64,18 @@ struct CanvasDocument: Equatable {
     let height: Int
     var resolution: Double = 72
     var layers: [ImageLayer] = [] // Bottom to top.
+    /// User-placed alignment lines. Saved with the project; undo covers them.
+    var guides: [CanvasGuide] = []
     /// Part of the document so undo/redo covers selection changes. Not saved to disk.
     var selection: DocumentSelection?
     var size: CGSize { CGSize(width: width, height: height) }
-    init(id: UUID = UUID(), width: Int, height: Int, layers: [ImageLayer] = [], resolution: Double = 72) {
+    init(id: UUID = UUID(), width: Int, height: Int, layers: [ImageLayer] = [], resolution: Double = 72, guides: [CanvasGuide] = []) {
         self.id = id
         self.width = width
         self.height = height
         self.layers = layers
         self.resolution = resolution
+        self.guides = guides
     }
 
     // Geometry limit; raster memory limits will be established with image import.
@@ -93,7 +96,7 @@ enum NavigationTool: String, CaseIterable {
     var isSelectionTool: Bool { self == .marquee || self == .lasso || self == .wand }
     var symbol: String { self == .type ? "textformat" : self == .eyedropper ? "eyedropper" : self == .marquee ? "rectangle.dashed" : self == .lasso ? "lasso" : self == .wand ? "wand.and.stars" : self == .brush ? "paintbrush.pointed" : self == .spotHealing ? "bandage" : self == .cloneStamp ? "seal" : self == .blur ? "drop" : self == .gradient ? "square.bottomhalf.filled" : self == .shape ? "square.on.circle" : self == .crop ? "crop" : self == .move ? "arrow.up.left.and.arrow.down.right" : self == .hand ? "hand.draw" : "magnifyingglass" }
     var label: String {
-        localizedString(self == .type ? "Type (T)" : self == .eyedropper ? "Eyedropper (I)" : self == .marquee ? "Marquee (M)" : self == .lasso ? "Lasso (L)" : self == .wand ? "Magic Wand (W)" : self == .brush ? "Brush (B) · Eraser (E)" : self == .spotHealing ? "Spot Healing Brush (J)" : self == .cloneStamp ? "Clone Stamp (S) · Option-click sets the source" : self == .blur ? "Smear (R)" : self == .gradient ? "Gradient (G)" : self == .shape ? "Shape (U) · Shift-U switches Rectangle/Ellipse/Line" : self == .crop ? "Crop (C)" : self == .move ? "Move / Transform (V)" : self == .hand ? "Hand (H)" : "Zoom (Z)")
+        localizedString(self == .type ? "Type (T)" : self == .eyedropper ? "Eyedropper (I)" : self == .marquee ? "Marquee (M)" : self == .lasso ? "Lasso (L)" : self == .wand ? "Magic (W) · Tab switches Wand and Object" : self == .brush ? "Brush (B) · Eraser (E)" : self == .spotHealing ? "Spot Healing Brush (J)" : self == .cloneStamp ? "Clone Stamp (S) · Option-click sets the source" : self == .blur ? "Smear (R)" : self == .gradient ? "Gradient (G)" : self == .shape ? "Shape (U) · Shift-U switches Rectangle/Ellipse" : self == .crop ? "Crop (C)" : self == .move ? "Move / Transform (V)" : self == .hand ? "Hand (H)" : "Zoom (Z)")
     }
 }
 
@@ -205,6 +208,8 @@ final class EditorSession {
     func symbol(for tool: NavigationTool) -> String {
         tool == .brush && brushMode == .erase ? "eraser" : tool.symbol
     }
+    /// The Magic tool's two modes: Wand selects by color, Object traces the object under the pointer (Tab).
+    var wandMode: WandMode = .wand
     /// Clone Stamp: the source Option-click set (document pixels), its options, and — once a
     /// stroke has started — the offset from brush to source that aligned strokes keep.
     var cloneSource: CGPoint?
@@ -256,7 +261,21 @@ final class EditorSession {
     var selectionAmountOperation: SelectionAmountOperation? { didSet { resumeFileRequests() } }
     var selectionFeatherAmount = 2
     var wandSettings = WandSettings()
+    var objectSelectionSettings = ObjectSelectionSettings()
     var showsPixelGrid = true
+    /// Layout grid (View > Show > Grid). Off until turned on; independent of the 800% pixel grid.
+    var showsGrid = false
+    /// User guides. Hidden extras do not snap.
+    var showsGuides = true
+    var showsRulers = false
+    /// Master snap switch (View > Snap). On so today's layer/canvas snap keeps working.
+    var snapEnabled = true
+    var snapToGuides = true
+    var snapToGrid = false
+    var snapToLayers = true
+    var snapToDocumentBounds = true
+    var locksGuides = false
+    var guideDrag: GuideDrag?
     /// Pixels the Expand / Contract buttons grow or shrink the selection by.
     var selectionExpandAmount = 1
     var selectionContractAmount = 1
@@ -329,7 +348,7 @@ final class EditorSession {
         }
     }
     /// Tab steps the current tool through its own modes — the setting sitting at the left of its tool bar. Tools
-    /// without modes (Move, Wand, Crop, Type, Eyedropper, Hand, Zoom) ignore it.
+    /// without modes (Move, Crop, Type, Eyedropper, Hand, Zoom) ignore it.
     func cycleToolMode() {
         guard !isProjectBusy, brushStroke == nil, warpStroke == nil else { return }
         func next<T: CaseIterable & Equatable>(_ value: T) -> T where T.AllCases.Index == Int {
@@ -339,6 +358,7 @@ final class EditorSession {
         }
         switch tool {
         case .marquee: toggleMarqueeKind()
+        case .wand: wandMode = next(wandMode)
         case .lasso: toggleLassoKind()
         case .shape: toggleShapeKind()
         case .brush: brushMode = next(brushMode)
