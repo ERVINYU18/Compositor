@@ -6,12 +6,11 @@ struct BlendModePicker: NSViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator(session: session) }
     func makeNSView(context: Context) -> NSPopUpButton {
         let button = NSPopUpButton(frame: .zero, pullsDown: false)
-        button.addItems(withTitles: LayerBlendMode.allCases.map(\.localizedName))
-        for (index, item) in (button.itemArray).enumerated() { item.tag = index }
+        button.addItems(withTitles: LayerBlendMode.allCases.map(\.rawValue))
         button.menu?.delegate = context.coordinator
         button.target = context.coordinator
         button.action = #selector(Coordinator.choose(_:))
-        button.setAccessibilityLabel(localizedString("Blend mode"))
+        button.setAccessibilityLabel("Blend mode")
         // A capsule like the SwiftUI buttons and menus (`roundedControls`), which don't reach this AppKit pop-up.
         button.borderShape = .capsule
         return button
@@ -19,8 +18,7 @@ struct BlendModePicker: NSViewRepresentable {
     func updateNSView(_ button: NSPopUpButton, context: Context) {
         button.isEnabled = session.canEditAppearance
         if !context.coordinator.tracking {
-            let mode = session.activeLayer?.blendMode ?? .normal
-            button.selectItem(at: LayerBlendMode.allCases.firstIndex(of: mode) ?? 0)
+            button.selectItem(withTitle: (session.activeLayer?.blendMode ?? .normal).rawValue)
         }
     }
     static func dismantleNSView(_ button: NSPopUpButton, coordinator: Coordinator) {
@@ -39,22 +37,28 @@ struct BlendModePicker: NSViewRepresentable {
             highlightedMode = nil
         }
         func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-            let mode = item.flatMap { item in
-                LayerBlendMode.allCases.indices.contains(item.tag) ? LayerBlendMode.allCases[item.tag] : nil
-            }
-            if let mode { highlightedMode = mode }
+            // AppKit briefly reports no highlighted item while dismissing the menu.
+            // Keep the last preview alive until the selection action has committed so
+            // the canvas never flashes back to the layer's previous mode.
+            guard let mode = item.flatMap({ LayerBlendMode(rawValue: $0.title) }) else { return }
+            highlightedMode = mode
             session.previewBlendMode(mode, for: layerID)
         }
         func menuDidClose(_ menu: NSMenu) {
             tracking = false
-            session.previewBlendMode(nil, for: nil)
+            // A chosen item's action runs as the menu finishes closing. Clearing on the
+            // next turn lets that action replace the preview with the committed mode;
+            // when the menu was cancelled, this simply restores the original mode.
+            DispatchQueue.main.async { [weak self] in
+                guard let self, !self.tracking else { return }
+                self.session.previewBlendMode(nil, for: nil)
+            }
         }
         @objc func choose(_ button: NSPopUpButton) {
             guard session.activeLayerID == layerID,
-                  let mode = highlightedMode ?? (LayerBlendMode.allCases.indices.contains(button.indexOfSelectedItem)
-                      ? LayerBlendMode.allCases[button.indexOfSelectedItem] : nil) else { return }
+                  let mode = highlightedMode ?? button.selectedItem.flatMap({ LayerBlendMode(rawValue: $0.title) }) else { return }
             session.setLayerBlendMode(mode)
-            button.selectItem(at: LayerBlendMode.allCases.firstIndex(of: mode) ?? 0)
+            button.selectItem(withTitle: mode.rawValue)
             highlightedMode = nil
             session.refreshCanvasPreview?()
         }

@@ -11,7 +11,7 @@ struct LassoControls: View {
                     session.cancelLasso()
                     session.marqueeKind = kind
                 })) {
-                    ForEach(LassoKind.marqueeChoices, id: \.self) { Text(verbatim: $0.localizedName).tag($0) }
+                    ForEach(LassoKind.marqueeChoices, id: \.self) { Text($0.rawValue).tag($0) }
                 }
                 .pickerStyle(.segmented).labelsHidden().fixedSize()
                 .help("Press M to switch between Rectangle and Ellipse")
@@ -21,7 +21,7 @@ struct LassoControls: View {
                     session.cancelLasso()
                     session.lassoKind = kind
                 })) {
-                    ForEach(LassoKind.lassoChoices, id: \.self) { Text(verbatim: $0.localizedName).tag($0) }
+                    ForEach(LassoKind.lassoChoices, id: \.self) { Text($0.rawValue).tag($0) }
                 }
                 .pickerStyle(.segmented).labelsHidden().fixedSize()
                 .help("Press L to switch between Freehand and Polygonal")
@@ -29,7 +29,7 @@ struct LassoControls: View {
             // Shows held Shift/Option (or an outline's mode) live; clicking sets the choice.
             Picker("Mode", selection: Binding(get: { session.displayedSelectionMode },
                                               set: { session.selectionModeChoice = $0 })) {
-                ForEach(SelectionMode.allCases, id: \.self) { Text(verbatim: $0.localizedName).tag($0) }
+                ForEach(SelectionMode.allCases, id: \.self) { Text($0.rawValue).tag($0) }
             }
             .pickerStyle(.segmented).labelsHidden().fixedSize()
             .help("Hold Shift to add or Option to subtract for one outline")
@@ -45,6 +45,19 @@ struct LassoControls: View {
             }
             modifyControl("Contract", amount: $session.selectionContractAmount) {
                 session.contractSelection(by: session.selectionContractAmount)
+            }
+            // Softens the selection's edge, as Select → Feather does.
+            HStack(spacing: 5) {
+                Button("Feather") { session.featherSelection(by: session.selectionFeatherAmount) }
+                    .disabled(!session.canModifySelection)
+                    .help("Fade the edge of the selection by this many pixels")
+                TextField("Feather", value: Binding(get: { Double(session.selectionFeatherAmount) },
+                                                    set: { session.selectionFeatherAmount = $0.isFinite ? Int(min(250, max(1, $0))) : 2 }),
+                          format: .number.precision(.fractionLength(0)))
+                    .frame(width: 48).textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing)
+                    .arrowSteps(value: { Double(session.selectionFeatherAmount) },
+                                change: { session.selectionFeatherAmount = Int(min(250, max(1, $0))) })
+                    .unitSuffix("px")
             }
             Spacer(minLength: 0)
             if let selection = session.selection {
@@ -88,10 +101,9 @@ struct LassoControls: View {
 
     /// A button plus its pixel amount (1–500, default 1); both disabled without a selection.
     private func modifyControl(_ title: String, amount: Binding<Int>, action: @escaping () -> Void) -> some View {
-        let localizedTitle = localizedString(title)
-        return HStack(spacing: 6) {
-            Button(localizedTitle, action: action)
-            TextField(localizedTitle, value: Binding(get: { amount.wrappedValue },
+        HStack(spacing: 5) {
+            Button(title, action: action)
+            TextField(title, value: Binding(get: { amount.wrappedValue },
                                             set: { amount.wrappedValue = min(500, max(1, $0)) }),
                       format: .number)
                 .frame(width: 40).textFieldStyle(.roundedBorder)
@@ -101,7 +113,7 @@ struct LassoControls: View {
                 .unitSuffix("px")
         }
         .disabled(!session.canModifySelection)
-        .help(String(format: localizedString("%@ the selection by this many pixels"), localizedTitle))
+        .help("\(title) the selection by this many pixels")
     }
 }
 
@@ -125,5 +137,63 @@ struct PolygonalLassoToolIcon: View {
             for part in [loop, knot, rope] { context.stroke(part, with: .foreground, style: style) }
         }
         .accessibilityHidden(true)
+    }
+}
+
+/// Selection modifiers share the filter panels' floating window and control layout.
+struct SelectionAmountSheet: View {
+    let session: EditorSession
+    let operation: EditorSession.SelectionAmountOperation
+    @State private var input: String
+    @FocusState private var focused: Bool
+
+    init(session: EditorSession, operation: EditorSession.SelectionAmountOperation) {
+        self.session = session
+        self.operation = operation
+        let amount: Int
+        switch operation {
+        case .expand: amount = session.selectionExpandAmount
+        case .contract: amount = session.selectionContractAmount
+        case .feather: amount = session.selectionFeatherAmount
+        }
+        _input = State(initialValue: String(amount))
+    }
+
+    private var maximum: Int { operation == .feather ? 250 : 500 }
+    private var amount: Int? {
+        guard let value = Int(input.trimmingCharacters(in: .whitespacesAndNewlines)),
+              (1...maximum).contains(value) else { return nil }
+        return value
+    }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 10) {
+                Text("Amount").frame(minWidth: 60, alignment: .leading)
+                Slider(value: Binding(get: { Double(amount ?? 1) },
+                                      set: { input = String(Int($0.rounded())) }),
+                       in: 1...Double(maximum), step: 1)
+                TextField("Amount", text: $input)
+                    .frame(width: 56).textFieldStyle(.roundedBorder)
+                    .multilineTextAlignment(.trailing).focused($focused)
+                    .unitSuffix("px")
+            }
+            Text("Enter a whole number from 1 to \(maximum) px.")
+                .font(.callout).foregroundStyle(.secondary)
+                .opacity(amount == nil ? 1 : 0)
+            Divider()
+            HStack {
+                Button("Cancel") { session.selectionAmountOperation = nil }
+                    .configuredNativeShortcut(.escape)
+                Spacer()
+                Button("OK") {
+                    if let amount { session.confirmSelectionAmount(amount) }
+                }
+                .configuredNativeShortcut(.return).buttonStyle(.borderedProminent)
+                .disabled(amount == nil)
+            }
+        }
+        .padding(24).frame(width: 380).fixedSize()
+        .onAppear { focused = true }
     }
 }
