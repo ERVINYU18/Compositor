@@ -52,7 +52,6 @@
       }
     },
     "%@ the selection by this many pixels" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -73,7 +72,6 @@
       }
     },
     "%@…" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -322,6 +320,9 @@
           }
         }
       }
+    },
+    "Amount" : {
+
     },
     "An image could not be saved. The previous project has not been replaced." : {
       "extractionState" : "manual",
@@ -785,6 +786,9 @@
         }
       }
     },
+    "Click a shortcut, then press its new key combination. Changes apply when you save." : {
+
+    },
     "Click corners · Click start, double-click or Enter to close · Delete removes corner · Escape cancel" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -976,6 +980,9 @@
         }
       }
     },
+    "Color Overlay" : {
+
+    },
     "Color Picker (Background Color)" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1082,6 +1089,9 @@
         }
       }
     },
+    "Contextual keys & mouse gestures" : {
+
+    },
     "Contiguous" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1104,6 +1114,7 @@
       }
     },
     "Contract by %lld px" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1123,6 +1134,9 @@
           }
         }
       }
+    },
+    "Contract…" : {
+
     },
     "Contrast" : {
       "extractionState" : "manual",
@@ -1436,6 +1450,7 @@
       }
     },
     "Delete Layer" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1456,6 +1471,7 @@
       }
     },
     "Delete Layer Mask" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1466,6 +1482,7 @@
       }
     },
     "Delete Layers" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1474,6 +1491,9 @@
           }
         }
       }
+    },
+    "Delete selected effect" : {
+
     },
     "Delete selected layer" : {
       "localizations" : {
@@ -1580,6 +1600,9 @@
           }
         }
       }
+    },
+    "Done" : {
+
     },
     "Drag a rectangle · Shift add · Option subtract · Shift again mid-drag square · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect" : {
       "extractionState" : "manual",
@@ -1766,6 +1789,9 @@
         }
       }
     },
+    "Drop Shadow" : {
+
+    },
     "Drop to open in a new canvas" : {
       "localizations" : {
         "zh-Hans" : {
@@ -1829,6 +1855,9 @@
         }
       }
     },
+    "Edit Text" : {
+
+    },
     "Ellipse" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -1860,6 +1889,9 @@
           }
         }
       }
+    },
+    "Enter a whole number from 1 to %lld px." : {
+
     },
     "Enter whole numbers from 1 to 30,000 pixels." : {
       "localizations" : {
@@ -1904,6 +1936,7 @@
       }
     },
     "Expand by %lld px" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1923,6 +1956,9 @@
           }
         }
       }
+    },
+    "Expand…" : {
+
     },
     "Export JPEG" : {
       "localizations" : {
@@ -2016,6 +2052,15 @@
           }
         }
       }
+    },
+    "Fade the edge of the selection by this many pixels" : {
+
+    },
+    "Feather" : {
+
+    },
+    "Feather…" : {
+
     },
     "Fill" : {
       "localizations" : {
@@ -2199,6 +2244,9 @@
           }
         }
       }
+    },
+    "Font face, including bold and italic variants" : {
+
     },
     "Foreground" : {
       "extractionState" : "manual",
@@ -2669,6 +2717,9 @@
         }
       }
     },
+    "Inner Shadow" : {
+
+    },
     "Input %lld · Output %lld" : {
       "localizations" : {
         "en" : {
@@ -2684,6 +2735,9 @@
           }
         }
       }
+    },
+    "Inside" : {
+
     },
     "Inverse" : {
       "localizations" : {
@@ -2735,6 +2789,9 @@
         }
       }
     },
+    "Keyboard Shortcuts…" : {
+
+    },
     "Lasso" : {
       "localizations" : {
         "zh-Hans" : {
@@ -2777,6 +2834,12 @@
         }
       }
     },
+    "Layer effects" : {
+
+    },
+    "Layer effects: stroke and drop shadow" : {
+
+    },
     "Layer Opacity" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -2817,6 +2880,9 @@
           }
         }
       }
+    },
+    "Leading" : {
+
     },
     "Lens Correction" : {
       "extractionState" : "manual",
@@ -2870,6 +2936,9 @@
           }
         }
       }
+    },
+    "Line height, baseline to baseline. Empty or 0 is Auto: 120% of the font size." : {
+
     },
     "Linear" : {
       "extractionState" : "manual",
@@ -3608,6 +3677,9 @@
         }
       }
     },
+    "Option temporarily selects the eyedropper in painting tools. Shift constrains shapes/movement or adds to a selection; Option subtracts from selections or draws from center. Command-drag moves selected pixels; Command-Option-drag copies them. Option-drag duplicates layers/folders/effects; Option-click at a layer boundary toggles clipping. Command-click a thumbnail loads its selection. Control bypasses snapping. Right-drag adjusts brush size. Modifier-and-mouse gestures are fixed." : {
+
+    },
     "Option-click to set the source" : {
       "localizations" : {
         "zh-Hans" : {
@@ -3658,6 +3730,9 @@
           }
         }
       }
+    },
+    "Outside" : {
+
     },
     "Overlay" : {
       "extractionState" : "manual",
@@ -3784,6 +3859,9 @@
           }
         }
       }
+    },
+    "Position" : {
+
     },
     "Positive straightens lines that bow outward (barrel); negative, lines that bow inward (pincushion)." : {
       "localizations" : {
@@ -3979,7 +4057,6 @@
       }
     },
     "Redo %@" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -4166,6 +4243,9 @@
         }
       }
     },
+    "Restore Defaults" : {
+
+    },
     "Result: %lld × %lld pixels" : {
       "localizations" : {
         "en" : {
@@ -4348,6 +4428,9 @@
         }
       }
     },
+    "Search shortcuts" : {
+
+    },
     "Select" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4451,7 +4534,11 @@
         }
       }
     },
+    "Shift-U (or Tab) steps through Rectangle, Ellipse and Line" : {
+
+    },
     "Shift-U switches between Rectangle and Ellipse" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -4584,6 +4671,9 @@
         }
       }
     },
+    "Snap" : {
+
+    },
     "Spot Healing" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4624,6 +4714,12 @@
           }
         }
       }
+    },
+    "Stroke" : {
+
+    },
+    "Subject" : {
+
     },
     "Subtract" : {
       "extractionState" : "manual",
@@ -4675,6 +4771,12 @@
           }
         }
       }
+    },
+    "Text color" : {
+
+    },
+    "Text fields keep standard macOS editing keys. Dialogs share the Apply/Cancel assignments above. Numeric fields use Up/Down, with Shift for larger steps. Standard macOS commands include ⌘Q to quit and ⌃⌘F for full screen. The shortcut editor itself always uses Return to save and Esc to cancel when not recording." : {
+
     },
     "That selection is too detailed to outline. Try a different Tolerance, or turn on Contiguous." : {
       "extractionState" : "manual",
@@ -4850,6 +4952,9 @@
         }
       }
     },
+    "Tracking" : {
+
+    },
     "Transform" : {
       "localizations" : {
         "zh-Hans" : {
@@ -4964,7 +5069,6 @@
       }
     },
     "Undo %@" : {
-      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
