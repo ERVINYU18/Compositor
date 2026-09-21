@@ -72,6 +72,7 @@
       }
     },
     "%@…" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -1136,7 +1137,14 @@
       }
     },
     "Contract…" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "收缩…"
+          }
+        }
+      }
     },
     "Contrast" : {
       "extractionState" : "manual",
@@ -1958,7 +1966,14 @@
       }
     },
     "Expand…" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "扩展…"
+          }
+        }
+      }
     },
     "Export JPEG" : {
       "localizations" : {
@@ -2060,7 +2075,14 @@
 
     },
     "Feather…" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "羽化…"
+          }
+        }
+      }
     },
     "Fill" : {
       "localizations" : {
@@ -2789,8 +2811,26 @@
         }
       }
     },
+    "Keyboard Shortcuts" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "键盘快捷键"
+          }
+        }
+      }
+    },
     "Keyboard Shortcuts…" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "键盘快捷键…"
+          }
+        }
+      }
     },
     "Lasso" : {
       "localizations" : {
@@ -4057,6 +4097,7 @@
       }
     },
     "Redo %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
@@ -4672,7 +4713,25 @@
       }
     },
     "Snap" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "吸附"
+          }
+        }
+      }
+    },
+    "Soft Light" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "柔光"
+          }
+        }
+      }
     },
     "Spot Healing" : {
       "localizations" : {
@@ -4719,7 +4778,14 @@
 
     },
     "Subject" : {
-
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "主体"
+          }
+        }
+      }
     },
     "Subtract" : {
       "extractionState" : "manual",
@@ -4751,6 +4817,9 @@
           }
         }
       }
+    },
+    "T" : {
+
     },
     "Targeted adjustment" : {
       "localizations" : {
@@ -5048,6 +5117,17 @@
         }
       }
     },
+    "Type (T)" : {
+      "extractionState" : "stale",
+      "localizations" : {
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "文字 (T)"
+          }
+        }
+      }
+    },
     "Underlying pixels · alpha-weighted histogram" : {
       "localizations" : {
         "zh-Hans" : {
@@ -5069,6 +5149,7 @@
       }
     },
     "Undo %@" : {
+      "extractionState" : "stale",
       "localizations" : {
         "zh-Hans" : {
           "stringUnit" : {
