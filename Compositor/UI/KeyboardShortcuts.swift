@@ -91,12 +91,15 @@ struct ShortcutDefinition: Identifiable {
             entry("Transform Layer / Selection", "t", 1, menu: true), entry("Duplicate / Layer via Copy", "j", 1, menu: true),
             entry("Toggle Clipping Mask", "g", 3, menu: true), entry("Group Layers", "g", 1, menu: true),
             entry("New Blank Layer", "n", 9, menu: true), entry("Move Layer Up", "]", 1, menu: true),
-            entry("Move Layer Down", "[", 1, menu: true), entry("Merge Layers", "e", 1, menu: true)
+            entry("Move Layer Down", "[", 1, menu: true), entry("Merge Layers", "e", 1, menu: true),
+            entry("Show Grid", "'", 1, menu: true), entry("Show Guides", ";", 1, menu: true),
+            entry("Show Rulers", "r", 1, menu: true), entry("Snap", ";", 9, menu: true),
+            entry("Lock Guides", ";", 3, menu: true)
         ]
         for (title, key) in [("Select tool", "a"), ("Move / Transform tool", "v"), ("Hand tool", "h"),
             ("Zoom tool", "z"), ("Brush tool", "b"), ("Eraser", "e"), ("Spot Healing", "j"),
             ("Clone Stamp", "s"), ("Type tool", "t"), ("Gradient tool", "g"), ("Shape tool", "u"),
-            ("Eyedropper tool", "i"), ("Marquee / cycle shape", "m"), ("Magic Wand", "w"),
+            ("Eyedropper tool", "i"), ("Marquee / cycle shape", "m"), ("Magic", "w"),
             ("Lasso / cycle mode", "l"), ("Blur / Smudge / Liquify", "r"), ("Crop tool", "c"),
             ("Swap foreground/background", "x"), ("Reset colors", "d"), ("Cycle tool mode", "\t"),
             ("Temporary Hand tool (hold)", " "), ("Delete selection / layer / effect / lasso point", "\u{7f}"),
