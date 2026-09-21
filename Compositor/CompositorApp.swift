@@ -84,9 +84,6 @@ struct CompositorApp: App {
                 }
                 // Grouped: a commands builder takes at most ten items.
                 Group {
-                    CommandGroup(after: .appInfo) {
-                        Button("Check for Updates…") { applicationDelegate.updater.checkForUpdates(nil) }
-                    }
                     CommandGroup(after: .toolbar) {
                         Button("Fit Canvas") { session.fit() }.configuredKeyboardShortcut("0").disabled(session.document == nil)
                         Button("Actual Pixels") { session.zoom(to: 1) }.configuredKeyboardShortcut("1").disabled(session.document == nil)
