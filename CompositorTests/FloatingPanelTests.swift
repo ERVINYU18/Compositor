@@ -50,8 +50,7 @@ struct FloatingPanelTests {
         controller.close()
         session.closeColorPicker(commit: false)
     }
-    // Invert has no settings and so no editor; it is covered on its own.
-    @Test(arguments: AdjustmentKind.allCases.filter(\.isEditable))
+    @Test(arguments: AdjustmentKind.allCases)
     func adjustmentEditorsUseMovableNonmodalPanels(_ kind: AdjustmentKind) async throws {
         let session = try sessionWithPixels()
         session.addAdjustment(kind)
@@ -61,9 +60,7 @@ struct FloatingPanelTests {
         switch kind {
         case .levels: controller.show(title: "Levels", content: LevelsSheet(session: session))
         case .hsv: controller.show(title: "Hue/Saturation", content: HueSaturationSheet(session: session))
-        case .curves, .exposure, .gradientMap, .grain, .blackWhite, .colorBalance:
-            controller.show(title: kind.rawValue, content: FilterSheet(session: session))
-        case .invert: return   // filtered out above: no editor, so no panel to test
+        case .curves, .exposure, .gradientMap, .grain: controller.show(title: kind.rawValue, content: FilterSheet(session: session))
         }
         settle()
         let panel = try #require(NSApp.windows.first { $0.identifier == controller.identifier })
