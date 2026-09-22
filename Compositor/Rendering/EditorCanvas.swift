@@ -774,7 +774,7 @@ final class CanvasView: NSView {
         // Color Burn and Color Dodge are blended by hand against the pixels under them, which needs a surface to
         // read back (see SeparableBlend).
         if !onSurface, document.layers.contains(where: { $0.adjustment != nil
-            || SeparableBlend.isCoreGraphicsWrong(session.displayedBlendMode(for: $0)) }) {
+            || SeparableBlend.needsSurface(session.displayedBlendMode(for: $0)) }) {
             AdjustmentSurface.draw(in: context) { self.drawLayers(document, scale: scale, center: center, in: $0, onSurface: true) }
             return
         }
@@ -784,7 +784,7 @@ final class CanvasView: NSView {
             // A folder the layer sits in dims it along with everything else inside (see LayerOpacity).
             let opacity = layer.effectiveOpacity(in: byID)
             let mode = session.displayedBlendMode(for: layer)
-            if SeparableBlend.isCoreGraphicsWrong(mode), normalBlendLayerID != id {
+            if SeparableBlend.needsSurface(mode), normalBlendLayerID != id {
                 normalBlendLayerID = id
                 defer { normalBlendLayerID = nil }
                 if SeparableBlend.draw(mode, in: context, body: { drawOwn(id, $0) }) { return }

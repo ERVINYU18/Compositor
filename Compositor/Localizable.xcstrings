@@ -3076,7 +3076,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "洋红色"
+            "value": "洋红"
           }
         }
       }
@@ -5904,6 +5904,186 @@
           "stringUnit": {
             "state": "translated",
             "value": "导入 Photoshop 文件"
+          }
+        }
+      }
+    },
+    "Linear Burn": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "线性加深"
+          }
+        }
+      }
+    },
+    "Linear Dodge (Add)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "线性减淡（添加）"
+          }
+        }
+      }
+    },
+    "Hard Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "强光"
+          }
+        }
+      }
+    },
+    "Vivid Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "亮光"
+          }
+        }
+      }
+    },
+    "Linear Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "线性光"
+          }
+        }
+      }
+    },
+    "Pin Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点光"
+          }
+        }
+      }
+    },
+    "Hard Mix": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实色混合"
+          }
+        }
+      }
+    },
+    "Exclusion": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "排除"
+          }
+        }
+      }
+    },
+    "Divide": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "划分"
+          }
+        }
+      }
+    },
+    "Black & White": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黑白"
+          }
+        }
+      }
+    },
+    "Color Balance": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色彩平衡"
+          }
+        }
+      }
+    },
+    "Color the result while keeping its tones, for a sepia or a cyanotype": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在保留明暗层次的同时为结果着色，可用于棕褐色或蓝晒效果"
+          }
+        }
+      }
+    },
+    "Midtones": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "中间调"
+          }
+        }
+      }
+    },
+    "Cyan / Red": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "青色 / 红色"
+          }
+        }
+      }
+    },
+    "Magenta / Green": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "洋红 / 绿色"
+          }
+        }
+      }
+    },
+    "Yellow / Blue": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黄色 / 蓝色"
+          }
+        }
+      }
+    },
+    "Preserve Luminosity": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保持明度"
+          }
+        }
+      }
+    },
+    "Put each pixel's brightness back afterwards, so only the color moves": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复每个像素原有的亮度，使调整只影响颜色"
           }
         }
       }

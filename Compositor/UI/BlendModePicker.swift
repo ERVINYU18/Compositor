@@ -3,58 +3,143 @@ import AppKit
 
 struct BlendModePicker: NSViewRepresentable {
     let session: EditorSession
-    func makeCoordinator() -> Coordinator { Coordinator(session: session) }
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(session: session)
+    }
+
     func makeNSView(context: Context) -> NSPopUpButton {
         let button = NSPopUpButton(frame: .zero, pullsDown: false)
-        button.addItems(withTitles: LayerBlendMode.allCases.map(\.localizedName))
-        for (index, item) in (button.itemArray).enumerated() { item.tag = index }
+
+        // 按 Photoshop 的分组显示，同时保留每个模式真实枚举索引，
+        // 这样显示中文后仍能正确识别对应的混合模式。
+        for (groupIndex, group) in LayerBlendMode.groups.enumerated() {
+            if groupIndex > 0 {
+                button.menu?.addItem(.separator())
+            }
+
+            for mode in group {
+                button.addItem(withTitle: mode.localizedName)
+
+                if let item = button.lastItem,
+                   let index = LayerBlendMode.allCases.firstIndex(of: mode) {
+                    item.tag = index
+                }
+            }
+        }
+
         button.menu?.delegate = context.coordinator
         button.target = context.coordinator
         button.action = #selector(Coordinator.choose(_:))
+
         button.setAccessibilityLabel(localizedString("Blend mode"))
-        // A capsule like the SwiftUI buttons and menus (`roundedControls`), which don't reach this AppKit pop-up.
+
+        // 与 SwiftUI 其他胶囊按钮保持一致。
         button.borderShape = .capsule
+
         return button
     }
+
     func updateNSView(_ button: NSPopUpButton, context: Context) {
         button.isEnabled = session.canEditAppearance
+
         if !context.coordinator.tracking {
             let mode = session.activeLayer?.blendMode ?? .normal
-            button.selectItem(at: LayerBlendMode.allCases.firstIndex(of: mode) ?? 0)
+
+            if let index = LayerBlendMode.allCases.firstIndex(of: mode) {
+                let menuIndex = button.indexOfItem(withTag: index)
+
+                if menuIndex >= 0 {
+                    button.selectItem(at: menuIndex)
+                }
+            }
         }
     }
-    static func dismantleNSView(_ button: NSPopUpButton, coordinator: Coordinator) {
-        if coordinator.tracking { coordinator.session.previewBlendMode(nil, for: nil) }
+
+    static func dismantleNSView(
+        _ button: NSPopUpButton,
+        coordinator: Coordinator
+    ) {
+        if coordinator.tracking {
+            coordinator.session.previewBlendMode(nil, for: nil)
+        }
+
         button.menu?.delegate = nil
     }
+
     final class Coordinator: NSObject, NSMenuDelegate {
         let session: EditorSession
+
         var tracking = false
+
         private var layerID: UUID?
         private var highlightedMode: LayerBlendMode?
-        init(session: EditorSession) { self.session = session }
+
+        init(session: EditorSession) {
+            self.session = session
+        }
+
         func menuWillOpen(_ menu: NSMenu) {
             tracking = true
             layerID = session.activeLayerID
             highlightedMode = nil
         }
+
         func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-            let mode = item.flatMap { item in
-                LayerBlendMode.allCases.indices.contains(item.tag) ? LayerBlendMode.allCases[item.tag] : nil
+            guard let item,
+                  !item.isSeparatorItem,
+                  LayerBlendMode.allCases.indices.contains(item.tag)
+            else {
+                return
             }
-            if let mode { highlightedMode = mode }
+
+            let mode = LayerBlendMode.allCases[item.tag]
+
+            highlightedMode = mode
             session.previewBlendMode(mode, for: layerID)
         }
+
         func menuDidClose(_ menu: NSMenu) {
             tracking = false
-            session.previewBlendMode(nil, for: nil)
+
+            DispatchQueue.main.async { [weak self] in
+                guard let self, !self.tracking else {
+                    return
+                }
+
+                self.session.previewBlendMode(nil, for: nil)
+            }
         }
+
         @objc func choose(_ button: NSPopUpButton) {
+            let selectedMode: LayerBlendMode?
+
+            if let highlightedMode {
+                selectedMode = highlightedMode
+            } else if let item = button.selectedItem,
+                      !item.isSeparatorItem,
+                      LayerBlendMode.allCases.indices.contains(item.tag) {
+                selectedMode = LayerBlendMode.allCases[item.tag]
+            } else {
+                selectedMode = nil
+            }
+
             guard session.activeLayerID == layerID,
-                  let mode = highlightedMode ?? (LayerBlendMode.allCases.indices.contains(button.indexOfSelectedItem)
-                      ? LayerBlendMode.allCases[button.indexOfSelectedItem] : nil) else { return }
+                  let mode = selectedMode
+            else {
+                return
+            }
+
             session.setLayerBlendMode(mode)
-            button.selectItem(at: LayerBlendMode.allCases.firstIndex(of: mode) ?? 0)
+
+            if let index = LayerBlendMode.allCases.firstIndex(of: mode) {
+                let menuIndex = button.indexOfItem(withTag: index)
+
+                if menuIndex >= 0 {
+                    button.selectItem(at: menuIndex)
+                }
+            }
+
             highlightedMode = nil
             session.refreshCanvasPreview?()
         }
