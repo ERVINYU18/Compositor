@@ -2014,7 +2014,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "曝光度"
+            "value": "曝光"
           }
         }
       }
@@ -5634,6 +5634,276 @@
           "stringUnit": {
             "state": "translated",
             "value": "此项目使用格式版本 %lld。此应用支持版本 1–8。"
+          }
+        }
+      }
+    },
+    "Develop “%@”": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显影“%@”"
+          }
+        }
+      }
+    },
+    "Temperature": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色温"
+          }
+        }
+      }
+    },
+    "Tint": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色调"
+          }
+        }
+      }
+    },
+    "Boost": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "增强"
+          }
+        }
+      }
+    },
+    "Import": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入"
+          }
+        }
+      }
+    },
+    "Open “%@”?": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "打开“%@”？"
+          }
+        }
+      }
+    },
+    "Reading the file to see what needs converting.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在读取文件，以检查需要转换的内容。"
+          }
+        }
+      }
+    },
+    "Compositor will convert these Photoshop features. Nothing is applied until you continue.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Compositor 将转换以下 Photoshop 特性。在你继续之前不会应用任何更改。"
+          }
+        }
+      }
+    },
+    "Reading the Photoshop file…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在读取 Photoshop 文件…"
+          }
+        }
+      }
+    },
+    "The Photoshop file could not be read. It may be damaged or incomplete.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取 Photoshop 文件。文件可能已损坏或不完整。"
+          }
+        }
+      }
+    },
+    "Large Document (.psb) Photoshop files aren’t supported.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂不支持 Photoshop 大型文档（.psb）。"
+          }
+        }
+      }
+    },
+    "Only 8-bit RGB Photoshop files can be imported.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只能导入 8 位 RGB Photoshop 文件。"
+          }
+        }
+      }
+    },
+    "This Photoshop file uses a layer compression method that isn’t supported.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 Photoshop 文件使用了暂不支持的图层压缩方式。"
+          }
+        }
+      }
+    },
+    "Editable Photoshop text becomes pixels and can’t be retyped.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可编辑的 Photoshop 文字将转换为像素，之后无法重新编辑文字。"
+          }
+        }
+      }
+    },
+    "The smart object was rasterized. Linked contents can’t be edited.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "智能对象已栅格化，链接内容将无法继续编辑。"
+          }
+        }
+      }
+    },
+    "Layer effects were discarded, so the appearance may differ.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层效果已被舍弃，因此外观可能与 Photoshop 中有所不同。"
+          }
+        }
+      }
+    },
+    "Vector shape was rasterized to pixels.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "矢量形状已栅格化为像素。"
+          }
+        }
+      }
+    },
+    "This Photoshop layer type isn’t supported and was imported as pixels.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂不支持这种 Photoshop 图层类型，已按像素图层导入。"
+          }
+        }
+      }
+    },
+    "Folder blend mode “%@” isn’t supported. The folder will be pass-through.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支持文件夹混合模式“%@”，该文件夹将使用穿透模式。"
+          }
+        }
+      }
+    },
+    "Blend mode “%@” isn’t supported and will be applied as Normal.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "不支持混合模式“%@”，将按“正常”模式处理。"
+          }
+        }
+      }
+    },
+    "This adjustment type isn’t supported and was skipped.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂不支持这种调整类型，已跳过。"
+          }
+        }
+      }
+    },
+    "Adjustment parameters may not match Photoshop exactly.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "调整参数可能无法与 Photoshop 完全一致。"
+          }
+        }
+      }
+    },
+    "The layer mask couldn’t be converted to 8-bit grayscale and was skipped.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层蒙版无法转换为 8 位灰度，已跳过。"
+          }
+        }
+      }
+    },
+    "This clipping mask’s base isn’t supported, so clipping was skipped.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此剪贴蒙版的基础图层暂不支持，因此已跳过剪贴关系。"
+          }
+        }
+      }
+    },
+    "Choose a JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) file.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择 JPEG、PNG、HEIC、TIFF 或 Photoshop（PSD）文件。"
+          }
+        }
+      }
+    },
+    "Some dropped items couldn’t be read. Drag JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) files from Finder.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分拖入项目无法读取。请从访达拖入 JPEG、PNG、HEIC、TIFF 或 Photoshop（PSD）文件。"
+          }
+        }
+      }
+    },
+    "Import Photoshop File": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入 Photoshop 文件"
           }
         }
       }

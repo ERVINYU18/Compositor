@@ -21,8 +21,9 @@ struct ContentView: View {
         guard let workspace = applicationDelegate?.workspace else { return true }
         return workspace.canReceiveDrag(into: workspace.current.id)
     }
-    var body: some View {
-        VStack(spacing: 0) {
+    // Extracted from `body`: as one expression the type checker times out (Xcode 26.1).
+    @ViewBuilder private var toolHeaders: some View {
+        Group {
             if session.tool == .move {
                 TransformInspector(session: session).id(session.activeLayerID)
                 Divider()
@@ -71,6 +72,12 @@ struct ContentView: View {
                 }.padding(.horizontal, 18).toolHeaderBar()
                 Divider()
             }
+        }
+    }
+
+    @ViewBuilder private var editorStack: some View {
+        VStack(spacing: 0) {
+            toolHeaders
             HStack(spacing: 0) {
                 toolRail
                 Divider()
@@ -102,6 +109,11 @@ struct ContentView: View {
             statusBar.fixedSize(horizontal: false, vertical: true)
                 .modifier(WidthReader(width: $windowWidth))
         }
+    }
+
+    // Split again for 1.1: the chain outgrew the type checker once more.
+    @ViewBuilder private var editorChrome: some View {
+        editorStack
         .background(Color(white: 0.14))
         .background {
             if let applicationDelegate, applicationDelegate.projects.workspace == nil {
@@ -174,6 +186,10 @@ struct ContentView: View {
                 }.help("Zoom out (⌘−)").disabled(session.document == nil)
             }
         }
+    }
+
+    var body: some View {
+        editorChrome
         .onChange(of: session.levels == nil) { _, closed in
             if closed { levelsPanel.close() }
             else {
@@ -220,8 +236,12 @@ struct ContentView: View {
             if !empty { session.canvasFocusRequest += 1 }
         }
         .fileImporter(isPresented: $session.showsImporter,
-                      allowedContentTypes: [.jpeg, .png, .heic, .tiff], allowsMultipleSelection: true) { result in
-            handleImportResult(result)
+                      allowedContentTypes: UTType.importableImages, allowsMultipleSelection: true) { result in
+            switch result {
+            case .success(let urls): Task { await session.importImages(urls) }
+            case .failure(let error):
+                if (error as NSError).code != NSUserCancelledError { session.importError = error.localizedDescription }
+            }
         }
         .alert("Import couldn’t finish", isPresented: Binding(
             get: { session.importError != nil }, set: { if !$0 { session.importError = nil } })) {
@@ -236,17 +256,6 @@ struct ContentView: View {
                 Button("OK") { session.cropError = nil }
             } message: { Text(session.cropError ?? "") }
     }
-    private func handleImportResult(_ result: Result<[URL], Error>) {
-        switch result {
-        case .success(let urls):
-            Task { await session.importImages(urls) }
-        case .failure(let error):
-            if (error as NSError).code != NSUserCancelledError {
-                session.importError = error.localizedDescription
-            }
-        }
-    }
-
     private func requestNewCanvas() {
         if let applicationDelegate { Task { await applicationDelegate.projects.newCanvas() } }
         else { session.clearProject() }
@@ -320,59 +329,74 @@ struct ContentView: View {
         .padding(.horizontal, 18).frame(height: 30)
         .accessibilityElement(children: .contain)
     }
-
     private var toolStatusMessage: String {
         switch session.tool {
         case .marquee:
             return localizedString(session.marqueeKind == .ellipse
                 ? "Drag an ellipse · Shift add · Option subtract · Shift again mid-drag circle · Drag inside to move · Delete clears · ⌘D deselect"
                 : "Drag a rectangle · Shift add · Option subtract · Shift again mid-drag square · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect")
+
         case .wand:
             return localizedString(session.wandMode == .object
                 ? "Click an object to select its outline · Tab for Wand · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect"
                 : "Click to select similar colors · Tab for Object · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect")
+
         case .lasso:
             return localizedString(session.lassoKind == .freehand
                 ? "Drag to select · Drag inside to move · Shift add · Option subtract · Delete clears · ⌥⌫/⌘⌫ fill · ⌘D deselect"
                 : "Click corners · Click start, double-click or Enter to close · Delete removes corner · Escape cancel")
+
         case .brush:
             return localizedString(session.brushMode == .erase
                 ? "Drag to erase · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan"
                 : "Drag to paint · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan")
+
         case .blur:
             return localizedString(session.blurMode == .blur
                 ? "Drag to soften · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan"
                 : session.blurMode == .smudge
                     ? "Drag to smudge · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan"
                     : "Drag to push pixels · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan")
+
         case .cloneStamp:
             return localizedString("Option-click to set the source · Drag to clone · [ ] size · Shift-[ ] hardness · 1–0 opacity · Space to pan")
+
         case .spotHealing:
             return localizedString("Drag over blemishes to heal · [ ] size · Shift-[ ] hardness · Escape cancel · Space to pan")
+
         case .type:
             return localizedString("Drag a text box · Click text to edit · Drag box handles to resize · ⌘Return finish · Escape cancel")
+
         case .shape:
             return localizedString(session.shapeKind == .line
                 ? "Drag to draw a shape on a new layer · Shift 45° · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan"
                 : session.shapeKind == .rectangle
                     ? "Drag to draw a shape on a new layer · Shift square · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan"
                     : "Drag to draw a shape on a new layer · Shift circle · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan")
+
         case .gradient:
             return localizedString("Drag to draw · Drag ends to adjust · Shift 45° · 1–0 opacity · Enter apply · Escape cancel")
+
         case .crop:
             return localizedString("Drag to crop · Enter apply · Escape cancel · Space to pan")
+
         case .move:
             return localizedString("Drag to move · Handles to resize · Circle to rotate · 1–0 layer opacity · Space to pan")
+
         case .hand:
             return localizedString("Drag to pan · Pinch to zoom")
+
         case .idle:
             return localizedString("No tool selected · Press a tool's key to pick one · Space to pan")
+
         case .zoom:
             return localizedString("Click to zoom in · Option-click to zoom out · Drag right or left to zoom smoothly · Space to pan")
+
         case .eyedropper:
             return localizedString("Click to sample a color · Space to pan")
         }
     }
+
 }
 
 /// A panel's divider that resizes the panel to its right: drag left to widen, right to narrow, within `range`.
