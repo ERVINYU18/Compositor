@@ -171,19 +171,26 @@ struct ContentView: View {
             // Absorb all remaining navigation-toolbar width before the zoom controls.
             // Without this spacer, the growing tab strip pushes the primary actions left.
             ToolbarSpacer(.flexible, placement: .navigation)
-            ToolbarItemGroup(placement: .primaryAction) {
+            ToolbarItem(placement: .primaryAction) {
                 Button("Fit") { session.fit() }.help("Fit canvas in window (⌘0)")
                     .accessibilityIdentifier("fitCanvas").disabled(session.document == nil)
+                    .padding(.horizontal, 4)
+            }
+            ToolbarItem(placement: .primaryAction) {
                 Button("100%") { session.zoom(to: 1) }.help("Actual pixels (⌘1)")
                     .accessibilityIdentifier("actualPixels").disabled(session.document == nil)
+                    .padding(.horizontal, 4)
             }
-            ToolbarItemGroup(placement: .primaryAction) {
-                Button { session.zoom(to: session.viewport.zoom * 1.25) } label: {
-                    Image(systemName: "plus.magnifyingglass")
-                }.help("Zoom in (⌘+)").disabled(session.document == nil)
-                Button { session.zoom(to: session.viewport.zoom / 1.25) } label: {
-                    Image(systemName: "minus.magnifyingglass")
-                }.help("Zoom out (⌘−)").disabled(session.document == nil)
+            ToolbarItem(placement: .primaryAction) {
+                HStack(spacing: 0) {
+                    Button { session.zoomKeyboard(by: 1) } label: {
+                        Image(systemName: "plus.magnifyingglass")
+                    }.help("Zoom in (⌘+)").disabled(session.document == nil)
+                    Button { session.zoomKeyboard(by: -1) } label: {
+                        Image(systemName: "minus.magnifyingglass")
+                    }.help("Zoom out (⌘−)").disabled(session.document == nil)
+                }
+                .padding(.horizontal, 4)
             }
         }
     }
@@ -194,14 +201,14 @@ struct ContentView: View {
             if closed { levelsPanel.close() }
             else {
                 levelsPanel.onClose = { session.cancelLevels() }
-                levelsPanel.show(title: "Levels", content: LevelsSheet(session: session))
+                levelsPanel.show(title: localizedString("Levels"), content: LevelsSheet(session: session))
             }
         }
         .onChange(of: session.hueSaturation == nil) { _, closed in
             if closed { adjustmentPanel.close() }
             else {
                 adjustmentPanel.onClose = { session.cancelHueSaturation() }
-                adjustmentPanel.show(title: "Hue/Saturation", content: HueSaturationSheet(session: session))
+                adjustmentPanel.show(title: localizedString("Hue/Saturation"), content: HueSaturationSheet(session: session))
             }
         }
         .onChange(of: session.effectsEditing) { _, selection in
@@ -229,7 +236,10 @@ struct ContentView: View {
             if closed { filterPanel.close() }
             else {
                 filterPanel.onClose = { session.cancelFilter() }
-                filterPanel.show(title: session.filterEdit?.kind.localizedName ?? localizedString("Filter"), content: FilterSheet(session: session))
+                let placement: FloatingPanelPlacement = session.filterEdit?.kind == .cameraRaw ? .dockedToMainWindowRight : .automatic
+                filterPanel.show(title: session.filterEdit?.kind.localizedName ?? localizedString("Filter"),
+                                 content: FilterSheet(session: session),
+                                 placement: placement)
             }
         }
         .onChange(of: session.document == nil) { _, empty in
@@ -262,7 +272,7 @@ struct ContentView: View {
     }
     private var toolRail: some View {
         // Scrolls when the window is too short for every tool, rather than pushing the bars above and below away.
-        ScrollView(.vertical) {
+        IndicatorlessScrollView {
         VStack(spacing: 10) {
             ForEach(NavigationTool.allCases.filter { $0 != .idle }, id: \.self) { tool in
                 Button { session.selectTool(tool) } label: {
@@ -270,11 +280,6 @@ struct ContentView: View {
                         if tool == .gradient { GradientToolIcon().frame(width: 18, height: 18) }
                         else if tool == .cloneStamp { CloneStampToolIcon().frame(width: 18, height: 18) }
                         else if tool == .lasso, session.lassoKind == .polygonal { PolygonalLassoToolIcon().frame(width: 18, height: 18) }
-                        else if tool == .type {
-                            Text("T")
-                                .font(.system(size: 18, weight: .medium))
-                                .frame(width: 18, height: 18)
-                        }
                         else if tool == .wand, session.wandMode == .object { ObjectSelectionToolIcon().frame(width: 18, height: 18) }
                         // The Marquee's icon follows its shape: a dashed circle in Ellipse mode.
                         else { Image(systemName: tool == .marquee && session.marqueeKind == .ellipse ? "circle.dashed" : session.symbol(for: tool)).font(.system(size: 17)) }
@@ -295,10 +300,8 @@ struct ContentView: View {
             ColorPaletteControls(session: session).padding(.top, 8)
         }
         .padding(.top, 16).padding(.bottom, 12)
+        .frame(width: 56)
         }
-        .scrollIndicators(.hidden)
-        // Only scrolls (and bounces) when the tools don't all fit.
-        .scrollBounceBehavior(.basedOnSize, axes: .vertical)
         .frame(width: 56)
     }
     private var welcome: some View {
@@ -322,81 +325,13 @@ struct ContentView: View {
                 ProgressView().controlSize(.mini)
                 Text("Importing images…")
             } else {
-                Text(verbatim: toolStatusMessage)
+                Text(verbatim: localizedString(session.tool == .marquee ? (session.marqueeKind == .ellipse ? "Drag an ellipse · Shift add · Option subtract · Shift again mid-drag circle · Drag inside to move · Delete clears · ⌘D deselect" : "Drag a rectangle · Shift add · Option subtract · Shift again mid-drag square · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect") : session.tool == .wand ? (session.wandMode == .object ? "Click an object to select its outline · Tab for Wand · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect" : "Click to select similar colors · Tab for Object · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect") : session.tool == .lasso ? (session.lassoKind == .freehand ? "Drag to select · Drag inside to move · Shift add · Option subtract · Delete clears · ⌥⌫/⌘⌫ fill · ⌘D deselect" : "Click corners · Click start, double-click or Enter to close · Delete removes corner · Escape cancel") : session.tool == .brush ? (session.brushMode == .erase ? "Drag to erase" : "Drag to paint") + " · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan" : session.tool == .blur ? (session.blurMode == .blur ? "Drag to soften" : session.blurMode == .smudge ? "Drag to smudge" : "Drag to push pixels") + " · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan" : session.tool == .cloneStamp ? "Option-click to set the source · Drag to clone · [ ] size · Shift-[ ] hardness · 1–0 opacity · Space to pan" : session.tool == .spotHealing ? "Drag over blemishes to heal · [ ] size · Shift-[ ] hardness · Escape cancel · Space to pan" : session.tool == .type ? "Drag a text box · Click text to edit · Drag box handles to resize · ⌘Return finish · Escape cancel" : session.tool == .shape ? "Drag to draw a shape on a new layer · Shift \(session.shapeKind == .line ? "45°" : session.shapeKind == .rectangle ? "square" : "circle") · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan" : session.tool == .gradient ? "Drag to draw · Drag ends to adjust · Shift 45° · 1–0 opacity · Enter apply · Escape cancel" : session.tool == .crop ? "Drag to crop · Enter apply · Escape cancel · Space to pan" : session.tool == .move ? "Drag to move · Handles to resize · Circle to rotate · 1–0 layer opacity · Space to pan" : session.tool == .hand ? "Drag to pan · Pinch to zoom" : session.tool == .idle ? "No tool selected · Press a tool's key to pick one · Space to pan" : "Click to zoom in · Option-click to zoom out · Drag right or left to zoom smoothly · Space to pan"))
             }
         }
         .font(.system(size: 11).monospacedDigit()).foregroundStyle(.secondary)
         .padding(.horizontal, 18).frame(height: 30)
         .accessibilityElement(children: .contain)
     }
-    private var toolStatusMessage: String {
-        switch session.tool {
-        case .marquee:
-            return localizedString(session.marqueeKind == .ellipse
-                ? "Drag an ellipse · Shift add · Option subtract · Shift again mid-drag circle · Drag inside to move · Delete clears · ⌘D deselect"
-                : "Drag a rectangle · Shift add · Option subtract · Shift again mid-drag square · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect")
-
-        case .wand:
-            return localizedString(session.wandMode == .object
-                ? "Click an object to select its outline · Tab for Wand · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect"
-                : "Click to select similar colors · Tab for Object · Shift add · Option subtract · Drag inside to move · ⌘-drag moves pixels · Delete clears · ⌘D deselect")
-
-        case .lasso:
-            return localizedString(session.lassoKind == .freehand
-                ? "Drag to select · Drag inside to move · Shift add · Option subtract · Delete clears · ⌥⌫/⌘⌫ fill · ⌘D deselect"
-                : "Click corners · Click start, double-click or Enter to close · Delete removes corner · Escape cancel")
-
-        case .brush:
-            return localizedString(session.brushMode == .erase
-                ? "Drag to erase · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan"
-                : "Drag to paint · [ ] size · Shift-[ ] hardness · 1–0 opacity · Escape cancel · Space to pan")
-
-        case .blur:
-            return localizedString(session.blurMode == .blur
-                ? "Drag to soften · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan"
-                : session.blurMode == .smudge
-                    ? "Drag to smudge · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan"
-                    : "Drag to push pixels · [ ] size · Shift-[ ] hardness · 1–0 strength · Space to pan")
-
-        case .cloneStamp:
-            return localizedString("Option-click to set the source · Drag to clone · [ ] size · Shift-[ ] hardness · 1–0 opacity · Space to pan")
-
-        case .spotHealing:
-            return localizedString("Drag over blemishes to heal · [ ] size · Shift-[ ] hardness · Escape cancel · Space to pan")
-
-        case .type:
-            return localizedString("Drag a text box · Click text to edit · Drag box handles to resize · ⌘Return finish · Escape cancel")
-
-        case .shape:
-            return localizedString(session.shapeKind == .line
-                ? "Drag to draw a shape on a new layer · Shift 45° · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan"
-                : session.shapeKind == .rectangle
-                    ? "Drag to draw a shape on a new layer · Shift square · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan"
-                    : "Drag to draw a shape on a new layer · Shift circle · Option from center · Shift-U or Tab for the next shape · Escape cancel · Space to pan")
-
-        case .gradient:
-            return localizedString("Drag to draw · Drag ends to adjust · Shift 45° · 1–0 opacity · Enter apply · Escape cancel")
-
-        case .crop:
-            return localizedString("Drag to crop · Enter apply · Escape cancel · Space to pan")
-
-        case .move:
-            return localizedString("Drag to move · Handles to resize · Circle to rotate · 1–0 layer opacity · Space to pan")
-
-        case .hand:
-            return localizedString("Drag to pan · Pinch to zoom")
-
-        case .idle:
-            return localizedString("No tool selected · Press a tool's key to pick one · Space to pan")
-
-        case .zoom:
-            return localizedString("Click to zoom in · Option-click to zoom out · Drag right or left to zoom smoothly · Space to pan")
-
-        case .eyedropper:
-            return localizedString("Click to sample a color · Space to pan")
-        }
-    }
-
 }
 
 /// A panel's divider that resizes the panel to its right: drag left to widen, right to narrow, within `range`.

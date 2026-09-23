@@ -13,6 +13,7 @@ struct EffectsSheet: View {
             case .colorOverlay: colorOverlay
             case .innerShadow: innerShadow
             case .outerGlow: outerGlow
+            case .innerGlow: innerGlow
             }
             HStack(spacing: 10) {
                 Spacer()
@@ -133,6 +134,23 @@ struct EffectsSheet: View {
         }
     }
 
+    @ViewBuilder private var innerGlow: some View {
+        let effect = session.editingEffects.innerGlow
+        HStack {
+            Text("Inner Glow").font(.headline)
+            Spacer()
+            if effect != nil { swatch(.innerGlow) }
+        }
+        if let effect {
+            slider("Size", value: Binding(get: { effect.size }, set: { size in
+                session.changeEffects { $0.innerGlow?.size = size }
+            }), range: 0...100, inputRange: 0...500, unit: "px")
+            slider("Opacity", value: Binding(get: { CGFloat(effect.opacity * 100) }, set: { value in
+                session.changeEffects { $0.innerGlow?.opacity = Double(value) / 100 }
+            }), range: 0...100, unit: "%")
+        }
+    }
+
     /// The effect's color, opened in the app's own picker.
     private func swatch(_ kind: LayerEffectKind) -> some View {
         let color = session.editingEffects.color(kind)
@@ -145,8 +163,8 @@ struct EffectsSheet: View {
                 .contentShape(shape)
         }
         .buttonStyle(.plain)
-        .help(kind.rawValue + " color")
-        .accessibilityLabel(kind.rawValue + " color")
+        .help(String(format: localizedString("%@ color"), kind.localizedName))
+        .accessibilityLabel(String(format: localizedString("%@ color"), kind.localizedName))
     }
 
     private func slider(_ title: String, value: Binding<CGFloat>, range: ClosedRange<CGFloat>,
@@ -157,12 +175,12 @@ struct EffectsSheet: View {
             value.wrappedValue = min(limits.upperBound, max(limits.lowerBound, CGFloat(amount)))
         }
         return HStack(spacing: 10) {
-            Text(title).frame(width: 64, alignment: .leading)
+            Text(verbatim: localizedString(title)).frame(width: 64, alignment: .leading)
             // A manually entered larger value stays intact; only the thumb is pinned
             // to the end of the slider until the user drags it again.
             Slider(value: Binding(get: { min(range.upperBound, max(range.lowerBound, value.wrappedValue)) },
                                   set: { value.wrappedValue = $0 }), in: range).frame(width: 130)
-            TextField(title, value: Binding(get: { Double(value.wrappedValue) },
+            TextField(localizedString(title), value: Binding(get: { Double(value.wrappedValue) },
                                             set: setAmount),
                       format: .number.precision(.fractionLength(0)))
                 .frame(width: 48).textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing)
