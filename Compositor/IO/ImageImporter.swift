@@ -18,7 +18,7 @@ nonisolated enum ImageImportError: LocalizedError {
         switch self {
         case .unreadable: "The image could not be read. It may be damaged or unavailable."
         case .unsupported: "Choose a JPEG, PNG, HEIC, TIFF, or Photoshop (PSD) file."
-        case .tooLarge: "This import exceeds the current 100-megapixel document budget or 30,000-pixel side limit."
+        case .tooLarge: "This import exceeds the current \(DocumentLimits.documentBudgetMegapixels)-megapixel document budget or \(DocumentLimits.maxSide.formatted())-pixel side limit."
         }
     }
 }
@@ -29,19 +29,21 @@ actor ImageImporter {
     private lazy var context = CIContext(options: [.cacheIntermediates: false])
     private let sRGB = CGColorSpace(name: CGColorSpace.sRGB)!
 
-    func decode(_ url: URL, remainingPixels: Int = 100_000_000) throws -> ImportedImage {
+    /// `flattenedPhotoshop`: a PSD or PSB with no layer records (only a background), read as its merged image.
+    func decode(_ url: URL, remainingPixels: Int = DocumentLimits.documentPixelBudget, flattenedPhotoshop: Bool = false) throws -> ImportedImage {
         try autoreleasepool {
             guard let source = CGImageSourceCreateWithURL(url as CFURL, [kCGImageSourceShouldCache: false] as CFDictionary),
                   let identifier = CGImageSourceGetType(source) as String?,
                   let type = UTType(identifier) else { throw ImageImportError.unreadable }
-            guard [UTType.jpeg, .png, .heic, .tiff].contains(where: { type.conforms(to: $0) }) else {
+            let photoshop = flattenedPhotoshop ? [UTType.photoshopImage, .photoshopLargeImage] : []
+            guard ([UTType.jpeg, .png, .heic, .tiff] + photoshop).contains(where: { type.conforms(to: $0) }) else {
                 throw ImageImportError.unsupported
             }
             guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
                   let width = properties[kCGImagePropertyPixelWidth] as? Int,
                   let height = properties[kCGImagePropertyPixelHeight] as? Int,
                   width > 0, height > 0 else { throw ImageImportError.unreadable }
-            guard width <= 30_000, height <= 30_000, width * height <= remainingPixels else {
+            guard width <= DocumentLimits.maxSide, height <= DocumentLimits.maxSide, width * height <= remainingPixels else {
                 throw ImageImportError.tooLarge
             }
             guard let decoded = CGImageSourceCreateImageAtIndex(source, 0, [kCGImageSourceShouldCacheImmediately: true] as CFDictionary) else {
@@ -61,7 +63,7 @@ actor ImageImporter {
         }
     }
 
-    func loadPhotoshop(_ url: URL, remainingPixels: Int = 100_000_000) throws -> PSDDocument {
+    func loadPhotoshop(_ url: URL, remainingPixels: Int = DocumentLimits.documentPixelBudget) throws -> PSDDocument {
         try PSDReader.read(from: url, remainingPixels: remainingPixels)
     }
 
