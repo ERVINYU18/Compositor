@@ -8068,6 +8068,216 @@
           }
         }
       }
+    },
+    "Rename…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重命名…"
+          }
+        }
+      }
+    },
+    "Delete Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除蒙版"
+          }
+        }
+      }
+    },
+    "Delete Selected Layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除所选图层"
+          }
+        }
+      }
+    },
+    "Add Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加蒙版"
+          }
+        }
+      }
+    },
+    "Reveal All (White)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部显示（白色）"
+          }
+        }
+      }
+    },
+    "Hide All (Black)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部隐藏（黑色）"
+          }
+        }
+      }
+    },
+    "Enable Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "启用蒙版"
+          }
+        }
+      }
+    },
+    "Disable Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "停用蒙版"
+          }
+        }
+      }
+    },
+    "Link Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "链接蒙版"
+          }
+        }
+      }
+    },
+    "Unlink Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消链接蒙版"
+          }
+        }
+      }
+    },
+    "Select layer; Cmd-click to select its pixels (Cmd-Shift adds, Cmd-Option subtracts)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择图层；按住 Command 点击可选择像素（Command-Shift 添加，Command-Option 减去）"
+          }
+        }
+      }
+    },
+    "Editable text layer": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "可编辑文字图层"
+          }
+        }
+      }
+    },
+    "Select image pixels": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择图像像素"
+          }
+        }
+      }
+    },
+    "Select layer mask; Shift-click to enable/disable; Cmd-click to select its black areas (Cmd-Shift adds, Cmd-Option subtracts)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择图层蒙版；按住 Shift 点击可启用或停用；按住 Command 点击可选择黑色区域（Command-Shift 添加，Command-Option 减去）"
+          }
+        }
+      }
+    },
+    "Link layer and mask so they move together": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "链接图层和蒙版，使其一起移动"
+          }
+        }
+      }
+    },
+    "Link mask: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "链接蒙版：%@"
+          }
+        }
+      }
+    },
+    "Unlink mask: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消链接蒙版：%@"
+          }
+        }
+      }
+    },
+    "Select text: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择文字图层：%@"
+          }
+        }
+      }
+    },
+    "Select image: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择图像：%@"
+          }
+        }
+      }
+    },
+    "Select mask: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择蒙版：%@"
+          }
+        }
+      }
+    },
+    "Unlink layer and mask to move or transform them separately": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取消链接图层和蒙版，使其可以分别移动或变换。"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
