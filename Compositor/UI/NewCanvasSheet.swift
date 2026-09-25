@@ -25,7 +25,7 @@ struct NewCanvasSheet: View {
                 Image(systemName: "multiply").foregroundStyle(.tertiary).padding(.top, 20)
                 dimension("Height", text: $height, field: .height)
             }
-            Text(valid ? "Transparent canvas · sRGB" : "Enter whole numbers from 1 to 30,000 pixels.")
+            Text(verbatim: valid ? localizedString("Transparent canvas · sRGB") : String(format: localizedString("Enter whole numbers from 1 to %@ pixels."), DocumentLimits.maxSide.formatted()))
                 .font(.callout).foregroundStyle(valid ? Color.secondary : Color.orange)
             HStack(spacing: 10) {
                 Button("Open project") { onOpen?() }.buttonStyle(.bordered)

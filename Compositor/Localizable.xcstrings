@@ -103,7 +103,7 @@
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
-            "value": "%lld × %lld 像素"
+            "value": "%1$lld × %2$lld 像素"
           }
         }
       }
@@ -7845,6 +7845,226 @@
           "stringUnit": {
             "state": "translated",
             "value": "拖动在新图层上绘制形状 · Shift 约束为圆形 · Option 从中心绘制 · Shift-U 或 Tab 切换下一形状 · Escape 取消 · 空格键平移"
+          }
+        }
+      }
+    },
+    "This Photoshop file uses a format version Compositor can’t read.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此 Photoshop 文件使用了 Compositor 无法读取的格式版本。"
+          }
+        }
+      }
+    },
+    "Only the first text style was kept.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "仅保留了第一种文字样式。"
+          }
+        }
+      }
+    },
+    "The Photoshop text warp was omitted.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未保留 Photoshop 文字变形效果。"
+          }
+        }
+      }
+    },
+    "Faux bold or faux italic was omitted.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未保留伪粗体或伪斜体样式。"
+          }
+        }
+      }
+    },
+    "Full justification was imported as left alignment.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "完全两端对齐的文字已按左对齐导入。"
+          }
+        }
+      }
+    },
+    "The font “%@” isn’t installed, so the text was drawn with the system font.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未安装字体“%@”，因此文字使用系统字体绘制。"
+          }
+        }
+      }
+    },
+    "Image export supports canvases up to %@ megapixels and %@ pixels per side.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图像导出支持最高 %@ 百万像素且每边不超过 %@ 像素的画布。"
+          }
+        }
+      }
+    },
+    "This import exceeds the current %@-megapixel document budget or %@-pixel side limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此导入内容超过当前文稿 %@ 百万像素的容量或每边 %@ 像素的限制。"
+          }
+        }
+      }
+    },
+    "This project exceeds the supported canvas, layer, file-size, or %@-megapixel document limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此项目超过受支持的画布、图层、文件大小或 %@ 百万像素文稿容量限制。"
+          }
+        }
+      }
+    },
+    "Choose a JPEG, PNG, HEIC, TIFF, Photoshop (PSD), or Photoshop Large Document (PSB) file.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择 JPEG、PNG、HEIC、TIFF、Photoshop (PSD) 或 Photoshop 大型文档 (PSB) 文件。"
+          }
+        }
+      }
+    },
+    "The copied layers exceed this project’s %@-megapixel limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复制的图层超过了此项目 %@ 百万像素的限制。"
+          }
+        }
+      }
+    },
+    "That shape is too large. A shape can cover up to %@ megapixels.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "形状过大。形状覆盖范围最多为 %@ 百万像素。"
+          }
+        }
+      }
+    },
+    "That text box exceeds the %@-pixel or %@-megapixel limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文字框超过了 %@ 像素或 %@ 百万像素的限制。"
+          }
+        }
+      }
+    },
+    "Final dimensions must be 1–%@ pixels per side.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最终尺寸每边必须为 1–%@ 像素。"
+          }
+        }
+      }
+    },
+    "Use 1–%@ pixels per side, up to %@ megapixels, and 1–9,600 pixels/inch.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每边需为 1–%@ 像素，最多 %@ 百万像素，分辨率需为 1–9,600 像素/英寸。"
+          }
+        }
+      }
+    },
+    "Enter whole numbers from 1 to %@ pixels.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请输入 1 到 %@ 之间的整数像素。"
+          }
+        }
+      }
+    },
+    "Text · Double-click to edit": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文字 · 双击以编辑"
+          }
+        }
+      }
+    },
+    "Adjustment · Double-click to edit": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "调整 · 双击以编辑"
+          }
+        }
+      }
+    },
+    "Folder": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件夹"
+          }
+        }
+      }
+    },
+    "Missing source": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缺少源图层"
+          }
+        }
+      }
+    },
+    "Clipped to %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "剪贴到 %@"
+          }
+        }
+      }
+    },
+    "Clipping mask based on %@. Option-click the bottom of its row to release.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "基于 %@ 的剪贴蒙版。按住 Option 并点击该图层行底部即可释放。"
           }
         }
       }

@@ -918,11 +918,11 @@ private final class LayerCell: NSTableCellView, NSTextFieldDelegate {
         // A reused cell must not carry another row's half-finished rename.
         if renaming, layerID != layer.id { restoreLabel() }
         if !renaming { nameLabel.stringValue = (layer.maskSourceID == nil ? "" : "↳ ") + layer.name }
-        dimensions.stringValue = layer.liveText != nil ? "Text" : layer.adjustment != nil ? "Adjustment · Double-click to edit" : layer.isGroup ? "Folder" : "\(Int(layer.size.width.rounded())) × \(Int(layer.size.height.rounded())) px"
+        dimensions.stringValue = layer.liveText != nil ? localizedString("Text · Double-click to edit") : layer.adjustment != nil ? localizedString("Adjustment · Double-click to edit") : layer.isGroup ? localizedString("Folder") : String(format: localizedString("%lld × %lld px"), Int64(layer.size.width.rounded()), Int64(layer.size.height.rounded()))
         if let source = layer.maskSourceID {
-            let sourceName = session.document?.layers.first(where: { $0.id == source })?.name ?? "Missing source"
-            dimensions.stringValue = "Clipped to \(sourceName)"
-            dimensions.toolTip = "Clipping mask based on \(sourceName). Option-click the bottom of its row to release."
+            let sourceName = session.document?.layers.first(where: { $0.id == source })?.name ?? localizedString("Missing source")
+            dimensions.stringValue = String(format: localizedString("Clipped to %@"), sourceName)
+            dimensions.toolTip = String(format: localizedString("Clipping mask based on %@. Option-click the bottom of its row to release."), sourceName)
         } else { dimensions.toolTip = nil }
         eye.image = NSImage(systemSymbolName: layer.isVisible ? "eye" : "eye.slash", accessibilityDescription: nil)
         eye.setAccessibilityLabel("\(layer.isVisible ? "Hide" : "Show") \(layer.name)")

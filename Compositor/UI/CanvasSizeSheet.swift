@@ -65,7 +65,7 @@ struct CanvasSizeSheet: View {
                 Text("New: \(Int(draft.width.rounded())) × \(Int(draft.height.rounded())) pixels · \(bytes(Int(draft.width.rounded()), Int(draft.height.rounded()))) uncompressed")
                     .font(.callout).foregroundStyle(.secondary)
             } else {
-                Text("Final dimensions must be 1–30,000 pixels per side.")
+                Text(verbatim: String(format: localizedString("Final dimensions must be 1–%@ pixels per side."), DocumentLimits.maxSide.formatted()))
                     .font(.callout).foregroundStyle(.orange)
             }
             HStack(alignment: .top, spacing: 24) {

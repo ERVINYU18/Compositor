@@ -20,9 +20,10 @@ struct TypeToolTests {
         var draft = try #require(session.textDraft)
         draft.style.content = "Hello\nCompositor"
         draft.style.fontSize = 48
+        let expectedOrigin = draft.origin // 1.2.9 places the first baseline at the click, above the raster bounds.
         #expect(session.applyText(draft))
         #expect(session.activeLayer?.liveText?.style == draft.style)
-        #expect(session.activeLayer?.origin == CGPoint(x: 30, y: 40))
+        #expect(session.activeLayer?.origin == expectedOrigin)
         #expect(session.history.undoCount == before + 1)
         session.editActiveText()
         session.textDraft = nil
@@ -37,6 +38,30 @@ struct TypeToolTests {
         #expect(session.document?.layers.count == 1)
         session.redo()
         #expect(session.activeLayer?.liveText != nil)
+    }
+
+    @Test func textColorPickerPreviewsAndRestoresDraft() throws {
+        let session = makeSession()
+        session.beginText(at: CGPoint(x: 30, y: 40))
+        let original = try #require(session.textDraft?.style)
+
+        session.openTextColorPicker()
+        try #require(session.colorPicker).hsb.setRGB(PaletteColor(red: 1, green: 0, blue: 0))
+        session.previewTextColor()
+        #expect(session.textDraft?.style.red == 1)
+        #expect(session.textDraft?.style.green == 0)
+        #expect(session.foregroundColor == .black)
+
+        session.closeColorPicker(commit: false)
+        #expect(session.textDraft?.style == original)
+        #expect(session.foregroundColor == .black)
+
+        session.openTextColorPicker()
+        try #require(session.colorPicker).hsb.setRGB(PaletteColor(red: 0, green: 0, blue: 1))
+        session.previewTextColor()
+        session.closeColorPicker(commit: true)
+        #expect(session.textDraft?.style.blue == 1)
+        #expect(session.foregroundColor == PaletteColor(red: 0, green: 0, blue: 1))
     }
 
     @Test func transformsDuplicatesAndClippingKeepTextEditable() throws {
@@ -105,13 +130,14 @@ struct TypeToolTests {
 
     @Test func clippingToTextExportsColoredGlyphsOnTransparency() async throws {
         let session = makeSession()
-        session.beginText(at: .zero)
+        session.beginText(at: CGPoint(x: 100, y: 100))
         session.textDraft?.style.content = "Text"
         #expect(session.applyText(try #require(session.textDraft)))
-        let source = try #require(session.activeLayerID)
-        let size = try #require(session.activeLayer?.size)
+        let sourceLayer = try #require(session.activeLayer)
+        let source = sourceLayer.id
+        let size = sourceLayer.size
         let fill = try EditorSession.shapeImage(.rectangle, size: size, color: PaletteColor(red: 1, green: 0, blue: 0))
-        session.addPixelLayer(fill, at: .zero, name: "Clipped color", editName: "Fill")
+        session.addPixelLayer(fill, at: sourceLayer.origin, name: "Clipped color", editName: "Fill")
         #expect(session.linkMask(source: source, target: try #require(session.activeLayerID)))
         let exported = try await ImageExporter.shared.render(try #require(session.projectSnapshot())).image
         let context = try #require(CGContext(data: nil, width: exported.width, height: exported.height,
@@ -123,7 +149,7 @@ struct TypeToolTests {
         var ink = 0, clear = 0
         for i in stride(from: 0, to: exported.width * exported.height * 4, by: 4) {
             if bytes[i + 3] == 0 { clear += 1 }
-            else if bytes[i + 3] == 255 { ink += 1; #expect(bytes[i] == 255 && bytes[i + 1] == 0) }
+            else if bytes[i + 3] == 255 { ink += 1; #expect(bytes[i] > bytes[i + 1], "clipped pixels should remain red: \(bytes[i]), \(bytes[i + 1])") }
         }
         #expect(ink > 100 && clear > 100)
     }

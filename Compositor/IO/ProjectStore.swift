@@ -6,7 +6,8 @@ import UniformTypeIdentifiers
 extension UTType {
     static let compositorProject = UTType(exportedAs: "com.compositor.project", conformingTo: .package)
     static let photoshopImage = UTType(importedAs: "com.adobe.photoshop-image")
-    static let importableImages: [UTType] = [.jpeg, .png, .heic, .tiff, .photoshopImage, .rawImage]
+    static let photoshopLargeImage = UTType(importedAs: "com.adobe.photoshop-large-image")
+    static let importableImages: [UTType] = [.jpeg, .png, .heic, .tiff, .photoshopImage, .photoshopLargeImage, .rawImage]
 }
 
 nonisolated struct ProjectManifest: Codable, Sendable {
@@ -76,7 +77,8 @@ nonisolated enum ProjectError: LocalizedError {
         case .missingImage:
             localizedString("An image inside the project is missing or damaged. The current document has not been replaced.")
         case .tooLarge:
-            localizedString("This project exceeds the supported canvas, layer, file-size, or 100-megapixel image limit.")
+            String(format: localizedString("This project exceeds the supported canvas, layer, file-size, or %@-megapixel document limit."),
+                   DocumentLimits.documentBudgetMegapixels.formatted())
         case .encode:
             localizedString("An image could not be saved. The previous project has not been replaced.")
         }
@@ -200,7 +202,7 @@ actor ProjectStore {
         if let resolution = manifest.resolution {
             guard resolution.isFinite, (1...9600).contains(resolution) else { throw ProjectError.invalid }
         }
-        guard (1...30_000).contains(manifest.width), (1...30_000).contains(manifest.height),
+        guard (1...DocumentLimits.maxSide).contains(manifest.width), (1...DocumentLimits.maxSide).contains(manifest.height),
               manifest.layers.count <= 10_000 else { throw ProjectError.tooLarge }
         for layer in manifest.layers {
             if let text = layer.text {
@@ -256,7 +258,7 @@ actor ProjectStore {
     }
 
     private func checkSize(width: Int, height: Int, used: inout Int) throws {
-        guard (1...30_000).contains(width), (1...30_000).contains(height), width * height <= 100_000_000 - used else {
+        guard (1...DocumentLimits.maxSide).contains(width), (1...DocumentLimits.maxSide).contains(height), width * height <= DocumentLimits.documentPixelBudget - used else {
             throw ProjectError.tooLarge
         }
         used += width * height

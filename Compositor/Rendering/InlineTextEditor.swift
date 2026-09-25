@@ -28,6 +28,8 @@ final class CanvasTextView: NSTextView {
             return
         }
         super.keyDown(with: event)
+        // Text views hide the pointer while typing; on the canvas it stays, so you can see where you'll click next.
+        NSCursor.setHiddenUntilMouseMoves(false)
     }
     override func paste(_ sender: Any?) { pasteAsPlainText(sender) }
     // The editor sets the cursor for the whole box — the I-beam over the text, resize arrows over the edges.
@@ -165,6 +167,10 @@ final class InlineTextEditor: NSView, NSTextViewDelegate {
                 guard let self, self.canvas?.session.textDraft?.id == draft.id else { return }
                 if self.window?.firstResponder is NSText, self.window?.firstResponder !== self.textView { return }
                 self.window?.makeFirstResponder(self.textView)
+                // Opening existing text puts the cursor after it, ready to add to it, unless a click already placed it.
+                if draft.layerID != nil, self.textView.selectedRange() == NSRange(location: 0, length: 0) {
+                    self.textView.setSelectedRange(NSRange(location: self.textView.string.utf16.count, length: 0))
+                }
             }
         }
     }
