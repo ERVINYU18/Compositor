@@ -8278,6 +8278,596 @@
           }
         }
       }
+    },
+    "%@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@"
+          }
+        }
+      }
+    },
+    "%@ × %@ px": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ × %@ 像素"
+          }
+        }
+      }
+    },
+    "%@ × %@ px · sRGB": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ × %@ 像素 · sRGB"
+          }
+        }
+      }
+    },
+    "%@%": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@%"
+          }
+        }
+      }
+    },
+    "%@°  %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@°  %@"
+          }
+        }
+      }
+    },
+    "%@. Double-click to reset.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@。双击可重置。"
+          }
+        }
+      }
+    },
+    "Click the fringe on the layer. Click the eyedropper again to stop.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在图层上点按边缘以设置采样区域。再次点按吸管可停止。"
+          }
+        }
+      }
+    },
+    "Click the original layer. Click the eyedropper again to stop.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点按原始图层。再次点按吸管可停止。"
+          }
+        }
+      }
+    },
+    "Current: %@ × %@ pixels": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "当前：%@ × %@ 像素"
+          }
+        }
+      }
+    },
+    "Dark": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暗色"
+          }
+        }
+      }
+    },
+    "Drag on the layer to place a guide. Draw at least two lines.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在图层上拖动以放置参考线。至少绘制两条线。"
+          }
+        }
+      }
+    },
+    "Enter a whole number from 1 to %@ px.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入 1 到 %@ 像素之间的整数。"
+          }
+        }
+      }
+    },
+    "In %@   Out %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入 %@   输出 %@"
+          }
+        }
+      }
+    },
+    "Input %@ · Output %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "输入 %@ · 输出 %@"
+          }
+        }
+      }
+    },
+    "New: %@ × %@ pixels · %@ uncompressed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建：%@ × %@ 像素 · %@ 未压缩"
+          }
+        }
+      }
+    },
+    "No lens metadata on this layer. Profile sliders set generic correction strength.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此图层没有镜头元数据。配置文件滑块可设置通用校正强度。"
+          }
+        }
+      }
+    },
+    "Smoothing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑"
+          }
+        }
+      }
+    },
+    "Atkinson (Classic Mac)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "艾特金森（经典 Mac）"
+          }
+        }
+      }
+    },
+    "Floyd–Steinberg": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "弗洛伊德–斯坦伯格"
+          }
+        }
+      }
+    },
+    "Bayer 2 × 2": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拜耳 2 × 2"
+          }
+        }
+      }
+    },
+    "Bayer 4 × 4": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拜耳 4 × 4"
+          }
+        }
+      }
+    },
+    "Bayer 8 × 8": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拜耳 8 × 8"
+          }
+        }
+      }
+    },
+    "Halftone Dots": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "半调圆点"
+          }
+        }
+      }
+    },
+    "Halftone Lines": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "半调线条"
+          }
+        }
+      }
+    },
+    "Halftone Diamonds": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "半调菱形"
+          }
+        }
+      }
+    },
+    "Mac Patterns": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mac 图案"
+          }
+        }
+      }
+    },
+    "ASCII": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ASCII"
+          }
+        }
+      }
+    },
+    "Pixel Size": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "像素大小"
+          }
+        }
+      }
+    },
+    "Make each dithered pixel this many pixels across, for a chunky old-screen look": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "设置每个抖动像素所占的像素宽度，呈现复古屏幕的块状效果。"
+          }
+        }
+      }
+    },
+    "Cell Size": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "单元大小"
+          }
+        }
+      }
+    },
+    "Characters": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "字符"
+          }
+        }
+      }
+    },
+    "The characters to draw with, in any order: each spot gets the one whose ink best matches its tone": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "用于绘制的字符，顺序不限；每个区域会使用墨量最接近其色调的字符。"
+          }
+        }
+      }
+    },
+    "Tones": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色调数"
+          }
+        }
+      }
+    },
+    "Tones per channel: 2 is pure black and white": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每个通道的色调级数；2 表示纯黑白。"
+          }
+        }
+      }
+    },
+    "How much of each pixel's error spreads to its neighbors. Less gives flatter areas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每个像素的误差向相邻像素扩散的程度。数值越低，色块越平。"
+          }
+        }
+      }
+    },
+    "Density": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "浓度"
+          }
+        }
+      }
+    },
+    "More ink (darker) or less before dithering": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "抖动前增加（变暗）或减少墨量。"
+          }
+        }
+      }
+    },
+    "Two Colors": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "两种颜色"
+          }
+        }
+      }
+    },
+    "Original": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "原始颜色"
+          }
+        }
+      }
+    },
+    "Choose the dark color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择暗色"
+          }
+        }
+      }
+    },
+    "Choose the light color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择亮色"
+          }
+        }
+      }
+    },
+    "Pixel Shape": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "像素形状"
+          }
+        }
+      }
+    },
+    "Square": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正方形"
+          }
+        }
+      }
+    },
+    "Dot": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圆点"
+          }
+        }
+      }
+    },
+    "Draw each chunky pixel as a solid square, or as a round dot like a dot-matrix screen": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "将块状像素绘制为实心方块，或绘制成点阵屏幕般的圆点。"
+          }
+        }
+      }
+    },
+    "Light on Dark": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "亮色绘于暗色"
+          }
+        }
+      }
+    },
+    "Draw the marks for the light tones on the dark color, like a glowing screen": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在暗色上用亮色绘制标记，呈现发光屏幕效果。"
+          }
+        }
+      }
+    },
+    "Color Picker (Dither Light Color)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色器（抖动亮色）"
+          }
+        }
+      }
+    },
+    "Color Picker (Dither Dark Color)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色器（抖动暗色）"
+          }
+        }
+      }
+    },
+    "Dither Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "亮色"
+          }
+        }
+      }
+    },
+    "Canvas text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画布文本"
+          }
+        }
+      }
+    },
+    "Font": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "字体"
+          }
+        }
+      }
+    },
+    "Press keys…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按下按键…"
+          }
+        }
+      }
+    },
+    "Press a shortcut": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按下快捷键"
+          }
+        }
+      }
+    },
+    "Revert": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "恢复"
+          }
+        }
+      }
+    },
+    "Keep Mine": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留我的版本"
+          }
+        }
+      }
+    },
+    "“%@” was changed on disk.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "磁盘上的“%@”已发生更改。"
+          }
+        }
+      }
+    },
+    "Another app changed this project. You can revert to the version on disk, losing your unsaved changes, or keep what you have.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "另一个应用更改了此项目。你可以恢复磁盘上的版本（未保存的更改将丢失），也可以保留当前版本。"
+          }
+        }
+      }
+    },
+    "Dither": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "抖动"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
