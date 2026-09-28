@@ -111,6 +111,46 @@ struct ProjectTests {
         #expect(try FileManager.default.contentsOfDirectory(atPath: destination.appendingPathComponent("images").path).isEmpty)
     }
 
+    @Test func version9ProjectsRemainReadable() async throws {
+        let root = try temporaryFolder()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let session = EditorSession()
+        session.createDocument(width: 8, height: 8)
+        session.addBlankLayer()
+        let snapshot = try #require(session.projectSnapshot())
+        let url = root.appendingPathComponent("Version9.comp")
+        try await ProjectStore.shared.save(snapshot, to: url)
+
+        var legacy = snapshot.manifest
+        legacy.version = 9
+        try JSONEncoder().encode(legacy).write(to: url.appendingPathComponent("manifest.json"))
+        let loaded = try await ProjectStore.shared.load(from: url)
+        #expect(loaded.manifest.version == 9)
+        #expect(loaded.manifest.layers.count == snapshot.manifest.layers.count)
+    }
+
+    @Test func resavingAProjectKeepsQuickLookPreviewAndDropsFinderThumbnail() async throws {
+        let root = try temporaryFolder()
+        defer { try? FileManager.default.removeItem(at: root) }
+        let session = EditorSession()
+        session.createDocument(width: 8, height: 8)
+        session.addBlankLayer()
+        let snapshot = try #require(session.projectSnapshot())
+        let url = root.appendingPathComponent("QuickLook.comp")
+        let oldPreview = Data([0xFF, 0xD8, 0xFF, 0xD9])
+        try await ProjectStore.shared.save(snapshot, to: url, quickLook: QuickLookImages(preview: oldPreview))
+
+        let quickLookFolder = url.appendingPathComponent("QuickLook")
+        try Data([0xFF, 0xD8, 0xFF, 0xD9]).write(to: quickLookFolder.appendingPathComponent("Thumbnail.jpg"))
+        let loaded = try await ProjectStore.shared.load(from: url)
+        let refreshedPreview = Data([0xFF, 0xD8, 0xFF, 0xD9, 0x01])
+        try await ProjectStore.shared.save(loaded, to: url, quickLook: QuickLookImages(preview: refreshedPreview))
+
+        let names = try FileManager.default.contentsOfDirectory(atPath: quickLookFolder.path)
+        #expect(Set(names) == ["Preview.jpg"])
+        #expect(try Data(contentsOf: quickLookFolder.appendingPathComponent("Preview.jpg")) == refreshedPreview)
+    }
+
     @Test func failedSavePreservesPreviouslySavedPackage() async throws {
         let root = try temporaryFolder()
         defer { try? FileManager.default.removeItem(at: root) }

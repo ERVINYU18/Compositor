@@ -86,12 +86,12 @@ private struct TransformValueField: View {
     @FocusState private var focused: Bool
     var body: some View {
         HStack(spacing: 4) {
-            Text(label).font(.caption).foregroundStyle(.secondary)
+            Text(verbatim: localizedString(label)).font(.caption).foregroundStyle(.secondary)
                 .scrubbable(sensitivity: 1, value: Binding(get: { value }, set: { newValue in
                     change(newValue)
                     text = Self.formatted(Double(newValue))
                 }), range: range, step: 1)
-            TextField(label, text: $text)
+            TextField(localizedString(label), text: $text)
                 .textFieldStyle(.roundedBorder).focused($focused)
                 .accessibilityIdentifier("transform\(label)")
                 .onAppear { sync() }

@@ -109,7 +109,7 @@ struct LevelsSheet: View {
             }
             let color: Color = switch settings.channel { case .rgb: .gray; case .red: .red; case .green: .green; case .blue: .blue }
             context.fill(path, with: .color(color))
-        }.accessibilityLabel("Original \(settings.channel.localizedName) histogram")
+        }.accessibilityLabel(String(format: localizedString("Original %@ histogram"), settings.channel.localizedName))
         .help("Linear histogram with automatic vertical scaling. Tall spikes may extend beyond the graph; all tones from 0 to 255 remain included.")
     }
     private func handles(output: Bool) -> some View {
