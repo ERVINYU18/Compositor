@@ -139,9 +139,10 @@ struct LassoControls: View {
 
     /// A button plus its pixel amount (1–500, default 1); both disabled without a selection.
     private func modifyControl(_ title: String, amount: Binding<Int>, action: @escaping () -> Void) -> some View {
-        HStack(spacing: 5) {
-            Button(title, action: action)
-            TextField(title, value: Binding(get: { amount.wrappedValue },
+        let localizedTitle = localizedString(title)
+        return HStack(spacing: 5) {
+            Button(localizedTitle, action: action)
+            TextField(localizedTitle, value: Binding(get: { amount.wrappedValue },
                                             set: { amount.wrappedValue = min(500, max(1, $0)) }),
                       format: .number)
                 .frame(width: 40).textFieldStyle(.roundedBorder)
@@ -151,7 +152,7 @@ struct LassoControls: View {
                 .unitSuffix("px", scrubValue: amount, sensitivity: 1, range: 1...500)
         }
         .disabled(!session.canModifySelection)
-        .help("\(title) the selection by this many pixels")
+        .help(String(format: localizedString("%@ the selection by this many pixels"), localizedTitle))
     }
 }
 

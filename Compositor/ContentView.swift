@@ -286,7 +286,8 @@ struct ContentView: View {
             ForEach(NavigationTool.allCases.filter { $0 != .idle }, id: \.self) { tool in
                 Button { session.selectTool(tool) } label: {
                     Group {
-                        if tool == .gradient { GradientToolIcon().frame(width: 18, height: 18) }
+                        if tool == .type { Text(verbatim: "T").font(.system(size: 17, weight: .medium)) }
+                        else if tool == .gradient { GradientToolIcon().frame(width: 18, height: 18) }
                         else if tool == .cloneStamp { CloneStampToolIcon().frame(width: 18, height: 18) }
                         else if tool == .lasso, session.lassoKind == .polygonal { PolygonalLassoToolIcon().frame(width: 18, height: 18) }
                         else if tool == .wand, session.wandMode == .object { ObjectSelectionToolIcon().frame(width: 18, height: 18) }

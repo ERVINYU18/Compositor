@@ -113,7 +113,10 @@ private struct TypeFontPicker: NSViewRepresentable {
 
     func makeNSView(context: Context) -> NSPopUpButton {
         let button = FixedWidthPopUpButton(frame: .zero, pullsDown: false)
-        if !fontName.isEmpty { button.addItem(withTitle: fontName) }
+        if !fontName.isEmpty {
+            button.addItem(withTitle: Self.displayName(for: fontName))
+            button.lastItem?.representedObject = fontName
+        }
         button.borderShape = .capsule
         // A long font name is cut off at its end rather than widening the control or scrolling its start away.
         button.cell?.lineBreakMode = .byTruncatingTail
@@ -135,9 +138,20 @@ private struct TypeFontPicker: NSViewRepresentable {
         guard !context.coordinator.tracking else { return }
         if fontName.isEmpty { Self.showMultiple(in: button); return }
         Self.hideMultiple(in: button)
-        guard button.titleOfSelectedItem != fontName else { return }
-        if button.item(withTitle: fontName) == nil { button.addItem(withTitle: fontName) }
-        button.selectItem(withTitle: fontName)
+        guard button.selectedItem?.representedObject as? String != fontName else { return }
+        if !button.itemArray.contains(where: { $0.representedObject as? String == fontName }) {
+            let item = NSMenuItem(title: Self.displayName(for: fontName), action: nil, keyEquivalent: "")
+            item.representedObject = fontName
+            button.menu?.addItem(item)
+        }
+        if let item = button.itemArray.first(where: { $0.representedObject as? String == fontName }) {
+            button.select(item)
+        }
+    }
+
+    /// NSFont's display name is intended for menus; fontName remains the stable PostScript identifier.
+    nonisolated private static func displayName(for fontName: String) -> String {
+        NSFont(name: fontName, size: NSFont.systemFontSize)?.displayName ?? fontName
     }
 
     /// Selected letters in more than one face: the menu says so with an item of its own at the top, which isn't a font.
@@ -185,9 +199,11 @@ private struct TypeFontPicker: NSViewRepresentable {
         /// stored as an empty string.
         @MainActor private static var styledNames: [String: NSAttributedString] = [:]
         @MainActor private static var preparing = false
-        @MainActor static func styledName(_ name: String) -> NSAttributedString? {
-            if styledNames[name] == nil { styledNames[name] = makeStyledName(name) }
-            let styled = styledNames[name]!
+        @MainActor static func styledName(_ postScriptName: String, displayName: String) -> NSAttributedString? {
+            if styledNames[postScriptName] == nil {
+                styledNames[postScriptName] = makeStyledName(displayName, fontName: postScriptName)
+            }
+            let styled = styledNames[postScriptName]!
             return styled.length == 0 ? nil : styled
         }
         @MainActor static func prepareStyledNames() {
@@ -195,17 +211,19 @@ private struct TypeFontPicker: NSViewRepresentable {
             preparing = true
             let names = NSFontManager.shared.availableFonts
             Task.detached(priority: .utility) {
-                let made = Made(names: Dictionary(uniqueKeysWithValues: names.map { ($0, makeStyledName($0)) }))
+                let made = Made(names: Dictionary(uniqueKeysWithValues: names.map {
+                    ($0, makeStyledName(TypeFontPicker.displayName(for: $0), fontName: $0))
+                }))
                 await MainActor.run { styledNames.merge(made.names) { current, _ in current } }
             }
         }
         /// Finished strings, never changed after they're made, handed over to the main thread.
         private struct Made: @unchecked Sendable { let names: [String: NSAttributedString] }
-        nonisolated private static func makeStyledName(_ name: String) -> NSAttributedString {
-            guard let font = NSFont(name: name, size: NSFont.systemFontSize),
-                  name.unicodeScalars.filter({ $0.properties.isAlphabetic }).allSatisfy({ font.coveredCharacterSet.contains($0) })
+        nonisolated private static func makeStyledName(_ displayName: String, fontName: String) -> NSAttributedString {
+            guard let font = NSFont(name: fontName, size: NSFont.systemFontSize),
+                  fontName.unicodeScalars.filter({ $0.properties.isAlphabetic }).allSatisfy({ font.coveredCharacterSet.contains($0) })
             else { return NSAttributedString() }
-            return NSAttributedString(string: name, attributes: [.font: font])
+            return NSAttributedString(string: displayName, attributes: [.font: font])
         }
 
         func menuNeedsUpdate(_ menu: NSMenu) {
@@ -213,11 +231,20 @@ private struct TypeFontPicker: NSViewRepresentable {
             let selected = fontName.wrappedValue
             var names = NSFontManager.shared.availableFonts
             if !selected.isEmpty, !names.contains(selected) { names.append(selected) }
-            names.sort()
             button.removeAllItems()
-            button.addItems(withTitles: names)
-            for item in button.itemArray { item.attributedTitle = Self.styledName(item.title) }
-            if selected.isEmpty { TypeFontPicker.showMultiple(in: button) } else { button.selectItem(withTitle: selected) }
+            let entries = names.map { (postScriptName: $0, displayName: TypeFontPicker.displayName(for: $0)) }
+                .sorted { $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending }
+            for entry in entries {
+                let item = NSMenuItem(title: entry.displayName, action: nil, keyEquivalent: "")
+                item.representedObject = entry.postScriptName
+                item.attributedTitle = Self.styledName(entry.postScriptName, displayName: entry.displayName)
+                menu.addItem(item)
+            }
+            if selected.isEmpty {
+                TypeFontPicker.showMultiple(in: button)
+            } else if let item = button.itemArray.first(where: { $0.representedObject as? String == selected }) {
+                button.select(item)
+            }
             loaded = true
         }
 
@@ -234,7 +261,9 @@ private struct TypeFontPicker: NSViewRepresentable {
         /// Only a face previews. Nothing highlighted (the pointer off the list, or the menu closing on a click) leaves the
         /// last face showing: reverting there flashed the old face just before the chosen one landed.
         func menu(_ menu: NSMenu, willHighlight item: NSMenuItem?) {
-            if let item, !TypeFontPicker.isMultiple(item) { preview(.show(item.title)) }
+            if let item, !TypeFontPicker.isMultiple(item), let name = item.representedObject as? String {
+                preview(.show(name))
+            }
         }
 
         @objc func choose(_ button: NSPopUpButton) {
@@ -242,7 +271,8 @@ private struct TypeFontPicker: NSViewRepresentable {
             chose = true
             preview(.keep)
             guard !TypeFontPicker.isMultiple(button.selectedItem),
-                  let selected = button.titleOfSelectedItem, selected != fontName.wrappedValue else { return }
+                  let selected = button.selectedItem?.representedObject as? String,
+                  selected != fontName.wrappedValue else { return }
             fontName.wrappedValue = selected
         }
     }
