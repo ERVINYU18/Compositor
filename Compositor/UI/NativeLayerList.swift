@@ -158,7 +158,7 @@ struct NativeLayerList: NSViewRepresentable {
 
             // A folder right-clicked can be ungrouped: its layers stay where they are, and the folder goes.
             if rows[row].isGroup {
-                let ungroupItem = NSMenuItem(title: "Ungroup Layers", action: #selector(ungroupLayersAction), keyEquivalent: "")
+                let ungroupItem = NSMenuItem(title: localizedString("Ungroup Layers"), action: #selector(ungroupLayersAction), keyEquivalent: "")
                 ungroupItem.target = self
                 ungroupItem.isEnabled = validateMenuItem(ungroupItem)
                 menu.addItem(ungroupItem)
@@ -571,7 +571,7 @@ final class LayerTableView: NSTableView {
                             fraction: 1, respectFlipped: true, hints: nil)
             return true
         }
-        image.accessibilityDescription = "Show mask alone"
+        image.accessibilityDescription = localizedString("Show mask alone")
         return NSCursor(image: image, hotSpot: base.hotSpot)
     }()
     override func updateTrackingAreas() {
@@ -927,7 +927,7 @@ private final class LayerCell: NSTableCellView, NSTextFieldDelegate {
         if layerID != layer.id || thumbnailKey != key {
             thumbnail.image = layer.adjustment.map { Self.adjustmentIcon($0.kind.symbol, description: $0.kind.localizedName, quarterTurnClockwise: $0.kind == .curves) }
                 ?? (layer.isGroup ? Self.folderIcon
-                    : editableText ? Self.adjustmentIcon("textformat", description: "Editable text")
+                    : editableText ? Self.textLayerIcon
                     : CanvasThumbnail.layer(layer.asset?.thumbnail, transform: layer.transform, canvas: canvas, box: 36))
             thumbnailKey = key
         }
@@ -1091,6 +1091,23 @@ private final class LayerCell: NSTableCellView, NSTextFieldDelegate {
         }
         icon.isTemplate = true
         icon.accessibilityDescription = "Folder"
+        return icon
+    }()
+    /// A text layer's badge is the letter T: it is the text tool's identifier, not a word to translate.
+    /// The `textformat` symbol cannot be used for it, because macOS substitutes a localized glyph drawn
+    /// in the bundle's language — under zh-Hans it renders as "格式" — so the letter is drawn directly.
+    private static let textLayerIcon: NSImage? = {
+        let icon = NSImage(size: NSSize(width: 36, height: 36), flipped: false) { bounds in
+            let text = NSAttributedString(string: "T", attributes: [
+                .font: NSFont.systemFont(ofSize: 24, weight: .medium),
+                .foregroundColor: NSColor.black,
+            ])
+            let size = text.size()
+            text.draw(at: NSPoint(x: bounds.midX - size.width / 2, y: bounds.midY - size.height / 2))
+            return true
+        }
+        icon.isTemplate = true
+        icon.accessibilityDescription = "Editable text"
         return icon
     }()
     private static func adjustmentIcon(_ symbolName: String, description: String, quarterTurnClockwise: Bool = false) -> NSImage? {
@@ -1372,7 +1389,7 @@ extension ImageLayer {
     /// The layer's size on the canvas and, once it's scaled, by how much, for its row. A photo shrunk to 5% keeps
     /// every one of its pixels; the percentage says so, where the size alone reads as if it had been resampled small.
     var sizeLabel: String {
-        let text = "\(Int(size.width.rounded())) × \(Int(size.height.rounded())) px"
+        let text = String(format: localizedString("%lld × %lld px"), Int64(size.width.rounded()), Int64(size.height.rounded()))
         guard let pixels = asset?.image.width, pixels > 0 else { return text }
         // Measured across the width, as the Transform bar's Scale field is.
         let percent = Double(size.width) / Double(pixels) * 100

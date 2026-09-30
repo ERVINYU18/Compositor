@@ -221,11 +221,17 @@ struct NativeResolutionPaintTests {
     @Test func layersPanelSaysHowFarALayerIsScaled() throws {
         let session = try session(scaledTo: 0.05)
         let layer = try #require(session.activeLayer)
-        #expect(layer.sizeLabel == "50 × 50 px · 5%")
+        #expect(layer.sizeLabel == expectedSizeLabel(50, 50, suffix: " · 5%"))
         var full = layer
         full.transform.size = CGSize(width: 1000, height: 1000)
-        #expect(full.sizeLabel == "1000 × 1000 px")
+        #expect(full.sizeLabel == expectedSizeLabel(1000, 1000))
         full.transform.size = CGSize(width: 25, height: 25)
-        #expect(full.sizeLabel == "25 × 25 px · 2.5%")
+        #expect(full.sizeLabel == expectedSizeLabel(25, 25, suffix: " · 2.5%"))
+    }
+
+    /// The size label is localized, so build the expectation from the same catalog entry the app uses
+    /// rather than hardcoding English.
+    private func expectedSizeLabel(_ width: Int, _ height: Int, suffix: String = "") -> String {
+        String(format: localizedString("%lld × %lld px"), Int64(width), Int64(height)) + suffix
     }
 }
