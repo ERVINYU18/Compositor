@@ -767,7 +767,7 @@ private final class LayerCell: NSTableCellView, NSTextFieldDelegate {
     private var maskGap: NSLayoutConstraint!
     /// The chain symbol runs corner to corner; turned 45° counterclockwise it stands upright in a narrow gap.
     private static let linkImage: NSImage? = {
-        guard let symbol = NSImage(systemSymbolName: "link", accessibilityDescription: "Linked")?
+        guard let symbol = NSImage(systemSymbolName: "link", accessibilityDescription: localizedString("Linked"))?
             .withSymbolConfiguration(NSImage.SymbolConfiguration(pointSize: 10, weight: .medium)) else { return nil }
         let side = max(symbol.size.width, symbol.size.height)
         let image = NSImage(size: NSSize(width: ceil(side * 0.7), height: ceil(side * 1.45)), flipped: false) { rect in
@@ -1082,7 +1082,7 @@ private final class LayerCell: NSTableCellView, NSTextFieldDelegate {
     private static var adjustmentIcons: [String: NSImage] = [:]
     /// The folder symbol at 80% of the size it would fill the thumbnail slot with.
     private static let folderIcon: NSImage? = {
-        guard let symbol = NSImage(systemSymbolName: "folder", accessibilityDescription: "Folder") else { return nil }
+        guard let symbol = NSImage(systemSymbolName: "folder", accessibilityDescription: localizedString("Folder")) else { return nil }
         let fit = 36 * 0.8 / max(symbol.size.width, symbol.size.height)
         let size = NSSize(width: symbol.size.width * fit, height: symbol.size.height * fit)
         let icon = NSImage(size: NSSize(width: 36, height: 36), flipped: false) { bounds in
@@ -1090,7 +1090,7 @@ private final class LayerCell: NSTableCellView, NSTextFieldDelegate {
             return true
         }
         icon.isTemplate = true
-        icon.accessibilityDescription = "Folder"
+        icon.accessibilityDescription = localizedString("Folder")
         return icon
     }()
     /// A text layer's badge is the letter T: it is the text tool's identifier, not a word to translate.

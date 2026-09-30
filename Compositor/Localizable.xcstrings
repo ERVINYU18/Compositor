@@ -8040,6 +8040,16 @@
         }
       }
     },
+    "Linked": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已链接"
+          }
+        }
+      }
+    },
     "Missing source": {
       "localizations": {
         "zh-Hans": {
@@ -10884,6 +10894,46 @@
           "stringUnit": {
             "state": "translated",
             "value": "文字大小"
+          }
+        }
+      }
+    },
+    "Move pixels": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移动像素"
+          }
+        }
+      }
+    },
+    "Sample color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "取色"
+          }
+        }
+      }
+    },
+    "Zoom in (⌘+), now %@. At 100%% each pixel of the JPEG is one pixel of the screen, as on the canvas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "放大 (⌘+)，当前 %@。在 100%% 时，JPEG 的每个像素对应屏幕的一个像素，与画布一致"
+          }
+        }
+      }
+    },
+    "Zoom out (⌘−), now %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "缩小 (⌘−)，当前 %@"
           }
         }
       }

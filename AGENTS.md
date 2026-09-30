@@ -2,6 +2,15 @@
 
 Compositor-CN 是 macOS 图像编辑器 [Compositor](https://github.com/robbietilton/Compositor) 的简体中文维护分支。本文件是给在此仓库工作的 AI 智能体的操作约定：在继承上游规则的基础上，叠加「中文本地化 + 独立分发」的额外约束。
 
+## 开工前必读
+
+本项目在进行**大的动作**（合并官方版本、改动构建或签名配置、改动本地化机制、替换正式版 App 等）或承接**大的需求**时，**必须先读完下面两份文档再动手**：
+
+- **需求文档** —— `docs/Compositor-CN-requirements.md`（仓库内；需求、本地化规范、验收标准）
+- **本文件 AGENTS.md** —— 操作约定、禁止事项、每轮适配清单
+
+冲突时的优先级：**用户当次的明确指示 > 需求文档 > 本文件**。
+
 ## 沟通与文件安全（硬性要求）
 
 沟通方式：
@@ -63,7 +72,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - 字母 **T** 是文字工具标识，永远保持 `T`，禁止翻成「格式」或任何中文。
 - 字体菜单显示用 `NSFont.displayName`，内部加载/识别仍用 PostScript name。
 - 格式化串用 `%@` / `%lld` 等标准说明符；多占位符可用位置说明符（`%1$lld × %2$lld`）。
-- 术语必须统一（见 `Compositor-CN-需求文档` 术语表）。
+- 术语必须统一（见 `docs/Compositor-CN-requirements.md` 的术语表）。
 - 快捷键编辑器：`ShortcutDefinition.title` 是持久化的稳定英文 id（UserDefaults 键依赖它），**只在显示层 `localizedString(title)`，禁止改 `title` 本身**；搜索须同时匹配中英文。
 
 ## 签名与发布（踩过坑，务必遵守）
