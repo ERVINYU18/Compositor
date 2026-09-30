@@ -10777,6 +10777,116 @@
           }
         }
       }
+    },
+    "How far apart the screen's lines are": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "屏幕扫描线之间的间距"
+          }
+        }
+      }
+    },
+    "Light blooming around the lines, like a CRT's phosphors": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "线条周围的辉光，如同 CRT 荧光粉"
+          }
+        }
+      }
+    },
+    "Break the lines into glowing beads": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "把扫描线分解为发光颗粒"
+          }
+        }
+      }
+    },
+    "Make the lines waver sideways down the screen, like a CRT losing sync": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "让扫描线沿屏幕向下摆动，如同 CRT 失去同步"
+          }
+        }
+      }
+    },
+    "How far the blur softens, in pixels": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "模糊柔化的范围（像素）"
+          }
+        }
+      }
+    },
+    "Line Spacing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扫描线间距"
+          }
+        }
+      }
+    },
+    "Wobble": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "摆动"
+          }
+        }
+      }
+    },
+    "Refine": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "细化"
+          }
+        }
+      }
+    },
+    "Shift Edge": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "边缘位移"
+          }
+        }
+      }
+    },
+    "Remove Distortion": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "去除畸变"
+          }
+        }
+      }
+    },
+    "Text Size": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文字大小"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
