@@ -11337,6 +11337,16 @@
           }
         }
       }
+    },
+    "Type Tool": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文字"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

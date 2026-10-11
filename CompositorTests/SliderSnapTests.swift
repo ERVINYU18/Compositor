@@ -6,7 +6,7 @@ import Testing
 @MainActor
 @Suite(.serialized)
 struct SliderSnapTests {
-    @Test func clickingTheTrackSnapsBeforeNativeTrackingBegins() throws {
+    @Test func clickingTheTrackSnapsBeforeNativeTrackingBegins() async throws {
         SliderSnap.install()
         let window = NSWindow(contentRect: CGRect(x: 200, y: 200, width: 260, height: 50), styleMask: [.titled],
                               backing: .buffered, defer: false)
@@ -16,15 +16,23 @@ struct SliderSnapTests {
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
         defer { window.orderOut(nil) }
-
         let cell = try #require(slider.cell as? NSSliderCell)
         let press = NSPoint(x: slider.bounds.width * 0.9, y: slider.bounds.midY)
+        // The cell reports no geometry until the slider has been laid out and drawn: read too early and the knob
+        // measures as wide as the track, leaving nothing to work the expected value out from. Wait for real
+        // geometry instead of guessing how long that takes.
+        var knob = CGRect.zero, track = slider.bounds
+        for _ in 0..<40 {
+            window.contentView?.layoutSubtreeIfNeeded()
+            knob = cell.knobRect(flipped: slider.isFlipped)
+            track = cell.trackRect.isEmpty ? slider.bounds : cell.trackRect
+            if track.width > knob.width { break }
+            try await Task.sleep(for: .milliseconds(50))
+        }
         // Where a click should land follows from the knob the system draws: its center can travel only between half
         // its width from either end of the track. Upstream's 0.94 was that sum written down for the 20-point knob of
         // an older macOS, and it stopped holding when the system changed how it draws a slider. Work the value out
         // from the cell instead, so the test keeps meaning whatever the knob measures.
-        let knob = cell.knobRect(flipped: slider.isFlipped)
-        let track = cell.trackRect.isEmpty ? slider.bounds : cell.trackRect
         let travel = track.width - knob.width
         #expect(travel > 0, "the slider draws a track longer than its knob")
         let expected = min(1.0, max(0.0, Double((press.x - track.minX - knob.width / 2) / travel)))

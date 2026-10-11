@@ -15,7 +15,9 @@ struct TypeControls: View {
     }
     var body: some View {
         HStack(spacing: 12) {
-            Text("Type").font(ToolHeaderStyle.titleFont)
+            // Not "Type": that key is the kind picker in BrushControls and reads "类型" there. The header of every
+            // tool's options bar is the tool's own name, which for this one is 文字.
+            Text("Type Tool").font(ToolHeaderStyle.titleFont)
             ScrollView(.horizontal) {
                 HStack(spacing: 10) {
                     TypeFontPicker(fontName: Binding(get: {
