@@ -22,7 +22,6 @@ nonisolated enum DitherStyle: String, CaseIterable, Sendable {
         [.dots, .lines, .diamonds],
         [.patterns, .ascii, .scanlines],
     ]
-    var localizedName: String { localizedString(rawValue) }
     var code: Int32 { Int32(Self.allCases.firstIndex(of: self)!) }
     /// Error diffusion: each pixel's rounding error is passed to its neighbors.
     var diffuses: Bool { Self.groups[0].contains(self) }
@@ -40,14 +39,12 @@ nonisolated enum DitherStyle: String, CaseIterable, Sendable {
 nonisolated enum DitherPixelShape: String, CaseIterable, Sendable {
     case square = "Square"
     case dot = "Dot"
-    var localizedName: String { localizedString(rawValue) }
 }
 
 nonisolated enum DitherColors: String, CaseIterable, Sendable {
     case blackWhite = "Black & White"
     case twoColors = "Two Colors"
     case original = "Original"
-    var localizedName: String { localizedString(rawValue) }
 }
 
 nonisolated struct DitherSettings: Equatable, Sendable {

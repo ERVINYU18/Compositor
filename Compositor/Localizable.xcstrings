@@ -11,6 +11,96 @@
         }
       }
     },
+    " · %1$lld DPI: %2$lld × %3$lld pixels": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · %1$lld DPI：%2$lld × %3$lld 像素"
+          }
+        }
+      }
+    },
+    "Black canvas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "黑色画布"
+          }
+        }
+      }
+    },
+    "Enter a size up to %@ pixels at this DPI.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请输入此 DPI 下不超过 %@ 像素的尺寸。"
+          }
+        }
+      }
+    },
+    "Millimeters": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "毫米"
+          }
+        }
+      }
+    },
+    "Resolution: 72 for screens, 300 for print. Click to switch.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分辨率：屏幕用 72，打印用 300。点击切换。"
+          }
+        }
+      }
+    },
+    "Start see-through, or with a white or black Background layer. Click to switch.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "以透明开始，或以白色或黑色背景图层开始。点击切换。"
+          }
+        }
+      }
+    },
+    "Transparent canvas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "透明画布"
+          }
+        }
+      }
+    },
+    "Units: pixels, inches, centimeters or millimeters. Click to switch.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "单位：像素、英寸、厘米或毫米。点击切换。"
+          }
+        }
+      }
+    },
+    "White canvas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "白色画布"
+          }
+        }
+      }
+    },
     "· encoded preview, fitted to window": {
       "localizations": {
         "zh-Hans": {
@@ -10934,6 +11024,316 @@
           "stringUnit": {
             "state": "translated",
             "value": "缩小 (⌘−)，当前 %@"
+          }
+        }
+      }
+    },
+    "Search commands and tools": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索命令与工具"
+          }
+        }
+      }
+    },
+    "No commands match": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有匹配的命令"
+          }
+        }
+      }
+    },
+    "Search Commands…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索命令…"
+          }
+        }
+      }
+    },
+    "Tool › Move / Transform": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 移动/变换"
+          }
+        }
+      }
+    },
+    "Tool › Rectangular Marquee": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 矩形选框"
+          }
+        }
+      }
+    },
+    "Tool › Elliptical Marquee": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 椭圆选框"
+          }
+        }
+      }
+    },
+    "Tool › Lasso": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 套索"
+          }
+        }
+      }
+    },
+    "Tool › Polygonal Lasso": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 多边形套索"
+          }
+        }
+      }
+    },
+    "Tool › Magic Wand": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 魔棒"
+          }
+        }
+      }
+    },
+    "Tool › Object Selection": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 对象选择"
+          }
+        }
+      }
+    },
+    "Tool › Crop": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 裁剪"
+          }
+        }
+      }
+    },
+    "Tool › Brush": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 画笔"
+          }
+        }
+      }
+    },
+    "Tool › Eraser": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 橡皮擦"
+          }
+        }
+      }
+    },
+    "Tool › Spot Healing Brush": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 污点修复画笔"
+          }
+        }
+      }
+    },
+    "Tool › Clone Stamp": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 仿制图章"
+          }
+        }
+      }
+    },
+    "Tool › Liquify": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 液化"
+          }
+        }
+      }
+    },
+    "Tool › Blur": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 模糊"
+          }
+        }
+      }
+    },
+    "Tool › Smudge": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 涂抹"
+          }
+        }
+      }
+    },
+    "Tool › Gradient": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 渐变"
+          }
+        }
+      }
+    },
+    "Tool › Rectangle": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 矩形"
+          }
+        }
+      }
+    },
+    "Tool › Ellipse": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 椭圆"
+          }
+        }
+      }
+    },
+    "Tool › Line": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 直线"
+          }
+        }
+      }
+    },
+    "Tool › Type": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 文字"
+          }
+        }
+      }
+    },
+    "Tool › Eyedropper": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 吸管"
+          }
+        }
+      }
+    },
+    "Tool › Hand": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 抓手"
+          }
+        }
+      }
+    },
+    "Tool › Zoom": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "工具 › 缩放"
+          }
+        }
+      }
+    },
+    "Layer › Add Layer Mask": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层 › 添加图层蒙版"
+          }
+        }
+      }
+    },
+    "Layer › Add Layer Mask from Selection": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层 › 从选区添加图层蒙版"
+          }
+        }
+      }
+    },
+    "Layer › Add Layer Mask Hiding Selection": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层 › 添加隐藏选区的图层蒙版"
+          }
+        }
+      }
+    },
+    "Layer › Add Layer Mask (Hide All)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图层 › 添加图层蒙版 (全部隐藏)"
+          }
+        }
+      }
+    },
+    "Search Commands": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索命令"
           }
         }
       }

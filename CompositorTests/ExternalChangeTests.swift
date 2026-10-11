@@ -164,7 +164,10 @@ struct ExternalChangeTests {
         let active = try #require(session.document?.layers.first?.id)
         session.renameLayer(active, to: "Unsaved here")
         try await renameFirstLayerOnDisk(url, to: "Renamed elsewhere")
-        // No window to ask in, so wait for the file-system notification to reach the pending prompt state.
+        await settle()
+        // No window to ask in, so the question waits and the document keeps the unsaved edit.
+        // The file-system notification arrives on its own time, so wait for the pending state instead of trusting
+        // one fixed delay: upstream's sleep alone flaked here.
         #expect(await eventually { controller.externalChanges.pending })
         #expect(controller.externalChanges.reloadCount == 0)
         #expect(controller.externalChanges.pending)

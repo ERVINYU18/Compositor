@@ -69,10 +69,6 @@ struct GridAppearance: Equatable {
              mediumBlue = "Medium Blue", yellow = "Yellow", magenta = "Magenta", cyan = "Cyan", black = "Black",
              custom = "Custom"
         var id: Self { self }
-        var localizedName: String {
-            if self == .black { return localizedString("Grid Black") }
-            return localizedString(rawValue)
-        }
 
         /// Nil for Custom, which uses the appearance's own color.
         var color: PaletteColor? {
@@ -95,7 +91,6 @@ struct GridAppearance: Equatable {
     enum Style: String, CaseIterable, Identifiable {
         case lines = "Lines", dashedLines = "Dashed Lines", dots = "Dots"
         var id: Self { self }
-        var localizedName: String { localizedString(rawValue) }
 
         /// On and off lengths in screen points; empty for a solid line.
         var dashes: [CGFloat] {
