@@ -40,7 +40,7 @@ Compositor-CN 是 macOS 图像编辑器 [Compositor](https://github.com/robbieti
 - 更新：独立的 Compositor-CN Updater；官方 Sparkle 更新入口被禁用（`startUpdater()` 永不调用）
 - 本地化机制：`Compositor/Localizable.xcstrings`（SwiftUI 自动查表）+ `Compositor/Localization.swift` 的 `localizedString()`
 - 版本以 `MARKETING_VERSION` 为准（不要看分支名——`adapt-compositor-1.4.1` 是历史遗留名，版本已前进）
-- 官方上游：`upstream`（robbietilton/Compositor）；本地中文仓库：`origin`（Echo-Smith/Compositor）
+- 官方上游：`upstream`（robbietilton/Compositor）；本地中文仓库：`origin`（ERVINYU18/Compositor，自己的 fork）
 
 ## 构建与测试
 
@@ -55,7 +55,8 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   -destination 'platform=macOS,arch=arm64' build
 ```
 
-- 完整测试须 0 失败；记录本轮通过数。历史「452 项」是 1.3.7 的数字，不可沿用。
+- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569（历史「452 项」是 1.3.7 的，早已作废）。
+- 取数用 `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准；同一份结果里 device 级的数字会偏大，不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 
 ## 本地化：四类泄漏必须全部清零
@@ -98,6 +99,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - 不绕过动态英文与真实 UI 检查，只凭目录缺失数判定本地化完成。
 - 不在未保存现场/未确认恢复点时执行 reset --hard、merge --abort、强制切分支或清理备份。
 - 不在脏工作区或未确认状态时启动正式 Compositor-CN Updater。
+- 不用 `rm` 删除任何项目文件（走废纸篓，见「文件生命周期」）；不在仓库或工作区长期堆放构建产物（`.xcresult`、DerivedData）。
 
 ## 每轮适配清单
 
@@ -108,7 +110,64 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 5. Debug + Release 构建；Release 启动冒烟测试；完整测试 0 失败。
 6. 测试版人工验收（重点：新增菜单/提示/无障碍文本/条件状态，Camera RAW、PSD/PSB、导入导出）。
 7. 通过可回滚流程替换正式版，核对版本 / build / Bundle ID / 签名 / 启动。
-8. 提交后建立离机归档（git bundle + 含 .git 的 tar.gz）。
+8. 提交、打 `vX.Y.Z-cn` 标签（标签语义 = 该周期最终状态，不是合并点），建立离机归档（git bundle + 含 .git 的 tar.gz），推送分支与发布标签。
+9. **清理本轮产生的中间文件**（见「文件生命周期」的清理清单）。
+10. **更新文档**（见「文档维护」）：测试基线、`docs/Compositor-CN-vX.Y.Z-conflict-resolution.md`、工作区日志。
+
+## 文件生命周期：清理、归档与保留
+
+原则：**项目产生的文件要么有明确归属，要么及时清理，不允许无限堆积。**
+
+### 归属（每类只有一处）
+
+| 类别 | 位置 | 说明 |
+|---|---|---|
+| 代码仓库 | `~/Desktop/Compositor-CN` | 唯一可构建、可提交的地方 |
+| 备份与归档 | `~/Desktop/.Compositor-CN-Backups/` | **唯一主目录**；iCloud 同名目录是它的镜像 |
+| 离机归档 | `~/Library/Mobile Documents/com~apple~CloudDocs/Compositor-CN-Backups/` | 与主目录保持一致 |
+| 更新器历史版本 | `~/Desktop/.Compositor-CN-Backups/Updater-历史版本/` | 只存档，不安装 |
+| 工作区（留档与证据） | `~/Desktop/AI/DSH/Compositor CN/` | 文档、审计脚本、核查证据；**不是 git 仓库** |
+| 构建中间产物 | Xcode DerivedData、工作区 `build-logs/` | 用完即清 |
+
+⚠️ `~/Documents/.Compositor-CN-Backups/` 已于 2026-10-12 废弃并删除，**不要再往那里放东西**。
+
+### 归档约定
+
+- 一次归档 = 一个 `post-<版本>-cn-<时间戳>/` 子目录，内含：`git bundle create --all` 的 `.bundle`、含 `.git` 的整仓库 `.tar.gz`、`SHA256SUMS.txt`、`STATE--<时间戳>.txt`（记录 HEAD / 父提交 / 版本 / 测试结果 / 恢复命令）。
+- 桌面与 iCloud **各存一份**，落地后各自 `shasum -c` 校验。
+- 同一版本只保留「最终状态」那一份；中间快照（`-inprogress-`）和重复的 `post-` 目录在下轮开始前清掉。
+- 删旧归档前先验证 `git bundle list-heads` 对比：旧 bundle 的引用必须被新 bundle 完全覆盖，否则会丢引用。
+
+### 每轮结束后的清理清单
+
+1. 工作区 `build-logs/` 里本轮之前的 `.xcresult`（单个可达数百 MB）→ 清；`.log` 只有几 MB，可留作证据。
+2. `~/Library/Developer/Xcode/DerivedData/Compositor-*` → 可清（下次构建自动重建）。**只删本项目那个目录**，别动共享缓存和其它项目。
+3. 旧 App 回滚点（`pre-*-install-*`）：新版验收通过后可逐步清，**至少保留最近两级**。
+4. `~/Library/Application Support/Compositor-CN-Updater/` 下的旧日志与空审计产物 → 可清。
+5. 合并中途快照（`-inprogress-`、更新器回滚留下的临时目录）→ 该轮完成后即清。
+
+### 删除方式（硬性）
+
+- **禁止 `rm`**：一律走废纸篓（`trash`），保证可恢复。
+- iCloud Drive 内的文件用 `trash` 会报权限错误（NSCocoaErrorDomain 513），改用 `mv <文件> ~/.Trash/<新名字>`。
+- 涉及个人目录时，删除前必须列出完整路径与影响范围并经用户确认；小批量（≤10 项）执行，每批完成后复核。
+
+### 定期维护节奏
+
+- **每轮适配结束**：走一遍上面的清理清单 + 更新文档。
+- **每月**：核对桌面与 iCloud 归档是否一致（文件列表 + `shasum -c`）；清一次 DerivedData 与旧 `.xcresult`。
+- **每次准备用更新器前**：确认 `compositor-cn.snapshot-tag` == 官方最新 tag、且 `compositor-upstream-snapshot` 分支存在**并且是 HEAD 的祖先**——缺一条更新器就不会短路，会把整个合并流程重跑一遍。手工合并完一轮后尤其要补查后两条。
+
+## 文档维护
+
+- 本文件的**唯一权威位置是仓库内 `AGENTS.md`**；工作区 `~/Desktop/AI/DSH/Compositor CN/AGENTS.md` 只是镜像，改完必须同步，避免两份漂移。
+- 上游也有 `AGENTS.md`，**每轮合并可能冲突**：解决时保留本文件的中文版全部内容，同时吸收上游新增的通用工程约定。
+- `README.md` 是**上游文件**（英文、介绍官方版），跟随上游合并，**不本地化、不改写**。
+- 每轮适配结束必须更新：
+  1. 本文件的测试通过数基线；
+  2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 先例，**1.4.7 起中断，1.4.9 必须补上**）；
+  3. 工作区 `.workbuddy-ai/memory/` 的当日日志与 `MEMORY.md`。
+- 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。
 
 ## 关键文件
 
