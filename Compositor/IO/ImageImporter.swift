@@ -17,7 +17,7 @@ nonisolated enum ImageImportError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .unreadable: localizedString("The image could not be read. It may be damaged or unavailable.")
-        case .unsupported: localizedString("Choose a JPEG, PNG, HEIC, TIFF, Photoshop (PSD), or Photoshop Large Document (PSB) file.")
+        case .unsupported: localizedString("Choose a JPEG, PNG, HEIC, TIFF, WebP, Photoshop (PSD), or Photoshop Large Document (PSB) file.")
         case .tooLarge:
             String(format: localizedString("This import exceeds the current %@-megapixel document budget or %@-pixel side limit."),
                    DocumentLimits.documentBudgetMegapixels.formatted(), DocumentLimits.maxSide.formatted())
@@ -59,7 +59,7 @@ actor ImageImporter {
                   let identifier = CGImageSourceGetType(source) as String?,
                   let type = UTType(identifier) else { throw ImageImportError.unreadable }
             let photoshop = flattenedPhotoshop ? [UTType.photoshopImage, .photoshopLargeImage] : []
-            guard ([UTType.jpeg, .png, .heic, .tiff] + photoshop).contains(where: { type.conforms(to: $0) }) else {
+            guard ([UTType.jpeg, .png, .heic, .tiff, .webP] + photoshop).contains(where: { type.conforms(to: $0) }) else {
                 throw ImageImportError.unsupported
             }
             guard let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],

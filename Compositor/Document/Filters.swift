@@ -11,6 +11,7 @@ nonisolated enum FilterKind: String, CaseIterable, Sendable {
     case vignette = "Vignette"
     case bloomGlow = "Bloom / Glow"
     case dither = "Dither"
+    case scanlines = "Scanlines"
     case tonalContrast = "Tonal Contrast"
     case lensCorrection = "Lens Correction"
     case cameraRaw = "Camera Raw Filter"
@@ -79,6 +80,7 @@ nonisolated struct FilterSettings: Equatable, Sendable {
     var blackWhite = BlackWhiteSettings()
     var colorBalance = ColorBalanceSettings()
     var dither = DitherSettings()
+    var scanlines = ScanlinesSettings()
     var cameraRaw = CameraRawSettings()
     /// Remove Background: Basic is the quick subject mask; Advanced refines it (see the three settings below).
     var backgroundQuality: BackgroundQuality = .basic
@@ -118,6 +120,7 @@ nonisolated struct FilterSettings: Equatable, Sendable {
         result.gradientMap = gradientMap.normalized
         result.grain = grain.normalized
         result.dither = dither.normalized
+        result.scanlines = scanlines.normalized
         result.cameraRaw = cameraRaw.normalized
         return result
     }
@@ -143,6 +146,8 @@ nonisolated struct FilterJob: @unchecked Sendable {
     /// Persistent histogram clipping indicators. Preview only; committing leaves these off.
     var showsShadowClipping = false
     var showsHighlightClipping = false
+    /// What Camera Raw's adaptive sliders read from `image`, when known already: measured once for a session's previews.
+    var cameraRawBrightness: CameraRawTables.Brightness? = nil
     /// Point-color range preview. −1 leaves the grade alone.
     var visualizesPointColor = -1
     /// Option-drag on Sharpening Masking. Preview only.
@@ -194,10 +199,12 @@ nonisolated enum PixelFilter {
         case .blackWhite: image = try settings.blackWhite.apply(job.image)
         case .colorBalance: image = try settings.colorBalance.apply(job.image)
         case .cameraRaw: image = try settings.cameraRaw.apply(job.image, clipping: job.cameraRawClipping, scale: job.scale, seed: job.seed,
-                                                                visualizePointColor: job.visualizesPointColor, sharpenMask: job.showsSharpenMask)
+                                                                visualizePointColor: job.visualizesPointColor, sharpenMask: job.showsSharpenMask,
+                                                                brightness: job.cameraRawBrightness)
         // Grain sits in layer pixels; the job's seed gives each application its own pattern.
         case .grain: image = try settings.grain.apply(job.image, unitsPerPixel: 1 / job.scale, seed: job.seed)
         case .dither: image = try settings.dither.apply(job.image)
+        case .scanlines: image = try settings.scanlines.apply(job.image)
         case .removeBackground:
             image = try SubjectRemoval.run(job.image, settings: settings)
         case .contentAwareFill:
@@ -356,6 +363,15 @@ final class FilterEdit {
     @ObservationIgnored var pendingTransform: LayerTransform?
     /// Reject a render started before the blur's padded pixel grid changed.
     @ObservationIgnored var previewSourceVersion: UInt64 = 0
+    /// Camera Raw's adaptive sliders read the picture before any change, which stays the same while the panel is open:
+    /// measured once from the preview's source, again only when that changes.
+    @ObservationIgnored private var cameraRawBrightness: (version: UInt64, value: CameraRawTables.Brightness)?
+    var previewBrightness: CameraRawTables.Brightness {
+        if let cached = cameraRawBrightness, cached.version == previewSourceVersion { return cached.value }
+        let value = CameraRawTables.brightness(of: previewSource)
+        cameraRawBrightness = (previewSourceVersion, value)
+        return value
+    }
     /// The settings `preparedPreview` was made with, for the automatic filters that have settings of their own.
     @ObservationIgnored var preparedSettings: FilterSettings?
     @ObservationIgnored var pending: FilterJob?
@@ -430,8 +446,9 @@ final class FilterEdit {
     private static func prepared(kind: FilterKind, from source: CGImage, placed: LayerTransform) throws
         -> (mapping: CGAffineTransform, previewSource: CGImage, previewScale: CGFloat, previewMapping: CGAffineTransform) {
         let mapping = BrushRaster.pixelToDocument(placed, width: source.width, height: source.height)
-        // Noise, grain and dither preview at full size: made on a smaller copy they would look coarser once enlarged.
-        let factor = [.addNoise, .grain, .dither, .contentAwareFill, .removeBackground].contains(kind)
+        // Noise, grain, dither and scanlines preview at full size: made on a smaller copy they would look coarser once
+        // enlarged.
+        let factor = [.addNoise, .grain, .dither, .scanlines, .contentAwareFill, .removeBackground].contains(kind)
             ? 1 : min(1, previewLimit / CGFloat(max(source.width, source.height)))
         guard factor < 1 else { return (mapping, source, 1, mapping) }
         let w = max(1, Int(CGFloat(source.width) * factor)), h = max(1, Int(CGFloat(source.height) * factor))
@@ -472,6 +489,7 @@ final class FilterEdit {
         job.showsHighlightClipping = showsHighlightClipping
         job.visualizesPointColor = pointColorVisualizeIndex
         job.showsSharpenMask = cameraRawSharpenMask
+        if kind == .cameraRaw { job.cameraRawBrightness = previewBrightness }
         return job
     }
 }

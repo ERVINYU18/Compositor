@@ -6,9 +6,15 @@ final class CompositorApplicationDelegate: NSObject, NSApplicationDelegate {
     var session: EditorSession { workspace.current.session }
     var projects: ProjectController { workspace.current.controller }
     var showEditor: (() -> Void)?
-    /// Checks the update feed and installs new versions (Sparkle). Started only after launch: its first-run prompt,
-    /// shown during launch, kept the editor window from ever opening.
-    let updater = SPUStandardUpdaterController(startingUpdater: false, updaterDelegate: nil, userDriverDelegate: nil)
+    /// Checks the update feed and installs new versions (Sparkle), offering each one with what's new listed in it.
+    /// Started only after launch: its first-run prompt, shown during launch, kept the editor window from ever opening.
+    private let updateDriver = UpdateDriver()
+    private let updaterDelegate = UpdaterDelegate()
+    lazy var updater: SPUUpdater = {
+        let updater = SPUUpdater(hostBundle: .main, applicationBundle: .main, userDriver: updateDriver, delegate: updaterDelegate)
+        updateDriver.updater = updater
+        return updater
+    }()
 
     // Finder Open With and Dock drops, including files delivered during launch.
     func application(_ application: NSApplication, open urls: [URL]) {

@@ -15,6 +15,9 @@ struct SliderSnapTests {
         window.contentView?.addSubview(slider)
         window.makeKeyAndOrderFront(nil)
         NSApp.activate(ignoringOtherApps: true)
+        // A slider cell learns its track's rectangle only when it draws, and the macOS 27 SDK no longer draws
+        // a window as it's ordered front, so draw it before pressing as a person would always see it first.
+        window.displayIfNeeded()
         defer { window.orderOut(nil) }
         let cell = try #require(slider.cell as? NSSliderCell)
         let press = NSPoint(x: slider.bounds.width * 0.9, y: slider.bounds.midY)
