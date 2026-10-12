@@ -57,4 +57,15 @@ Debug test session: `/Users/yi/Library/Developer/Xcode/DerivedData/Compositor-da
 - Failure summaries: 0; error summaries: 0; runtime warnings: 0
 - Device-level `passedTests` reports 651 because parameterized runs are counted there; use the top-level 577 as the suite baseline.
 
-Release build, launch smoke test, installation and manual acceptance are still pending. Append those results after they are completed.
+## Release build and installation
+
+- Release product verified at `Build/Products/Release/Compositor.app`: version **1.4.10 / build 45**, bundle ID `com.wonderassembly.compositor.cn`.
+- Signature: ad-hoc; TeamIdentifier not set. No official Sparkle keys in the app Info.plist.
+- Compiled `zh-Hans.lproj/Localizable.strings` (UTF-16LE) contains the new entries including 高光恢复, 保留透明度, the HEIF import strings, and localized camera help text.
+- Before replacement, copied the installed 1.4.9 / build 44 app to `~/Desktop/.Compositor-CN-Backups/pre-1.4.10-install-20261012-111856/Compositor-CN-1.4.9-previous.app`; source and backup have identical 62-file / 130-entry counts, and `diff -rq` showed no content differences (ignoring the expected Sparkle framework symlink loops).
+- Replaced the installed app reversibly: old app moved to macOS Trash, new Release app copied to `/Applications/Compositor-CN.app`.
+- Launch smoke test: PID 58364 remained alive after 15 seconds; no Compositor crash report found.
+
+Manual acceptance: **passed** (user confirmed 2026-10-12). New Camera Raw controls, Gaussian Blur Preserve Transparency, HEIF import and Spot Healing were accepted.
+
+Next: create the `v1.4.10-cn` tag, dual offline archive, and remote push.
