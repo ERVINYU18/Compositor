@@ -3,6 +3,7 @@
 Baseline: Chinese adaptation `adapt-compositor-1.4.1` at `9990a10` (tag `v1.4.9-cn`).
 Official release: v1.4.10, upstream tag commit `eb1fda73e97dbaf5a56ddbf237b712721b37050a`.
 Merge source: synthetic snapshot commit `1fb57a2`, whose parent is the v1.4.9 upstream snapshot `0ab3ff5`.
+Compositor-CN merge commit: `5408843` (parents: `9990a10` + `1fb57a2`).
 
 ## Source provenance — important caveat
 
@@ -56,5 +57,4 @@ Debug test session: `/Users/yi/Library/Developer/Xcode/DerivedData/Compositor-da
 - Failure summaries: 0; error summaries: 0; runtime warnings: 0
 - Device-level `passedTests` reports 651 because parameterized runs are counted there; use the top-level 577 as the suite baseline.
 
-Release build, launch smoke test, installation and manual acceptance are still pending. Append those results and
-the final merge commit hash after they are completed.
+Release build, launch smoke test, installation and manual acceptance are still pending. Append those results after they are completed.
