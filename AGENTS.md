@@ -55,7 +55,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   -destination 'platform=macOS,arch=arm64' build
 ```
 
-- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569（历史「452 项」是 1.3.7 的，早已作废）。
+- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577（历史「452 项」是 1.3.7 的，早已作废）。
 - 取数用 `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准；同一份结果里 device 级的数字会偏大，不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 
@@ -105,14 +105,15 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 
 1. 只读复核：分支 / HEAD / 无 MERGE_HEAD / 工作区干净 / snapshot-tag。
 2. 干净基线上建立恢复点（备份分支或离机归档）。
-3. 逐文件合并官方新标签；冲突同时保留新版行为与中文定制；**并核对 Release 签名配置未被覆盖**。
-4. 源码侧本地化审计四类泄漏清零 + 补齐词条与显示路径。
-5. Debug + Release 构建；Release 启动冒烟测试；完整测试 0 失败。
-6. 测试版人工验收（重点：新增菜单/提示/无障碍文本/条件状态，Camera RAW、PSD/PSB、导入导出）。
-7. 通过可回滚流程替换正式版，核对版本 / build / Bundle ID / 签名 / 启动。
-8. 提交、打 `vX.Y.Z-cn` 标签（标签语义 = 该周期最终状态，不是合并点），建立离机归档（git bundle + 含 .git 的 tar.gz），推送分支与发布标签。
-9. **清理本轮产生的中间文件**（见「文件生命周期」的清理清单）。
-10. **更新文档**（见「文档维护」）：测试基线、`docs/Compositor-CN-vX.Y.Z-conflict-resolution.md`、工作区日志。
+3. 获取官方新标签源码并核对来源；若使用 tarball 合成快照，必须在提交与冲突记录中明确标注「非真实上游 tag commit」，并记录其父提交。
+4. 逐文件合并官方新标签；冲突同时保留新版行为与中文定制；**并核对 Release 签名配置未被覆盖**。
+5. 源码侧本地化审计四类泄漏清零 + 补齐词条与显示路径。
+6. Debug + Release 构建；Release 启动冒烟测试；完整测试 0 失败。
+7. 测试版人工验收（重点：新增菜单/提示/无障碍文本/条件状态，Camera RAW、PSD/PSB、导入导出）。
+8. 通过可回滚流程替换正式版，核对版本 / build / Bundle ID / 签名 / 启动。
+9. 提交、打 `vX.Y.Z-cn` 标签（标签语义 = 该周期最终状态，不是合并点），建立离机归档（git bundle + 含 .git 的 tar.gz），推送分支与发布标签。
+10. **清理本轮产生的中间文件**（见「文件生命周期」的清理清单）。
+11. **更新文档**（见「文档维护」）：测试基线、`docs/Compositor-CN-vX.Y.Z-conflict-resolution.md`、工作区日志。
 
 ## 文件生命周期：清理、归档与保留
 
