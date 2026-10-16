@@ -8,8 +8,8 @@ nonisolated enum PSDError: LocalizedError, Equatable {
         switch self {
         case .truncated: localizedString("The Photoshop file could not be read. It may be damaged or incomplete.")
         case .unsupportedVersion: localizedString("This Photoshop file uses a format version Compositor can’t read.")
-        case .unsupportedColorMode: localizedString("Only 8-bit RGB Photoshop files can be imported.")
-        case .unsupportedDepth: localizedString("Only 8-bit RGB Photoshop files can be imported.")
+        case .unsupportedColorMode: localizedString("Only 8-bit RGB and CMYK Photoshop files can be imported.")
+        case .unsupportedDepth: localizedString("Only 8-bit RGB and CMYK Photoshop files can be imported.")
         case .unsupportedCompression: localizedString("This Photoshop file uses a layer compression method that isn’t supported.")
         }
     }
@@ -30,6 +30,8 @@ nonisolated struct PSDDocument: @unchecked Sendable {
     var width: Int
     var height: Int
     var resolution: Double
+    /// A CMYK file's profile, which its layers were converted to RGB through; nil for an RGB file.
+    var cmykProfile: CMYKProfile?
     /// Bottom to top, including folders. Hidden section dividers are not stored.
     var layers: [PSDRecord]
 }
