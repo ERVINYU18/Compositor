@@ -79,9 +79,9 @@ struct ColorRangeSheet: View {
 
     private func help(_ mode: HueSampleMode) -> String {
         switch mode {
-        case .replace: "Click the image to select that color"
-        case .add: "Click the image to add that color to the selection"
-        case .remove: "Click the image to take that color out of the selection"
+        case .replace: localizedString("Click the image to select that color")
+        case .add: localizedString("Click the image to add that color to the selection")
+        case .remove: localizedString("Click the image to take that color out of the selection")
         }
     }
 

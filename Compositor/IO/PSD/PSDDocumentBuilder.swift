@@ -27,7 +27,7 @@ nonisolated enum PSDDocumentBuilder {
         for record in document.layers {
             if record.croppedToCanvas {
                 conversions.append(PSDConversion(layerName: record.name,
-                                                 message: "Cropped to the canvas so the file fits in memory. Pixels outside the canvas weren't imported."))
+                                                 message: localizedString("Cropped to the canvas so the file fits in memory. Pixels outside the canvas weren't imported.")))
             }
             let renderedText = record.text.flatMap { try? PSDText.render($0) }
             var notes: [String] = []

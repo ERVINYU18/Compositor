@@ -205,10 +205,10 @@ final class ShortcutSettings {
                 return localizedString("Text-editing shortcuts need Command, Option, or Control so they do not replace normal typing.")
             }
             if [ShortcutChord("q", 1), ShortcutChord(",", 1), ShortcutChord("m", 3)].contains(chord) {
-                return String(format: localizedString("%@ is reserved by macOS."), chord.label)
+                return String(format: localizedString("%@ is reserved by macOS."), localizedString(chord.label))
             }
             if let other = assigned[chord] {
-                return String(format: localizedString("%@ is assigned to both %@ and %@."), chord.label, localizedString(other), localizedString(definition.title))
+                return String(format: localizedString("%@ is assigned to both %@ and %@."), localizedString(chord.label), localizedString(other), localizedString(definition.title))
             }
             assigned[chord] = definition.title
         }
@@ -339,8 +339,8 @@ private struct ShortcutRecorder: NSViewRepresentable {
     func makeNSView(context: Context) -> RecorderButton { RecorderButton() }
     func updateNSView(_ button: RecorderButton, context: Context) {
         button.start = start; button.finish = finish; button.recording = recording
-        button.title = recording ? localizedString("Press keys…") : chord.label
-        button.setAccessibilityLabel(recording ? localizedString("Press a shortcut") : chord.label)
+        button.title = recording ? localizedString("Press keys…") : localizedString(chord.label)
+        button.setAccessibilityLabel(recording ? localizedString("Press a shortcut") : localizedString(chord.label))
         if recording, button.window?.firstResponder !== button { button.window?.makeFirstResponder(button) }
     }
     final class RecorderButton: NSButton {

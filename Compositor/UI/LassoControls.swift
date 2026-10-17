@@ -156,7 +156,7 @@ struct LassoControls: View {
                 .unitSuffix("px", scrubValue: amount, sensitivity: 1, range: 1...500)
         }
         .disabled(!session.canModifySelection)
-        .help("\(title) the selection by this many pixels")
+        .help(String(format: localizedString("%@ the selection by this many pixels"), localizedString(title)))
     }
 }
 

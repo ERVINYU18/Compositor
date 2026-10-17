@@ -831,7 +831,7 @@ final class EditorSession {
         }
         defer { for folder in folders { folder.stopAccessingSecurityScopedResource() } }
         if !empty.isEmpty {
-            let message = empty.map { "“\($0)” has no images to import." }.joined(separator: "\n")
+            let message = empty.map { String(format: localizedString("“%@” has no images to import."), $0) }.joined(separator: "\n")
             importError = [importError, message].compactMap { $0 }.joined(separator: "\n\n")
         }
         guard !urls.isEmpty else { return }

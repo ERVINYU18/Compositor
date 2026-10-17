@@ -331,8 +331,8 @@ struct CameraRawControls: View {
         }
         .buttonStyle(.borderless)
         .disabled(session.filterEdit?.committing == true)
-        .help("Reset \(group.rawValue) to its defaults")
-        .accessibilityLabel("Reset \(group.rawValue)")
+        .help(String(format: localizedString("Reset %@ to its defaults"), localizedString(group.rawValue)))
+        .accessibilityLabel(String(format: localizedString("Reset %@"), localizedString(group.rawValue)))
     }
 
     private func slider(_ title: String, _ key: WritableKeyPath<CameraRawSettings, Double>, range: ClosedRange<Double>,
@@ -342,7 +342,7 @@ struct CameraRawControls: View {
         return HStack(spacing: 10) {
             Text(verbatim: localizedString(title))
                 .frame(minWidth: Self.labelWidth, alignment: .leading)
-                .help(help)
+                .help(localizedString(help))
                 .onTapGesture(count: 2) { reset(key, to: resetValue) }
                 .scrubbable(sensitivity: 1 / step,
                             value: Binding(get: { raw[keyPath: key] }, set: { assign(key, $0, clipping: nil) }),
@@ -353,7 +353,7 @@ struct CameraRawControls: View {
             TextField(localizedString(title), value: Binding(get: { raw[keyPath: key] }, set: { assign(key, $0, clipping: nil) }),
                       format: .number.precision(.fractionLength(0...decimals)))
                 .frame(width: 56).textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing)
-                .help(help)
+                .help(localizedString(help))
         }
         .accessibilityElement(children: .contain)
         .accessibilityLabel(localizedString(title))

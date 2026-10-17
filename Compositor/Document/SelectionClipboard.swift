@@ -185,7 +185,7 @@ extension EditorSession {
         guard let type = pasteboard.availableType(from: [.png, .tiff]), let data = pasteboard.data(forType: type) else { return }
         let folder = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
         defer { try? FileManager.default.removeItem(at: folder) }
-        let file = folder.appendingPathComponent("Pasted Image").appendingPathExtension(type == .png ? "png" : "tiff")
+        let file = folder.appendingPathComponent(localizedString("Pasted Image")).appendingPathExtension(type == .png ? "png" : "tiff")
         do {
             try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
             try data.write(to: file)

@@ -483,7 +483,7 @@ final class CanvasView: NSView {
     /// The Zoom tool's cursors: a magnifier with a plus, or a minus while Option is held.
     private static func zoomCursor(out: Bool) -> NSCursor {
         let symbol = NSImage(systemSymbolName: out ? "minus.magnifyingglass" : "plus.magnifyingglass",
-                             accessibilityDescription: out ? "Zoom out" : "Zoom in")!
+                             accessibilityDescription: localizedString(out ? "Zoom out" : "Zoom in"))!
         let white = symbol.withSymbolConfiguration(.init(paletteColors: [.white]))!
         let black = symbol.withSymbolConfiguration(.init(paletteColors: [.black]))!
         let image = NSImage(size: NSSize(width: 24, height: 24), flipped: false) { _ in
