@@ -27,3 +27,16 @@ nonisolated func localizedHistoryAction(_ name: String) -> String {
     }
     return localizedString(name)
 }
+
+/// Workspace tabs carry their model names "Untitled", "Untitled 2", … and the tests assert those stored
+/// names. Only the display layer translates them, so "Untitled 2" reads "未命名 2" in the tab strip.
+nonisolated func localizedUntitledName(_ name: String) -> String {
+    let prefix = "Untitled"
+    guard name.hasPrefix(prefix) else { return name }
+    let rest = name.dropFirst(prefix.count)
+    if rest.isEmpty { return localizedString("Untitled") }
+    if rest.hasPrefix(" "), let number = Int(rest.dropFirst()) {
+        return String(format: localizedString("Untitled %lld"), Int64(number))
+    }
+    return name
+}

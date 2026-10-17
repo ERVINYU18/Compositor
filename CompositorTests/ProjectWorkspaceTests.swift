@@ -82,6 +82,10 @@ import Testing
         #expect(workspace.canClose(first))
         let second = workspace.addTab(), third = workspace.addTab()
         #expect(second.title == "Untitled 2" && third.title == "Untitled 3")
+        // The stored names stay English (asserted above); only the tab strip shows the translated ones.
+        #expect(localizedUntitledName(first.title) == localizedString("Untitled"))
+        #expect(localizedUntitledName(second.title) == String(format: localizedString("Untitled %lld"), Int64(2)))
+        #expect(localizedUntitledName("photo.comp") == "photo.comp")
         workspace.removeTab(second.id)
         #expect(workspace.addTab().title == "Untitled 2", "the lowest free number")
         for tab in workspace.tabs { workspace.removeTab(tab.id) }

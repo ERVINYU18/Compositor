@@ -13747,6 +13747,16 @@
           }
         }
       }
+    },
+    "Untitled %lld": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "未命名 %lld"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
