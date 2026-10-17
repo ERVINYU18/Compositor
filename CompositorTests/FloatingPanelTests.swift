@@ -87,7 +87,10 @@ struct FloatingPanelTests {
         controller.show(title: "Gaussian Blur", content: Text("Blur"))
         settle()
         let panel = try #require(NSApp.windows.first { $0.identifier == controller.identifier })
-        let parked = NSPoint(x: 40, y: 240)
+        // Well inside the screen: the system keeps floating windows out of a margin along
+        // the left edge, which would move a panel parked there off the saved position.
+        let screen = try #require(panel.screen ?? NSScreen.main).visibleFrame
+        let parked = NSPoint(x: screen.midX - 200, y: 240)
         panel.setFrameOrigin(parked)
         let saved = NSPoint(x: panel.frame.minX, y: panel.frame.maxY)
         controller.close()

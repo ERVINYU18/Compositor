@@ -68,7 +68,9 @@ struct ColorPickerTests {
         controller.show(try #require(session.colorPicker), session: session)
         let panel = try #require(NSApp.windows.first { $0.identifier == ColorPickerPanelController.identifier && $0.isVisible })
         let screen = try #require(panel.screen ?? NSScreen.main).visibleFrame
-        let spot = NSPoint(x: screen.minX + 40, y: screen.maxY - 40)
+        // Well inside the screen: the system keeps floating windows out of a margin along
+        // the left edge, which would move a panel parked there off the saved position.
+        let spot = NSPoint(x: screen.midX - 200, y: screen.maxY - 40)
         panel.setFrameTopLeftPoint(spot)
         session.closeColorPicker(commit: false)
         controller.close()
