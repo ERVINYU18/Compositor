@@ -329,7 +329,7 @@ struct PSDRoundTripTests {
         let live = try #require(try PSDVector.live(extra: extra, canvas: PSDVectorFixtures.canvas))
         #expect(live.style.kind == .rectangle)
         #expect(live.style.cornerRadius == 0)
-        #expect(live.notes.contains { $0.contains("stroke") })
+        #expect(live.notes.contains { $0.contains(localizedString("The Photoshop stroke isn’t supported on shape layers and was omitted.")) })
         var record = PSDRecord(id: UUID(), name: "rectangle-contour-jaune")
         record.kind = .vector
         record.image = live.image
@@ -338,8 +338,8 @@ struct PSDRoundTripTests {
         record.shapeNotes = live.notes
         let imported = try PSDDocumentBuilder.makeImport(PSDDocument(width: 1920, height: 1080, resolution: 72, layers: [record]))
         #expect(imported.layers.first?.liveShape?.style.kind == .rectangle)
-        #expect(imported.conversions.contains { $0.layerName == "rectangle-contour-jaune" && $0.message.contains("stroke") })
-        #expect(!imported.conversions.contains { $0.message.contains("rasterized") })
+        #expect(imported.conversions.contains { $0.layerName == "rectangle-contour-jaune" && $0.message.contains(localizedString("The Photoshop stroke isn’t supported on shape layers and was omitted.")) })
+        #expect(!imported.conversions.contains { $0.message.contains(localizedString("Vector shape was rasterized to pixels.")) })
     }
 
     @Test func fourSharpCornersInferARectangleWithoutOrigination() throws {

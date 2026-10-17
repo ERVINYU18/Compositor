@@ -59,7 +59,7 @@ struct CropToCanvasImportTests {
         #expect(layer.bounds == CGRect(x: -2, y: 1, width: 6, height: 3))
         #expect(!layer.croppedToCanvas)
         #expect(try rgbaPixels(#require(layer.image)) == rgbaPixels(#require(fixture.source.layers[0].image)))
-        #expect(!(try PSDDocumentBuilder.makeImport(parsed)).conversions.contains { $0.message.contains("Cropped to the canvas") })
+        #expect(!(try PSDDocumentBuilder.makeImport(parsed)).conversions.contains { $0.message.contains(localizedString("Cropped to the canvas so the file fits in memory. Pixels outside the canvas weren't imported.")) })
     }
 
     @Test func overBudgetDocumentCropsImageAndMaskToCanvas() throws {
@@ -80,7 +80,7 @@ struct CropToCanvasImportTests {
         var expectedMask: [UInt8] = []
         for row in 0..<3 { expectedMask.append(contentsOf: sourceMask[row * 6 + 2..<row * 6 + 6]) }
         #expect(try grayPixels(mask) == expectedMask)
-        let cropNotes = try PSDDocumentBuilder.makeImport(parsed).conversions.filter { $0.message.contains("Cropped to the canvas") }
+        let cropNotes = try PSDDocumentBuilder.makeImport(parsed).conversions.filter { $0.message.contains(localizedString("Cropped to the canvas so the file fits in memory. Pixels outside the canvas weren't imported.")) }
         #expect(cropNotes.map(\.layerName) == ["Overhang"])
     }
 
@@ -101,7 +101,7 @@ struct CropToCanvasImportTests {
         let imported = try #require(parsed.layers.first)
         #expect(imported.image == nil)
         #expect(imported.croppedToCanvas)
-        #expect((try PSDDocumentBuilder.makeImport(parsed)).conversions.contains { $0.layerName == "Outside" && $0.message.contains("Cropped to the canvas") })
+        #expect((try PSDDocumentBuilder.makeImport(parsed)).conversions.contains { $0.layerName == "Outside" && $0.message.contains(localizedString("Cropped to the canvas so the file fits in memory. Pixels outside the canvas weren't imported.")) })
     }
 
     @Test func channelCropsMatchFullDecodes() throws {
