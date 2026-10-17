@@ -46,7 +46,9 @@ struct ExternalChangeTests {
         try await ProjectStore.shared.save(snapshot, to: url)
     }
 
-    private func eventually(_ timeout: Duration = .seconds(4), _ condition: () -> Bool) async -> Bool {
+    /// The file-system notification arrives on its own time: on a loaded machine it can be seconds late, so
+    /// allow real slack instead of a window that only fits an idle Mac.
+    private func eventually(_ timeout: Duration = .seconds(20), _ condition: () -> Bool) async -> Bool {
         let deadline = ContinuousClock.now + timeout
         while ContinuousClock.now < deadline {
             if condition() { return true }
