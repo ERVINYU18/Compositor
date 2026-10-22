@@ -167,7 +167,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - `README.md` 是**上游文件**（英文、介绍官方版），跟随上游合并，**不本地化、不改写**。
 - 每轮适配结束必须更新：
   1. 本文件的测试通过数基线；
-  2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 / 1.4.7 / 1.4.9；**每轮都要写，别再断**）；
+  2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 / 1.4.7 / 1.4.9 / 1.4.10 / 1.5.3；**每轮都要写，别再断**）；
   3. 工作区 `.workbuddy-ai/memory/` 的当日日志与 `MEMORY.md`。
 - 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。
 
