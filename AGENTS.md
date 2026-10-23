@@ -55,7 +55,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   -destination 'platform=macOS,arch=arm64' build
 ```
 
-- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687（历史「452 项」是 1.3.7 的，早已作废）。
+- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707（历史「452 项」是 1.3.7 的，早已作废）。
 - 取数用 `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准；同一份结果里 device 级的数字会偏大，不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 - 本机开着 Stage Manager：系统会把置前的浮动窗口限制在左边缘边距之外（本显示器为 x ≥ 221），**窗口坐标类测试不要把面板停在屏幕左边缘**；`NSApp.activate` 在 xcodebuild 下不可靠，别依赖它。文件通知类断言在全量负载下会晚到，等待窗口要留足余量。
@@ -71,9 +71,12 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 
 规则：
 
+- **`Text(String)` 不本地化**：`Text(某 String 变量)` 走的是 verbatim 初始化器，`Text("字面量")` 才查表。凡是拼好的 `String`（汇总行、进度行、`LocalizedError.errorDescription`——`localizedDescription` 原样返回它）都必须自己 `String(format: localizedString(...))`。
+- **`02-localization/audit_strings.py` 有三类盲区**，跑完它必须再补一轮扫描：① 枚举/变量承载的键（`Toggle(kind.titleKey)`、`LayerType.filterLabel`）；② 三元表达式（`isPlaying ? "Pause" : "Play"`）；③ AppKit setter（`field.placeholderString = "…"`）。判定「本地化完成」不能只看它的 0 缺口。
 - 字母 **T** 是文字工具标识，永远保持 `T`，禁止翻成「格式」或任何中文。
 - 字体菜单显示用 `NSFont.displayName`，内部加载/识别仍用 PostScript name。
 - 格式化串用 `%@` / `%lld` 等标准说明符；多占位符可用位置说明符（`%1$lld × %2$lld`）。
+- **数据用名不译**：ColorSync 配置文件名字（`Generic CMYK Profile` 等）被 `CMYK.generic` 按字符串精确匹配，翻译会静默破坏查找；`GIFDelayMode` 的 rawValue 之类 Codable 存储值同理。
 - 术语必须统一（见 `docs/Compositor-CN-requirements.md` 的术语表）。
 - 快捷键编辑器：`ShortcutDefinition.title` 是持久化的稳定英文 id（UserDefaults 键依赖它），**只在显示层 `localizedString(title)`，禁止改 `title` 本身**；搜索须同时匹配中英文。
 
@@ -167,7 +170,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - `README.md` 是**上游文件**（英文、介绍官方版），跟随上游合并，**不本地化、不改写**。
 - 每轮适配结束必须更新：
   1. 本文件的测试通过数基线；
-  2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 / 1.4.7 / 1.4.9 / 1.4.10 / 1.5.3 / 1.5.5；**每轮都要写，别再断**）；
+  2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 / 1.4.7 / 1.4.9 / 1.4.10 / 1.5.3 / 1.5.5 / 1.5.6；**每轮都要写，别再断**）；
   3. 工作区 `.workbuddy-ai/memory/` 的当日日志与 `MEMORY.md`。
 - 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。
 

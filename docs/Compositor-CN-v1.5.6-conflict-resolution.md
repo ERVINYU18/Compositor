@@ -164,5 +164,5 @@ a false positive. The JSON has
 ## Tests
 
 Four new test files come with this version: `GIFLayerTests`, `GIFPreviewPlaybackTests`,
-`ToolRailTests`, `UpdateCheckTests`. The baseline has to be re-measured this round
-(1.5.5 was 687 passing).
+`ToolRailTests`, `UpdateCheckTests`. Full suite: **707 passing, 0 failing**
+(`xcrun xcresulttool get test-results summary`, 1.5.5 was 687 — +20).
