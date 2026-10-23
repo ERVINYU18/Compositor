@@ -14007,6 +14007,606 @@
           }
         }
       }
+    },
+    "Loop": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "循环"
+          }
+        }
+      }
+    },
+    "Forever": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "永久"
+          }
+        }
+      }
+    },
+    "Once": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "一次"
+          }
+        }
+      }
+    },
+    "Transparency": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "透明度"
+          }
+        }
+      }
+    },
+    "Keep transparent areas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留透明区域"
+          }
+        }
+      }
+    },
+    "Frames": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "帧数"
+          }
+        }
+      }
+    },
+    "GIF keeps fully transparent or opaque pixels; soft edges use a 50% threshold.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "GIF 只保留完全透明或完全不透明的像素；柔和边缘按 50% 阈值处理。"
+          }
+        }
+      }
+    },
+    "Up to 256 colors · sRGB": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "最多 256 色 · sRGB"
+          }
+        }
+      }
+    },
+    "1 frame · Still canvas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "1 帧 · 静态画布"
+          }
+        }
+      }
+    },
+    "%@ frames": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ 帧"
+          }
+        }
+      }
+    },
+    "Encoding frame %lld of %lld…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在编码第 %lld 帧，共 %lld 帧…"
+          }
+        }
+      }
+    },
+    "Animation export supports up to %@ frames, %lld megapixels across all exported frames, and 512 MiB of encoded data. Reduce the export size or frame count.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动画导出最多支持 %@ 帧、所有导出帧合计 %lld 百万像素，以及 512 MiB 的编码数据。请减小导出尺寸或减少帧数。"
+          }
+        }
+      }
+    },
+    "The selected animation timeline is missing or invalid.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选动画时间轴缺失或无效。"
+          }
+        }
+      }
+    },
+    "Play the animation preview.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "播放动画预览。"
+          }
+        }
+      }
+    },
+    "Pause the animation preview.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停动画预览。"
+          }
+        }
+      }
+    },
+    "Play animation preview": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "播放动画预览"
+          }
+        }
+      }
+    },
+    "Pause animation preview": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停动画预览"
+          }
+        }
+      }
+    },
+    "Enabled masks apply here, as on the canvas. Drag or scroll to move around; double-click switches between Fit and 100%.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已启用的蒙版在此同样生效，与画布一致。拖动或滚动可移动视图；双击在「适合窗口」与 100% 之间切换。"
+          }
+        }
+      }
+    },
+    "Other formats: TIFF, PDF and GIF, EXR to keep light brighter than white, and Channel Pack for game textures": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他格式：TIFF、PDF 和 GIF；EXR 可保留比白色更亮的光；通道包用于游戏贴图"
+          }
+        }
+      }
+    },
+    "Other formats: TIFF, PDF and GIF, and Channel Pack for game textures": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他格式：TIFF、PDF 和 GIF，以及用于游戏贴图的通道包"
+          }
+        }
+      }
+    },
+    "What fills the %@ channel: a layer or group read as grayscale, or solid black or white": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "填充 %@ 通道的内容：按灰度读取的图层或组，或纯黑、纯白"
+          }
+        }
+      }
+    },
+    "Play": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "播放"
+          }
+        }
+      }
+    },
+    "Pause": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "暂停"
+          }
+        }
+      }
+    },
+    "How long each frame shows": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每一帧显示多长时间"
+          }
+        }
+      }
+    },
+    "Duplicate Frame": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复制帧"
+          }
+        }
+      }
+    },
+    "Delete Frame": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除帧"
+          }
+        }
+      }
+    },
+    "Frame %lld": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "第 %lld 帧"
+          }
+        }
+      }
+    },
+    "%lld ms · %@ fps": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 毫秒 · %@ fps"
+          }
+        }
+      }
+    },
+    "Change GIF Delays": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更改 GIF 帧延迟"
+          }
+        }
+      }
+    },
+    "Duplicate GIF Frame": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复制 GIF 帧"
+          }
+        }
+      }
+    },
+    "Delete GIF Frame": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除 GIF 帧"
+          }
+        }
+      }
+    },
+    "Delete GIF Frames": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除 GIF 帧"
+          }
+        }
+      }
+    },
+    "Choose a JPEG, PNG, GIF, HEIC, HEIF, TIFF, WebP, PDF, Photoshop (PSD), or Photoshop Large Document (PSB) file.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请选择 JPEG、PNG、GIF、HEIC、HEIF、TIFF、WebP、PDF、Photoshop (PSD) 或 Photoshop 大文档 (PSB) 文件。"
+          }
+        }
+      }
+    },
+    "Some dropped items couldn’t be read. Drag JPEG, PNG, GIF, HEIC, HEIF, TIFF, WebP, PDF, or Photoshop (PSD) files from Finder.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "部分拖入的项目无法读取。请从访达拖入 JPEG、PNG、GIF、HEIC、HEIF、TIFF、WebP、PDF 或 Photoshop (PSD) 文件。"
+          }
+        }
+      }
+    },
+    "This animation has more than %@ frames, which exceeds the current timeline limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此动画的帧数超过 %@，已超出当前时间轴上限。"
+          }
+        }
+      }
+    },
+    "Couldn’t read GIF frame %lld: %@": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法读取 GIF 第 %lld 帧：%@"
+          }
+        }
+      }
+    },
+    "The copied GIFs exceed this project’s animation memory limit.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "复制的 GIF 超出了此项目的动画内存上限。"
+          }
+        }
+      }
+    },
+    "This project uses format version %lld. This app supports versions %lld–%lld, 27, and %lld.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此项目使用的格式版本为 %lld。本 App 支持版本 %lld–%lld、27 和 %lld。"
+          }
+        }
+      }
+    },
+    "Search layers by name": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按名称搜索图层"
+          }
+        }
+      }
+    },
+    "Close the search": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关闭搜索"
+          }
+        }
+      }
+    },
+    "Search layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索图层"
+          }
+        }
+      }
+    },
+    "Close search": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关闭搜索"
+          }
+        }
+      }
+    },
+    "Search Layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "搜索图层"
+          }
+        }
+      }
+    },
+    "Show only some kinds of layer": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "只显示某几类图层"
+          }
+        }
+      }
+    },
+    "Filter the layer list": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选图层列表"
+          }
+        }
+      }
+    },
+    "Images": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "图像"
+          }
+        }
+      }
+    },
+    "Shapes": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "形状"
+          }
+        }
+      }
+    },
+    "Folders": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件夹"
+          }
+        }
+      }
+    },
+    "Adjustments": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "调整"
+          }
+        }
+      }
+    },
+    "Filter to image layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选图像图层"
+          }
+        }
+      }
+    },
+    "Filter to shape layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选形状图层"
+          }
+        }
+      }
+    },
+    "Filter to text layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选文字图层"
+          }
+        }
+      }
+    },
+    "Filter to folder layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选文件夹图层"
+          }
+        }
+      }
+    },
+    "Filter to adjustment layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选调整图层"
+          }
+        }
+      }
+    },
+    "Filter to the selected layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "筛选选中的图层"
+          }
+        }
+      }
+    },
+    "No layers match the filter.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有图层符合筛选条件。"
+          }
+        }
+      }
+    },
+    "Clear All": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "全部清除"
+          }
+        }
+      }
+    },
+    "Create a canvas or import a file.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建画布或导入文件。"
+          }
+        }
+      }
+    },
+    "Import a file or add a blank layer.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导入文件或添加空白图层。"
+          }
+        }
+      }
+    },
+    "Animated GIF: select it to show its frames under the canvas": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "动画 GIF：选中后可在画布下方显示其帧"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
