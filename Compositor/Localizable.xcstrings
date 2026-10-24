@@ -14607,6 +14607,346 @@
           }
         }
       }
+    },
+    "Lens Effects": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "镜头效果"
+          }
+        }
+      }
+    },
+    "Effect": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "效果"
+          }
+        }
+      }
+    },
+    "Points": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点数"
+          }
+        }
+      }
+    },
+    "Length": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "长度"
+          }
+        }
+      }
+    },
+    "Copies": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "份数"
+          }
+        }
+      }
+    },
+    "Reach": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "延伸"
+          }
+        }
+      }
+    },
+    "Brightness": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "亮度"
+          }
+        }
+      }
+    },
+    "Ring": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "环边"
+          }
+        }
+      }
+    },
+    "Anamorphic Flare": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "变形镜头光晕"
+          }
+        }
+      }
+    },
+    "Starburst": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "星芒"
+          }
+        }
+      }
+    },
+    "Mist": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雾化"
+          }
+        }
+      }
+    },
+    "Prism": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "棱镜"
+          }
+        }
+      }
+    },
+    "Bokeh": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "散景"
+          }
+        }
+      }
+    },
+    "Round": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圆形"
+          }
+        }
+      }
+    },
+    "Hexagon": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "六边形"
+          }
+        }
+      }
+    },
+    "Oval": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "椭圆"
+          }
+        }
+      }
+    },
+    "Cat's Eye": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "猫眼"
+          }
+        }
+      }
+    },
+    "How far the streaks reach across the picture": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光条在画面中延伸多远"
+          }
+        }
+      }
+    },
+    "How bright a light has to be to flare": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线要多亮才会产生光晕"
+          }
+        }
+      }
+    },
+    "How far the lens's coatings turn each streak blue along its length; none keeps the light's own color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "镜头镀膜让每条光晕沿其长度变蓝的程度；为零时保留光线原本的颜色"
+          }
+        }
+      }
+    },
+    "How far the spikes reach": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "星芒尖角延伸多远"
+          }
+        }
+      }
+    },
+    "How bright a light has to be to sparkle": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线要多亮才会产生星芒"
+          }
+        }
+      }
+    },
+    "How many spikes each light has, as the lens's aperture blades make them": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "每个光源的尖角数量，由镜头光圈叶片决定"
+          }
+        }
+      }
+    },
+    "How much light scatters: a soft halo around bright areas, and gently lifted shadows": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线散射的程度：亮部周围形成柔和光晕，暗部被轻轻提亮"
+          }
+        }
+      }
+    },
+    "How far the light spreads": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线扩散多远"
+          }
+        }
+      }
+    },
+    "How many times the picture echoes, each fainter": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "画面重影的次数，每层更淡"
+          }
+        }
+      }
+    },
+    "How far apart the copies are": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "各重影之间的距离"
+          }
+        }
+      }
+    },
+    "Which way it's pushed, toward the edge the prism sits at": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重影朝哪个方向偏移，即棱镜所在的那一边"
+          }
+        }
+      }
+    },
+    "How far into the frame the copies show from that edge": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重影从该边缘向画面内延伸多远"
+          }
+        }
+      }
+    },
+    "How far out of focus: the size of each disc": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "失焦程度：每个光斑的大小"
+          }
+        }
+      }
+    },
+    "How brightly lights open into discs": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光源散开成光斑的亮度"
+          }
+        }
+      }
+    },
+    "Light gathered at each disc's rim, as some lenses draw it": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光斑边缘聚集的光，某些镜头的成像特征"
+          }
+        }
+      }
+    },
+    "The aperture's shape: round wide open, a hexagon of blades, an anamorphic oval, or a cat's eye toward the edges": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光圈形状：全开时为圆形，收小后呈叶片构成的六边形，变形镜头为椭圆，画面边缘为猫眼形"
+          }
+        }
+      }
+    },
+    "%@ · Original": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@ · 原始"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
