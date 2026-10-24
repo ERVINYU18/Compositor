@@ -93,5 +93,5 @@ localisation cannot break it.
 ## Tests
 
 One new test file (`LensEffectsTests`, 138 lines) and 55 more lines in
-`GIFPreviewPlaybackTests`. The baseline has to be re-measured this round (1.5.6 was
-707 passing).
+`GIFPreviewPlaybackTests`. Measured after the merge: **720 passing, 0 failing**
+(1.5.6 was 707, so upstream added 13 cases).
