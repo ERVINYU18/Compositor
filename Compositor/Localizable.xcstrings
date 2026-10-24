@@ -14378,16 +14378,6 @@
         }
       }
     },
-    "This project uses format version %lld. This app supports versions %lld–%lld, 27, and %lld.": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "此项目使用的格式版本为 %lld。本 App 支持版本 %lld–%lld、27 和 %lld。"
-          }
-        }
-      }
-    },
     "Search layers by name": {
       "localizations": {
         "zh-Hans": {
@@ -14658,16 +14648,6 @@
         }
       }
     },
-    "Reach": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "延伸"
-          }
-        }
-      }
-    },
     "Brightness": {
       "localizations": {
         "zh-Hans": {
@@ -14878,26 +14858,6 @@
         }
       }
     },
-    "Which way it's pushed, toward the edge the prism sits at": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重影朝哪个方向偏移，即棱镜所在的那一边"
-          }
-        }
-      }
-    },
-    "How far into the frame the copies show from that edge": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "重影从该边缘向画面内延伸多远"
-          }
-        }
-      }
-    },
     "How far out of focus: the size of each disc": {
       "localizations": {
         "zh-Hans": {
@@ -14944,6 +14904,96 @@
           "stringUnit": {
             "state": "translated",
             "value": "%@ · 原始"
+          }
+        }
+      }
+    },
+    "Direction": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "方向"
+          }
+        }
+      }
+    },
+    "One Way": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "单向"
+          }
+        }
+      }
+    },
+    "Both Ways": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "双向"
+          }
+        }
+      }
+    },
+    "Which way the copies step": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重影偏移的方向"
+          }
+        }
+      }
+    },
+    "Soften the copies, more the farther they're pushed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "柔化重影，偏移越远越柔和"
+          }
+        }
+      }
+    },
+    "Copies to one side of the picture, or out to both": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重影只出现在画面一侧，或向两侧同时延伸"
+          }
+        }
+      }
+    },
+    "How bright a light has to be to flare; near 100, only the biggest, brightest spots": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线要多亮才会产生光晕；接近 100 时只保留最大最亮的光源"
+          }
+        }
+      }
+    },
+    "How bright a light has to be to sparkle; near 100, only the biggest, brightest spots": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线要多亮才会产生星芒；接近 100 时只保留最大最亮的光源"
+          }
+        }
+      }
+    },
+    "This project uses format version %lld. This app supports versions 1–%lld and 27.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此项目使用的格式版本为 %lld。本 App 支持版本 1–%lld 和 27。"
           }
         }
       }

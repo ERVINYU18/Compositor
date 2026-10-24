@@ -18,10 +18,10 @@ extension UTType {
 nonisolated struct ProjectManifest: Codable, Sendable {
     /// The format version new saves write.
     static let current = 17
-    /// Every version `load` accepts. The package-header check, the manifest check and the error
-    /// message all read this, so they cannot drift apart when `current` is bumped.
-    static let upstreamVersions = 1...14
-    static let supported = Set(upstreamVersions).union([27, current])
+    /// Every version `load` accepts: each one a release has written (1 through `current`), and 27 from the
+    /// GIF branch's own builds. Leaving out 15 and 16 once locked out projects saved by 1.5.4 and 1.5.5.
+    /// The package-header and manifest checks both read this, so they can't drift apart when `current` is bumped.
+    static let supported = Set(1...current).union([27])
 
     var format = "com.compositor.project"
     var version = ProjectManifest.current
@@ -148,10 +148,8 @@ nonisolated enum ProjectError: LocalizedError {
             localizedString("This is not a valid Compositor project, or its metadata is damaged.")
         case .version(let version):
             String(
-                format: localizedString("This project uses format version %lld. This app supports versions %lld–%lld, 27, and %lld."),
+                format: localizedString("This project uses format version %lld. This app supports versions 1–%lld and 27."),
                 Int64(version),
-                Int64(ProjectManifest.upstreamVersions.lowerBound),
-                Int64(ProjectManifest.upstreamVersions.upperBound),
                 Int64(ProjectManifest.current)
             )
         case .missingImage:
