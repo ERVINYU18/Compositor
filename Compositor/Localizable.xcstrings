@@ -14997,6 +14997,16 @@
           }
         }
       }
+    },
+    "RGB Split": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "RGB 分离"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
