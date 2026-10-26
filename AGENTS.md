@@ -116,10 +116,9 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 6. Debug + Release 构建；Release 启动冒烟测试；完整测试 0 失败。
 7. 测试版人工验收（重点：新增菜单/提示/无障碍文本/条件状态，Camera RAW、PSD/PSB、导入导出）。
 8. 通过可回滚流程替换正式版，核对版本 / build / Bundle ID / 签名 / 启动。
-9. 提交、打 `vX.Y.Z-cn` 标签（标签语义 = 该周期最终状态，不是合并点），建立离机归档（git bundle + 含 .git 的 tar.gz），推送分支与发布标签。**推送必须显式指定 Clash 代理**，否则 git 走直连（本机 `github.com` 直连不通，会 75 秒超时；沙箱注入的代理会 502）：
+9. 提交、打 `vX.Y.Z-cn` 标签（标签语义 = 该周期最终状态，不是合并点），建立离机归档（git bundle + 含 .git 的 tar.gz），推送分支与发布标签。**推送必须显式指定 Clash 代理**，否则 git 走直连（本机 `github.com` 直连不通，会 75 秒超时；沙箱注入的代理会 502）。**写成单行，别用 `\` 续行** —— 复制粘贴时 `\` 后容易带空格，zsh 会报 `parse error near '\n'`：
    ```bash
-   env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy \
-     git -c http.proxy=http://127.0.0.1:7897 push origin <分支或标签>
+   env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy git -c http.proxy=http://127.0.0.1:7897 push origin <分支或标签>
    ```
 10. **清理本轮产生的中间文件**（见「文件生命周期」的清理清单）。
 11. **更新文档**（见「文档维护」）：测试基线、`docs/Compositor-CN-vX.Y.Z-conflict-resolution.md`、工作区日志。
