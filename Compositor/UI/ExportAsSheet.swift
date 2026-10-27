@@ -198,7 +198,7 @@ struct ExportAsSheet: View {
                 if format == .channelPack {
                     ForEach(Array(ChannelPack.Channel.allCases.enumerated()), id: \.offset) { index, channel in
                         GridRow {
-                            Text(channel.rawValue)
+                            Text(verbatim: channel.localizedName)
                             channelPicker(index, channel: channel)
                         }
                     }
@@ -416,7 +416,7 @@ struct ExportAsSheet: View {
     /// A channel's source: one of the document's layers or groups, top first, or solid black or white.
     private func channelPicker(_ index: Int, channel: ChannelPack.Channel) -> some View {
         let layers = snapshot?.manifest.layers ?? []
-        return Picker(channel.rawValue, selection: $channels[index]) {
+        return Picker(channel.localizedName, selection: $channels[index]) {
             Text("Black").tag(ChannelPack.Source.black)
             Text("White").tag(ChannelPack.Source.white)
             Divider()

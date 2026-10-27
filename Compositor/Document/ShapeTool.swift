@@ -87,6 +87,10 @@ nonisolated enum ShapeLineCap: String, CaseIterable, Codable, Sendable {
     case round = "Round"
     var cgLineCap: CGLineCap { self == .round ? .round : .square }
 
+    /// Keys of its own rather than the raw values: the catalog's "Square" and "Round" are shapes (正方形 / 圆形),
+    /// which read wrong for how a line's ends are finished.
+    var localizedName: String { self == .round ? localizedString("Round Cap") : localizedString("Square Cap") }
+
     /// How far past its two points a line of `width` reaches along each axis. A round cap reaches half the width
     /// every way; a square one's corners reach further when the line runs at an angle. The extra is in whole pixels,
     /// so the layer's pixels hold all of the corners and the line sits on the pixel grid as a round-capped one does:

@@ -15007,6 +15007,316 @@
           }
         }
       }
+    },
+    "Align": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "对齐"
+          }
+        }
+      }
+    },
+    "Distribute": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "分布"
+          }
+        }
+      }
+    },
+    "Align Left Edges": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "左边缘对齐"
+          }
+        }
+      }
+    },
+    "Align Horizontal Centers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水平居中对齐"
+          }
+        }
+      }
+    },
+    "Align Right Edges": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "右边缘对齐"
+          }
+        }
+      }
+    },
+    "Align Top Edges": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "上边缘对齐"
+          }
+        }
+      }
+    },
+    "Align Vertical Centers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "垂直居中对齐"
+          }
+        }
+      }
+    },
+    "Align Bottom Edges": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下边缘对齐"
+          }
+        }
+      }
+    },
+    "Distribute Horizontal Centers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水平居中分布"
+          }
+        }
+      }
+    },
+    "Distribute Vertical Centers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "垂直居中分布"
+          }
+        }
+      }
+    },
+    "Distribute Horizontal Spacing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "水平间隔分布"
+          }
+        }
+      }
+    },
+    "Distribute Vertical Spacing": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "垂直间隔分布"
+          }
+        }
+      }
+    },
+    "%@ (three or more layers)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%@（三个或更多图层）"
+          }
+        }
+      }
+    },
+    "Line layers up with each other, the selection, or the canvas when one is selected": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "让图层彼此对齐，或与选区对齐；只选中一个图层时与画布对齐"
+          }
+        }
+      }
+    },
+    "Custom…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自定义…"
+          }
+        }
+      }
+    },
+    "Custom ratio": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "自定义比例"
+          }
+        }
+      }
+    },
+    "Width:Height": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "宽度:高度"
+          }
+        }
+      }
+    },
+    "Width:height, such as 4:5 or 3:2": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "宽:高，例如 4:5 或 3:2"
+          }
+        }
+      }
+    },
+    "Enter a positive ratio within the document size limits.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "请输入文档尺寸范围内的正数比例。"
+          }
+        }
+      }
+    },
+    "Sharpen": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "锐化"
+          }
+        }
+      }
+    },
+    "How strongly edges and fine detail are brought out": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "边缘与细节被强化的程度"
+          }
+        }
+      }
+    },
+    "How fine the detail it sharpens: small for crisp texture, larger for a punchier look": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "锐化的细节有多细：数值小则纹理锐利，数值大则观感更有冲击力"
+          }
+        }
+      }
+    },
+    "Fringe": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "色散"
+          }
+        }
+      }
+    },
+    "Split each copy's red and blue apart, as glass does; 0 keeps the copies crisp": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "像玻璃那样把每个副本的红蓝分开；0 则保持副本清晰"
+          }
+        }
+      }
+    },
+    "Solid": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "实线"
+          }
+        }
+      }
+    },
+    "Dotted": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "点线"
+          }
+        }
+      }
+    },
+    "Dashed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "虚线"
+          }
+        }
+      }
+    },
+    "Long Dash": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "长虚线"
+          }
+        }
+      }
+    },
+    "Round Cap": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "圆头"
+          }
+        }
+      }
+    },
+    "Square Cap": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "方头"
+          }
+        }
+      }
+    },
+    "Alpha": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "透明度"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

@@ -33,7 +33,7 @@ struct ShapeControls: View {
                     TextField("Width", value: Binding(get: { session.shapeLineWidth },
                                                       set: { session.shapeLineWidth = $0.isFinite ? min(5000, max(1, $0)) : 4 }),
                               format: .number.precision(.fractionLength(0)))
-                        .frame(width: 48).textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing)
+                        .frame(width: 48).textFieldStyle(.roundedBorder)
                         .arrowSteps(value: { session.shapeLineWidth },
                                     change: { session.shapeLineWidth = min(5000, max(1, $0)) })
                         .unitSuffix("px")
@@ -42,7 +42,7 @@ struct ShapeControls: View {
                     Text("Style")
                     Picker("Style", selection: $session.shapeLineStyle) {
                         ForEach(ShapeLineStyle.allCases, id: \.self) { style in
-                            Image(nsImage: LineSample.style(style)).accessibilityLabel(style.rawValue).tag(style)
+                            Image(nsImage: LineSample.style(style)).accessibilityLabel(style.localizedName).tag(style)
                         }
                     }
                     .pickerStyle(.menu).labelsHidden().fixedSize()
@@ -52,7 +52,7 @@ struct ShapeControls: View {
                     Text("Cap")
                     Picker("Cap", selection: $session.shapeLineCap) {
                         ForEach(ShapeLineCap.allCases, id: \.self) { cap in
-                            Label { Text(cap.rawValue) } icon: { Image(nsImage: LineSample.cap(cap)) }.tag(cap)
+                            Label { Text(verbatim: cap.localizedName) } icon: { Image(nsImage: LineSample.cap(cap)) }.tag(cap)
                         }
                     }
                     .pickerStyle(.menu).labelsHidden().fixedSize()
@@ -68,7 +68,7 @@ struct ShapeControls: View {
                     TextField("Radius", value: Binding(get: { session.shapeCornerRadius },
                                                        set: { session.shapeCornerRadius = $0.isFinite ? min(5000, max(0, $0)) : 0 }),
                               format: .number.precision(.fractionLength(0)))
-                        .frame(width: 48).textFieldStyle(.roundedBorder).multilineTextAlignment(.trailing)
+                        .frame(width: 48).textFieldStyle(.roundedBorder)
                         .arrowSteps(value: { Double(session.shapeCornerRadius) },
                                     change: { session.shapeCornerRadius = min(5000, max(0, CGFloat($0))) })
                         .unitSuffix("px")
