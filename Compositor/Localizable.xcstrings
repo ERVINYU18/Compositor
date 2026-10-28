@@ -8850,26 +8850,6 @@
         }
       }
     },
-    "Color Picker (Dither Light Color)": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "拾色器（抖动亮色）"
-          }
-        }
-      }
-    },
-    "Color Picker (Dither Dark Color)": {
-      "localizations": {
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "拾色器（抖动暗色）"
-          }
-        }
-      }
-    },
     "Dither Light": {
       "localizations": {
         "zh-Hans": {
@@ -15314,6 +15294,156 @@
           "stringUnit": {
             "state": "translated",
             "value": "透明度"
+          }
+        }
+      }
+    },
+    "Rim Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "轮廓光"
+          }
+        }
+      }
+    },
+    "Choke": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "收缩"
+          }
+        }
+      }
+    },
+    "Light %lld": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光源 %lld"
+          }
+        }
+      }
+    },
+    "Add Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "添加光源"
+          }
+        }
+      }
+    },
+    "Choose this light's color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择此光源的颜色"
+          }
+        }
+      }
+    },
+    "Remove this light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "移除此光源"
+          }
+        }
+      }
+    },
+    "How far the light wraps around the subject's edges": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线环绕主体边缘的范围"
+          }
+        }
+      }
+    },
+    "How the light ends on the inside: low feathers it off softly from the edge, high holds it bright and ends it crisply": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线在主体内侧的收尾方式：数值低时从边缘柔和淡出，数值高时保持明亮并干脆收住"
+          }
+        }
+      }
+    },
+    "Let the lights glow in the air around the subject, blending them into the background": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "让光线在主体周围的空气中发光，与背景融为一体"
+          }
+        }
+      }
+    },
+    "Light the subject from another side as well": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "再从另一侧为对象打光"
+          }
+        }
+      }
+    },
+    "Where the light comes from, behind the subject: 0° from the right, 90° from above": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光线来自主体后方的哪个方向：0° 在右侧，90° 在上方"
+          }
+        }
+      }
+    },
+    "Finding the subject…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在查找主体…"
+          }
+        }
+      }
+    },
+    "Color Picker (Light %lld)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色器（光源 %lld）"
+          }
+        }
+      }
+    },
+    "Color Picker (Light Color)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色器（亮色）"
+          }
+        }
+      }
+    },
+    "Color Picker (Dark Color)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拾色器（暗色）"
           }
         }
       }
