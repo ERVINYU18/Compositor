@@ -16,7 +16,7 @@
 | 目标语言 | zh-Hans（简体中文） |
 | 交付形态 | 独立 .app，ad-hoc 签名，独立更新器 |
 | 上游 | github.com/robbietilton/Compositor |
-| 当前基线版本 | 1.4.1（build 36） |
+| 当前基线版本 | 1.5.12（build 58）—— 每轮适配后更新 |
 
 ## 1 背景与目标
 
@@ -142,7 +142,9 @@ Compositor-CN Updater 会拒绝脏工作区。合并提交后工作区干净，�
 
 ### 8.3 备份与远端
 
-`adapt-compositor-1.4.1` 无远端跟踪，origin 上不存在该分支，本地比 origin/main 多 41 个提交；以 iCloud 离机归档作为防灾手段（bundle 不含 `.git/config`，须与 tar.gz 配套）。
+`adapt-compositor-1.4.1` 已推送到 `origin`（`ERVINYU18/Compositor`），分支与每个 `vX.Y.Z-cn` 标签都在远端。推送必须显式走 Clash 代理（`127.0.0.1:7897`），直连 `github.com` 不通，见 `AGENTS.md` 第 9 步。
+
+本地防灾仍以离机归档为准：`git bundle` 不含 `.git/config`，须与含 `.git` 的 `tar.gz` 配套使用。只保留最新一份归档 + 两级安装回滚点，删旧归档前必须校验引用覆盖。
 
 ### 8.4 测试环境
 
