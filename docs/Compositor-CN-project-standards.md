@@ -30,7 +30,7 @@
 
 ### 0.4 适用范围
 
-适用于 `~/Desktop/Compositor-CN` 仓库内的一切改动，以及工作区 `~/Desktop/AI/DSH/Compositor CN` 内的文档、脚本、证据留档。
+适用于 `~/Desktop/AI/DSH/Compositor CN/Compositor-CN` 仓库内的一切改动，以及工作区 `~/Desktop/AI/DSH/Compositor CN` 内的文档、脚本、证据留档。
 
 ---
 
@@ -293,7 +293,7 @@ ENABLE_HARDENED_RUNTIME = NO
 
 ### 6.4 安装与回滚
 
-1. 备份当前 `/Applications/Compositor-CN.app` 到 `~/Desktop/.Compositor-CN-Backups/pre-<新版本>-install-<时间戳>/`，并核对备份里的版本号。
+1. 备份当前 `/Applications/Compositor-CN.app` 到 `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/pre-<新版本>-install-<时间戳>/`，并核对备份里的版本号。
 2. 替换正式版，核对版本 / build / Bundle ID / 签名。
 3. 装机版再冒烟一次。
 4. **保留两级**安装回滚点，更早的清掉。
@@ -349,10 +349,10 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy git -c http.proxy=
 
 | 类别 | 位置 | 说明 |
 | --- | --- | --- |
-| 代码仓库 | `~/Desktop/Compositor-CN` | 唯一可构建、可提交的地方 |
-| 备份与归档 | `~/Desktop/.Compositor-CN-Backups/` | 唯一主目录 |
+| 代码仓库 | `~/Desktop/AI/DSH/Compositor CN/Compositor-CN` | 唯一可构建、可提交的地方 |
+| 备份与归档 | `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/` | 唯一主目录 |
 | 离机归档 | `~/Library/Mobile Documents/com~apple~CloudDocs/Compositor-CN-Backups/` | 与主目录一致 |
-| 更新器历史版本 | `~/Desktop/.Compositor-CN-Backups/Updater-历史版本/` | 只存档，不安装 |
+| 更新器历史版本 | `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/Updater-历史版本/` | 只存档，不安装 |
 | 工作区 | `~/Desktop/AI/DSH/Compositor CN/` | 文档、审计脚本、证据；**不是 git 仓库** |
 | 构建中间产物 | Xcode DerivedData、工作区 `build-logs/` | 用完即清 |
 

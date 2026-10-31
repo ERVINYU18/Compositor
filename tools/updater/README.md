@@ -47,7 +47,7 @@ bash "tools/updater/test-handoff-refuses-conflict.sh"
 
 ## 改更新器的流程
 
-1. 先备份到 `~/Desktop/.Compositor-CN-Backups/Updater-历史版本/`
+1. 先备份到 `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/Updater-历史版本/`
 2. 改 `Contents/Resources/update.command` 或 `UpdaterCore.sh`
 3. `bash -n` 语法检查两个文件
 4. 跑这两个演练

@@ -157,10 +157,10 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 
 | 类别 | 位置 | 说明 |
 |---|---|---|
-| 代码仓库 | `~/Desktop/Compositor-CN` | 唯一可构建、可提交的地方 |
-| 备份与归档 | `~/Desktop/.Compositor-CN-Backups/` | **唯一主目录**；iCloud 同名目录是它的镜像 |
+| 代码仓库 | `~/Desktop/AI/DSH/Compositor CN/Compositor-CN` | 唯一可构建、可提交的地方 |
+| 备份与归档 | `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/` | **唯一主目录**；iCloud 同名目录是它的镜像 |
 | 离机归档 | `~/Library/Mobile Documents/com~apple~CloudDocs/Compositor-CN-Backups/` | 与主目录保持一致 |
-| 更新器历史版本 | `~/Desktop/.Compositor-CN-Backups/Updater-历史版本/` | 只存档，不安装 |
+| 更新器历史版本 | `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/Updater-历史版本/` | 只存档，不安装 |
 | 工作区（留档与证据） | `~/Desktop/AI/DSH/Compositor CN/` | 交接文档、核查证据、历史留档；**不是 git 仓库** |
 | 本地化与更新器脚本 | 仓库内 `tools/localization/`、`tools/updater/` | 随仓库走，换机器不用重建 |
 | 构建中间产物 | Xcode DerivedData、工作区 `build-logs/` | 用完即清 |

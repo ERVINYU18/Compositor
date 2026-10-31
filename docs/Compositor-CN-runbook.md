@@ -9,7 +9,7 @@
 ## 0 开工前自查（只读，不改任何东西）
 
 ```bash
-cd ~/Desktop/Compositor-CN
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN
 git status --short --branch
 git log -1 --format='%H %s'
 test -f .git/MERGE_HEAD && echo "⚠️ 有未完成的合并" || echo "无 MERGE_HEAD"
@@ -47,7 +47,7 @@ grep -m2 -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION" Compositor-<版本>/Comp
 建快照（**父提交必须是上一个快照**，这样祖先链不断）：
 
 ```bash
-cd ~/Desktop/Compositor-CN
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN
 export GIT_INDEX_FILE=/tmp/cn-merge-<版本>/snap.idx
 rm -f "$GIT_INDEX_FILE"
 git --work-tree=/tmp/cn-merge-<版本>/Compositor-<版本> add -A .
@@ -65,7 +65,7 @@ git log --oneline -2 compositor-upstream-snapshot
 ## 3 合并
 
 ```bash
-cd ~/Desktop/Compositor-CN
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN
 git branch backup-cn-<版本>-merge-$(git rev-parse --short HEAD)
 git merge --no-ff --no-commit <新快照sha>
 grep -rn -E "^(<<<<<<<|=======|>>>>>>>)" Compositor CompositorTests CompositorUITests Compositor.xcodeproj
@@ -105,7 +105,7 @@ git diff HEAD -- Compositor/UI/ | grep -E "^-.*localizedString" || echo "没被�
 脚本在仓库内 `tools/localization/`（随仓库走，换机器不用重建）：
 
 ```bash
-cd ~/Desktop/Compositor-CN/tools/localization
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN/tools/localization
 cp add_<上一版>_keys.py add_<版本>_keys.py    # 改 TRANSLATIONS / OBSOLETE / docstring
 python3 add_<版本>_keys.py
 python3 audit_strings.py
@@ -134,7 +134,7 @@ grep -rnE "\b(Text|Button|Picker|Menu|Label)\([a-zA-Z_$][a-zA-Z0-9_.$]*\)" Compo
 cat > /tmp/wb-run.sh <<'SH'
 #!/bin/zsh
 exec > /tmp/wb-run.log 2>&1
-cd ~/Desktop/Compositor-CN || exit 1
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN || exit 1
 echo "=== START $(date) ==="
 xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release \
   -destination 'platform=macOS,arch=arm64' build 2>&1 | tail -20
@@ -173,7 +173,7 @@ xcrun xcresulttool get test-results summary --path "$HOME/Desktop/AI/DSH/Composi
 ```bash
 # 备份当前正式版
 STAMP=$(date +%Y%m%d-%H%M%S)
-BK=~/Desktop/.Compositor-CN-Backups/pre-<版本>-install-$STAMP
+BK=~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/pre-<版本>-install-$STAMP
 mkdir -p "$BK"
 ditto "/Applications/Compositor-CN.app" "$BK/Compositor-CN-<旧版本>.app"
 /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" "$BK/Compositor-CN-<旧版本>.app/Contents/Info.plist"
@@ -197,7 +197,7 @@ PID=$(/usr/bin/lsappinfo info -only pid "com.wonderassembly.compositor.cn" | gre
 ## 8 标签、归档、推送
 
 ```bash
-cd ~/Desktop/Compositor-CN
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN
 git add -A && git commit -F - <<'MSG'
 docs: record the v<版本> merge and its <N>-test baseline
 MSG
@@ -216,7 +216,7 @@ git merge-base --is-ancestor <快照sha> HEAD && echo "快照是 HEAD 祖先 ✅
 
 ```bash
 STAMP=$(date +%Y%m%d-%H%M%S)
-DIR=~/Desktop/.Compositor-CN-Backups/post-<版本>-cn-$STAMP
+DIR=~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/post-<版本>-cn-$STAMP
 mkdir -p "$DIR"
 git bundle create "$DIR/Compositor-CN-all-refs-$STAMP.bundle" --all
 tar czf "$DIR/Compositor-CN-repo-full-$STAMP.tar.gz" --exclude=build-logs --exclude=derived-data --exclude=.DS_Store -C ~/Desktop Compositor-CN
@@ -290,12 +290,12 @@ rm -rf /tmp/cn-merge-<版本> ~/Library/Developer/Xcode/DerivedData/Compositor-*
 ### 改更新器的流程
 
 ```bash
-cp -R "/Applications/Compositor-CN Updater.app" ~/Desktop/.Compositor-CN-Backups/Updater-历史版本/Compositor-CN\ Updater-<旧版本>.app
+cp -R "/Applications/Compositor-CN Updater.app" ~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/Updater-历史版本/Compositor-CN\ Updater-<旧版本>.app
 # 改 Contents/Resources/update.command 或 UpdaterCore.sh
 bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/update.command"
 bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh"
 cd "/Users/yi/Desktop/AI/DSH/Compositor CN"
-cd ~/Desktop/Compositor-CN
+cd ~/Desktop/AI/DSH/Compositor CN/Compositor-CN
 bash "tools/updater/test-handoff-parks-merge.sh"        # 期望 REHEARSAL_OK
 bash "tools/updater/test-handoff-refuses-conflict.sh"   # 期望 REHEARSAL2_OK
 codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
@@ -329,9 +329,9 @@ codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
 
 | 对象 | 位置 | 缺了会怎样 |
 | --- | --- | --- |
-| 代码仓库 | `~/Desktop/Compositor-CN` | 没法干活（本地化与更新器脚本已在 `tools/`，随仓库走） |
+| 代码仓库 | `~/Desktop/AI/DSH/Compositor CN/Compositor-CN` | 没法干活（本地化与更新器脚本已在 `tools/`，随仓库走） |
 | 工作区 | `~/Desktop/AI/DSH/Compositor CN/` | 丢交接文档（当前状态、历史决策）、历史证据与项目记忆 |
-| 备份主目录 | `~/Desktop/.Compositor-CN-Backups/` | 丢归档与两级安装回滚点 |
+| 备份主目录 | `~/Desktop/AI/DSH/Compositor CN/.Compositor-CN-Backups/` | 丢归档与两级安装回滚点 |
 | iCloud 镜像 | `~/Library/Mobile Documents/com~apple~CloudDocs/Compositor-CN-Backups/` | 丢离机防灾 |
 | 更新器 App | `/Applications/Compositor-CN Updater.app` | 下一轮只能全程手工 |
 | 项目记忆 | 工作区 `.workbuddy-ai/memory/` | 丢「踩过什么坑」的来龙去脉 |
