@@ -88,7 +88,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 规则：
 
 - **`Text(String)` 不本地化**：`Text(某 String 变量)` 走的是 verbatim 初始化器，`Text("字面量")` 才查表。凡是拼好的 `String`（汇总行、进度行、`LocalizedError.errorDescription`——`localizedDescription` 原样返回它）都必须自己 `String(format: localizedString(...))`。
-- **`02-localization/audit_strings.py` 有三类盲区**，跑完它必须再补一轮扫描：① 枚举/变量承载的键（`Toggle(kind.titleKey)`、`LayerType.filterLabel`）；② 三元表达式（`isPlaying ? "Pause" : "Play"`）；③ AppKit setter（`field.placeholderString = "…"`）。判定「本地化完成」不能只看它的 0 缺口。
+- **`tools/localization/audit_strings.py` 有三类盲区**，跑完它必须再补一轮扫描：① 枚举/变量承载的键（`Toggle(kind.titleKey)`、`LayerType.filterLabel`）；② 三元表达式（`isPlaying ? "Pause" : "Play"`）；③ AppKit setter（`field.placeholderString = "…"`）。判定「本地化完成」不能只看它的 0 缺口。
 - **更新器的动态英文检测是可靠信号，别当成误报**：它扫出 `Text($0.rawValue)` 之类会把枚举 rawValue 直接上屏的写法，命中就整笔事务回滚（v1.5.7 就因此回滚）。清单在 `~/Library/Application Support/Compositor-CN-Updater/DynamicEnglish.txt`。修法照仓库惯例：`Text(verbatim: $0.localizedName)`，rawValue 保持英文只让目录供中文。
 - 字母 **T** 是文字工具标识，永远保持 `T`，禁止翻成「格式」或任何中文。
 - 字体菜单显示用 `NSFont.displayName`，内部加载/识别仍用 PostScript name。
@@ -120,7 +120,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - **判「已是最新」四要素**：已装 App 版本 == 官方最新 tag、`snapshot-tag` == 最新 tag、快照分支存在、**且是 HEAD 祖先**。手工合并完必须补查后两条，否则更新器会重跑整个合并。
 - **本地化门禁是 `handoff_for_localization` 不是回滚**：命中「新增动态英文」或「词条缺 zh-Hans」时提交到 `wip-cn-<版本>-needs-localization`、仓库回到干净状态、正式版不动、退出码 3。有未解决冲突时仍回滚，绝不提交冲突标记。
 - ⚠️ **已知缺陷：`CompositorApp.swift` 一冲突就必报 `APP_PATCH_FAILED`。** CN 补丁脚本对「被标为冲突」的该文件有一组「6 条中文规则已恢复」的校验，但校验跑在冲突解决**之前**，文件里还是 `<<<<<<<` → 替换全不匹配 → 6 条全命中 → 中止。**它连 `last-conflicts.txt` 都不写**，文件里留着上一轮的旧内容，别当本轮冲突。修法二选一：见 `<<<<<<<` 就跳过校验，或把校验挪到冲突解决之后。
-- **改更新器**：备份到 `Updater-历史版本/` → 改 `update.command` 或 `UpdaterCore.sh` → `bash -n` 两个文件 → 跑工作区 `05-updater/` 的两个演练（期望 `REHEARSAL_OK` / `REHEARSAL2_OK`）→ `codesign --force --deep --sign -` 重签 → 在「已是最新」状态跑一次短路冒烟。命令见运行手册第 10 节。
+- **改更新器**：备份到 `Updater-历史版本/` → 改 `update.command` 或 `UpdaterCore.sh` → `bash -n` 两个文件 → 跑 `tools/updater/` 的两个演练（期望 `REHEARSAL_OK` / `REHEARSAL2_OK`）→ `codesign --force --deep --sign -` 重签 → 在「已是最新」状态跑一次短路冒烟。命令见运行手册第 10 节。
 - ⚠️ **V2.3 Dev 不要装**：是另一个工具（`--rehearse` 默认、`/private/tmp` 隔离、遇内容冲突直接 fail、从不安装、目标硬编码 v1.4.7、**无 CN 补丁**），装上去功能倒退。
 
 ## 禁止事项
@@ -161,7 +161,8 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 | 备份与归档 | `~/Desktop/.Compositor-CN-Backups/` | **唯一主目录**；iCloud 同名目录是它的镜像 |
 | 离机归档 | `~/Library/Mobile Documents/com~apple~CloudDocs/Compositor-CN-Backups/` | 与主目录保持一致 |
 | 更新器历史版本 | `~/Desktop/.Compositor-CN-Backups/Updater-历史版本/` | 只存档，不安装 |
-| 工作区（留档与证据） | `~/Desktop/AI/DSH/Compositor CN/` | 文档、审计脚本、核查证据；**不是 git 仓库** |
+| 工作区（留档与证据） | `~/Desktop/AI/DSH/Compositor CN/` | 交接文档、核查证据、历史留档；**不是 git 仓库** |
+| 本地化与更新器脚本 | 仓库内 `tools/localization/`、`tools/updater/` | 随仓库走，换机器不用重建 |
 | 构建中间产物 | Xcode DerivedData、工作区 `build-logs/` | 用完即清 |
 
 ⚠️ `~/Documents/.Compositor-CN-Backups/` 已于 2026-10-12 废弃并删除，**不要再往那里放东西**。
@@ -203,7 +204,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 / 1.4.7 / 1.4.9 / 1.4.10 / 1.5.3 / 1.5.5 / 1.5.6 / 1.5.7 / 1.5.8 / 1.5.9 / 1.5.11 / 1.5.12；**每轮都要写，别再断**）；
   3. 工作区 `.workbuddy-ai/memory/` 的当日日志与 `MEMORY.md`。
 - `docs/Compositor-CN-runbook.md` 不按轮更新，但**命令变了就要改**（换了工具链、换了代理端口、更新器改了流程）。它是给下一个接手的人照抄的，写错了比没写更糟。
-- 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。**换 agent / 换机器时，工作区必须一并移交**，否则丢的是审计脚本、更新器演练和全部历史决策（见运行手册第 12 节）。
+- 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。**换 agent / 换机器时，工作区必须一并移交**，否则丢的是交接文档、历史决策与全部证据（脚本已在仓库 `tools/`，不受影响）。见运行手册第 12 节。
 
 ## 关键文件
 
@@ -216,3 +217,5 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - `Compositor.xcodeproj/project.pbxproj` —— 版本号 / Bundle ID / 签名配置
 - `docs/writing-comp-files.md`、`docs/project-format.md` —— 上游文件格式约定
 - `docs/Compositor-CN-runbook.md` —— 每轮的命令集（含更新器运维与故障处置）
+- `tools/localization/` —— 补词条与审计脚本（`audit_strings.py`、`add_<版本>_keys.py`）
+- `tools/updater/` —— 更新器回归演练（改更新器前后必跑）

@@ -102,11 +102,13 @@ git diff HEAD -- Compositor/UI/ | grep -E "^-.*localizedString" || echo "没被�
 
 ## 5 本地化
 
+脚本在仓库内 `tools/localization/`（随仓库走，换机器不用重建）：
+
 ```bash
-cd "/Users/yi/Desktop/AI/DSH/Compositor CN/02-localization"
+cd ~/Desktop/Compositor-CN/tools/localization
 cp add_<上一版>_keys.py add_<版本>_keys.py    # 改 TRANSLATIONS / OBSOLETE / docstring
-/Users/yi/.workbuddy-ai/binaries/python/versions/3.13.12/bin/python3 add_<版本>_keys.py
-/Users/yi/.workbuddy-ai/binaries/python/versions/3.13.12/bin/python3 audit_strings.py
+python3 add_<版本>_keys.py
+python3 audit_strings.py
 ```
 
 脚本自带三道保护：备份到 `backups/`、写入前验证「重新序列化 == 原字节」、拒绝在含冲突标记时运行。
@@ -293,8 +295,9 @@ cp -R "/Applications/Compositor-CN Updater.app" ~/Desktop/.Compositor-CN-Backups
 bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/update.command"
 bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh"
 cd "/Users/yi/Desktop/AI/DSH/Compositor CN"
-bash "05-updater/test-handoff-parks-merge.sh"        # 期望 REHEARSAL_OK
-bash "05-updater/test-handoff-refuses-conflict.sh"   # 期望 REHEARSAL2_OK
+cd ~/Desktop/Compositor-CN
+bash "tools/updater/test-handoff-parks-merge.sh"        # 期望 REHEARSAL_OK
+bash "tools/updater/test-handoff-refuses-conflict.sh"   # 期望 REHEARSAL2_OK
 codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
 ```
 
@@ -326,8 +329,8 @@ codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
 
 | 对象 | 位置 | 缺了会怎样 |
 | --- | --- | --- |
-| 代码仓库 | `~/Desktop/Compositor-CN` | 没法干活 |
-| 工作区 | `~/Desktop/AI/DSH/Compositor CN/` | 丢审计脚本、更新器演练、交接文档、历史证据 |
+| 代码仓库 | `~/Desktop/Compositor-CN` | 没法干活（本地化与更新器脚本已在 `tools/`，随仓库走） |
+| 工作区 | `~/Desktop/AI/DSH/Compositor CN/` | 丢交接文档（当前状态、历史决策）、历史证据与项目记忆 |
 | 备份主目录 | `~/Desktop/.Compositor-CN-Backups/` | 丢归档与两级安装回滚点 |
 | iCloud 镜像 | `~/Library/Mobile Documents/com~apple~CloudDocs/Compositor-CN-Backups/` | 丢离机防灾 |
 | 更新器 App | `/Applications/Compositor-CN Updater.app` | 下一轮只能全程手工 |

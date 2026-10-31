@@ -206,7 +206,7 @@ v1.5.11 snapshot <sha>).
 
 ### 4.6 新增词条流程
 
-1. 复制 `02-localization/add_<上一版>_keys.py` 为新版本脚本，改 `TRANSLATIONS`。
+1. 复制 `tools/localization/add_<上一版>_keys.py` 为新版本脚本，改 `TRANSLATIONS`。
 2. 脚本必须保留三道保护：备份到 `backups/`、**写入前验证「重新序列化 == 原字节」**（目录文件末尾无换行）、拒绝在含冲突标记时运行。
 3. 废弃键走 `OBSOLETE` + `still_referenced()` 双重检查：源码里还有引用就不删。
 4. 跑完**必须**再跑 `audit_strings.py`，并把「0 缺口」当起点而不是终点（见 4.7）。
