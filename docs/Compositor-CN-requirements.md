@@ -11,7 +11,7 @@
 
 | 项目 | 约定 |
 | --- | --- |
-| 源码仓库 | `/Users/yi/Desktop/AI/DSH/Compositor CN/Compositor-CN` |
+| 源码仓库 | `/Users/yi/Desktop/AI/AI Project/Compositor CN/Compositor-CN` |
 | Bundle ID | `com.wonderassembly.compositor.cn` |
 | 目标语言 | zh-Hans（简体中文） |
 | 交付形态 | 独立 .app，ad-hoc 签名，独立更新器 |
