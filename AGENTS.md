@@ -8,9 +8,10 @@ Compositor-CN 是 macOS 图像编辑器 [Compositor](https://github.com/robbieti
 
 - **需求文档** —— `docs/Compositor-CN-requirements.md`（仓库内；需求、本地化规范、验收标准）
 - **项目规范** —— `docs/Compositor-CN-project-standards.md`（分支/标签、提交、代码、本地化编码、测试、构建发布的工程标准与放行门禁）
+- **运行手册** —— `docs/Compositor-CN-runbook.md`（每轮要敲的命令：建快照、合并、补词条、借 Terminal 构建、装机、归档、推送、故障处置）
 - **本文件 AGENTS.md** —— 操作约定、禁止事项、每轮适配清单
 
-冲突时的优先级：**用户当次的明确指示 > 需求文档 > 本文件 > 项目规范**。
+冲突时的优先级：**用户当次的明确指示 > 需求文档 > 本文件 > 项目规范**。运行手册只给命令，不定义规则。
 
 ## 沟通与文件安全（硬性要求）
 
@@ -110,7 +111,17 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - 处理 `.comp` 项目文件：读 [docs/writing-comp-files.md](docs/writing-comp-files.md)。
 - 项目文件格式：见 [docs/project-format.md](docs/project-format.md)；改动存档格式须同步 bump 格式版本号。
 - 代码与注释用英文美式拼写（"color"）；**但 UI 字符串一律中文**（此条覆盖上游 AGENTS.md 的 "American spelling in UI"）。
-- CI 在 push 时跑 CompositorTests。
+- CI 在 push 时跑 CompositorTests。**push 后要确认真的触发了**（`gh api repos/ERVINYU18/Compositor/actions/runs?per_page=3`）—— Actions 被关过两次，`actions/permissions` 在关闭时也显示 `enabled: true`，靠它判断不出来。关闭期间推的提交需 `gh workflow run verify.yml -R ERVINYU18/Compositor --ref <分支或标签>` 手动补。
+
+## 更新器（Compositor-CN Updater）
+
+**位置与版本**：`/Applications/Compositor-CN Updater.app`，当前 **V2.2.1 / 221**。主逻辑在 `Contents/Resources/UpdaterCore.sh`，入口 `update.command`。
+
+- **判「已是最新」四要素**：已装 App 版本 == 官方最新 tag、`snapshot-tag` == 最新 tag、快照分支存在、**且是 HEAD 祖先**。手工合并完必须补查后两条，否则更新器会重跑整个合并。
+- **本地化门禁是 `handoff_for_localization` 不是回滚**：命中「新增动态英文」或「词条缺 zh-Hans」时提交到 `wip-cn-<版本>-needs-localization`、仓库回到干净状态、正式版不动、退出码 3。有未解决冲突时仍回滚，绝不提交冲突标记。
+- ⚠️ **已知缺陷：`CompositorApp.swift` 一冲突就必报 `APP_PATCH_FAILED`。** CN 补丁脚本对「被标为冲突」的该文件有一组「6 条中文规则已恢复」的校验，但校验跑在冲突解决**之前**，文件里还是 `<<<<<<<` → 替换全不匹配 → 6 条全命中 → 中止。**它连 `last-conflicts.txt` 都不写**，文件里留着上一轮的旧内容，别当本轮冲突。修法二选一：见 `<<<<<<<` 就跳过校验，或把校验挪到冲突解决之后。
+- **改更新器**：备份到 `Updater-历史版本/` → 改 `update.command` 或 `UpdaterCore.sh` → `bash -n` 两个文件 → 跑工作区 `05-updater/` 的两个演练（期望 `REHEARSAL_OK` / `REHEARSAL2_OK`）→ `codesign --force --deep --sign -` 重签 → 在「已是最新」状态跑一次短路冒烟。命令见运行手册第 10 节。
+- ⚠️ **V2.3 Dev 不要装**：是另一个工具（`--rehearse` 默认、`/private/tmp` 隔离、遇内容冲突直接 fail、从不安装、目标硬编码 v1.4.7、**无 CN 补丁**），装上去功能倒退。
 
 ## 禁止事项
 
@@ -191,7 +202,8 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   1. 本文件的测试通过数基线；
   2. `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` —— 记录该轮每个冲突的取舍（已有 1.2.9 / 1.3.3 / 1.3.7 / 1.4.7 / 1.4.9 / 1.4.10 / 1.5.3 / 1.5.5 / 1.5.6 / 1.5.7 / 1.5.8 / 1.5.9 / 1.5.11 / 1.5.12；**每轮都要写，别再断**）；
   3. 工作区 `.workbuddy-ai/memory/` 的当日日志与 `MEMORY.md`。
-- 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。
+- `docs/Compositor-CN-runbook.md` 不按轮更新，但**命令变了就要改**（换了工具链、换了代理端口、更新器改了流程）。它是给下一个接手的人照抄的，写错了比没写更糟。
+- 一次性的核查报告、交接文档留在工作区，不进仓库；结论过时要在文件里标注日期与「已过时」，不要默默留着误导后续。**换 agent / 换机器时，工作区必须一并移交**，否则丢的是审计脚本、更新器演练和全部历史决策（见运行手册第 12 节）。
 
 ## 关键文件
 
@@ -203,3 +215,4 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - `Compositor/UI/KeyboardShortcuts.swift` —— 快捷键编辑器（显示层本地化）
 - `Compositor.xcodeproj/project.pbxproj` —— 版本号 / Bundle ID / 签名配置
 - `docs/writing-comp-files.md`、`docs/project-format.md` —— 上游文件格式约定
+- `docs/Compositor-CN-runbook.md` —— 每轮的命令集（含更新器运维与故障处置）
