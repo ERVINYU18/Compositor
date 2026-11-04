@@ -15447,6 +15447,446 @@
           }
         }
       }
+    },
+    "Reduce Noise": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "降噪"
+          }
+        }
+      }
+    },
+    "Volumetric Light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "体积光"
+          }
+        }
+      }
+    },
+    "Preserve Details": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留细节"
+          }
+        }
+      }
+    },
+    "Color Noise": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "彩色噪点"
+          }
+        }
+      }
+    },
+    "How much grain is smoothed from the picture's brightness": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "按画面亮度平滑多少颗粒"
+          }
+        }
+      }
+    },
+    "How much fine texture and edges are kept while the grain is smoothed": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑颗粒时保留多少细纹理与边缘"
+          }
+        }
+      }
+    },
+    "How much colored speckle is smoothed into the colors around it": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "把多少彩色斑点平滑到周围的颜色中"
+          }
+        }
+      }
+    },
+    "Haze": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雾气"
+          }
+        }
+      }
+    },
+    "Depth Contrast": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "深度对比"
+          }
+        }
+      }
+    },
+    "Intensity": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "强度"
+          }
+        }
+      }
+    },
+    "Shafts": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光束"
+          }
+        }
+      }
+    },
+    "Keep Subject Clear": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保持主体清晰"
+          }
+        }
+      }
+    },
+    "Click or drag on the canvas to move the light": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在画布上单击或拖动以移动灯光"
+          }
+        }
+      }
+    },
+    "Choose the light's color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择灯光的颜色"
+          }
+        }
+      }
+    },
+    "Getting depth…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在获取深度…"
+          }
+        }
+      }
+    },
+    "Extract Depth": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "提取深度"
+          }
+        }
+      }
+    },
+    "Close the filter and add the depth the haze goes by as a new layer: white is near, black is far": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关闭滤镜，并将雾气所依据的深度作为新图层添加：白色表示近，黑色表示远"
+          }
+        }
+      }
+    },
+    "How thick the air is: haze lit by the light, thinner in front of the subject": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "空气的浓稠程度：被灯光照亮的雾气更浓，主体前方更薄"
+          }
+        }
+      }
+    },
+    "How far into the scene the haze begins: low reaches up to the camera, high leaves all but the farthest parts clear": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "雾气从场景多远处开始：数值低时一直延伸到相机前，数值高时只保留最远处的部分"
+          }
+        }
+      }
+    },
+    "Spread out depths bunched together, such as a distant city, so the haze builds through them in steps; 0 keeps the depth as the model sees it": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "把挤在一起的深度（例如远处的城市）拉开，让雾气分层累积；0 表示保持模型看到的原始深度"
+          }
+        }
+      }
+    },
+    "How big the light is": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "灯光的大小"
+          }
+        }
+      }
+    },
+    "How bright the beams are": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光束的亮度"
+          }
+        }
+      }
+    },
+    "How far from the light the beams reach": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光束从灯光向外延伸的距离"
+          }
+        }
+      }
+    },
+    "How much the beams break up into separate shafts": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "光束分散成独立光柱的程度"
+          }
+        }
+      }
+    },
+    "Keep the subject clear of the haze; off, it's hazed by its own distance, so a figure far off is misted": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "让主体不受雾气影响；关闭后主体会按自身距离被雾化，远处的人物会显得朦胧"
+          }
+        }
+      }
+    },
+    "Show Extras": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示附加内容"
+          }
+        }
+      }
+    },
+    "Distances": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "距离"
+          }
+        }
+      }
+    },
+    "Selection %lld × %lld px": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选区 %1$lld × %2$lld 像素"
+          }
+        }
+      }
+    },
+    "New filter layer": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "新建滤镜图层"
+          }
+        }
+      }
+    },
+    "Show Layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "显示图层"
+          }
+        }
+      }
+    },
+    "Hide Layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "隐藏图层"
+          }
+        }
+      }
+    },
+    "Export Layer as PNG": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出图层为 PNG"
+          }
+        }
+      }
+    },
+    "Export %lld Layers as PNGs": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出 %lld 个图层为 PNG"
+          }
+        }
+      }
+    },
+    "Choose a folder for the layers’ PNGs.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "选择用于存放图层 PNG 的文件夹。"
+          }
+        }
+      }
+    },
+    "Export": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出"
+          }
+        }
+      }
+    },
+    "Replace": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "替换"
+          }
+        }
+      }
+    },
+    "“%@” already exists. Replace it?": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@”已存在。要替换吗？"
+          }
+        }
+      }
+    },
+    "%lld of these files already exist in “%@”. Replace them?": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其中 %lld 个文件已存在于“%@”中。要替换它们吗？"
+          }
+        }
+      }
+    },
+    "“%@” has nothing to export": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "“%@”没有可导出的内容"
+          }
+        }
+      }
+    },
+    "%lld layers have nothing to export": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "有 %lld 个图层没有可导出的内容"
+          }
+        }
+      }
+    },
+    "A layer with no visible pixels, such as an adjustment layer, isn’t saved as a PNG.": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "没有可见像素的图层（例如调整图层）不会保存为 PNG。"
+          }
+        }
+      }
+    },
+    "Couldn’t export layers": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "无法导出图层"
+          }
+        }
+      }
+    },
+    "Export Layer as PNG…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出图层为 PNG…"
+          }
+        }
+      }
+    },
+    "Export Layers as PNGs…": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "导出多个图层为 PNG…"
+          }
+        }
+      }
     }
   },
   "version": "1.0"
