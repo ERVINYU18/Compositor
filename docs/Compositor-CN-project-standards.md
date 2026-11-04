@@ -330,7 +330,7 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy git -c http.proxy=
 | 需求文档 | `docs/Compositor-CN-requirements.md` | 无 |
 | 本规范 | `docs/Compositor-CN-project-standards.md` | 无 |
 | 每轮冲突记录 | `docs/Compositor-CN-vX.Y.Z-conflict-resolution.md` | 无 |
-| 交接文档 | 工作区 `Compositor-CN-项目交接文档-2026-10-16.md` | 无（文件名日期不代表内容版本） |
+| 交接文档 | 工作区 `Compositor-CN-项目交接文档-2026-10-31.md` | 无（文件名日期不代表内容版本） |
 
 ### 8.2 每轮必更新
 
