@@ -254,7 +254,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Debug
 
 - 每轮**必须**重取通过数，**禁止**沿用上一轮。取数用：
   `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准（device 级数字偏大）。
-- 已知基线：1.4.7=539、1.4.9=569、1.4.10=577、1.5.3=654、1.5.5=687、1.5.6=707、1.5.7=720、1.5.8=723、1.5.9=734、1.5.11=745、1.5.12=752。
+- 已知基线：1.4.7=539、1.4.9=569、1.4.10=577、1.5.3=654、1.5.5=687、1.5.6=707、1.5.7=720、1.5.8=723、1.5.9=734、1.5.11=745、1.5.12=752、1.6.3=794。
 - 新增测试后**必须**同步更新 `AGENTS.md` 的基线行。
 
 ### 5.5 稳定性约束
