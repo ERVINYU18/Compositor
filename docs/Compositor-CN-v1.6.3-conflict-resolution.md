@@ -151,12 +151,26 @@ regression from this round.
   `build-logs/1.6.3-tests.xcresult`.
 - Release smoke: the DerivedData product stayed alive for 7 seconds, its main
   thread sampled in `ReceiveNextEventCommon` (3 hits), then quit cleanly.
+- Installed on 2026-11-04 after backing up 1.5.12 to
+  `.Compositor-CN-Backups/pre-1.6.3-install-20261104-133433/`. The installed app
+  reports **1.6.3 (62)**, `com.wonderassembly.compositor.cn`, ad-hoc, no Team
+  ID; it stayed alive through the installed smoke test and was left open for
+  manual acceptance.
 - The compiled `zh-Hans.lproj` contains the new strings (体积光, 降噪, 保留细节,
   选区 %1$lld × %2$lld 像素, 导出多个图层为 PNG…).
 
-## 6 Manual acceptance focus
+## 6 Release
 
-Not yet installed, tagged or pushed. Before replacing the installed 1.5.12:
+- Release tag: `v1.6.3-cn`, on the commit that carries this record.
+- `compositor-cn.snapshot-tag` is set to `v1.6.3`; the snapshot branch
+  `compositor-upstream-snapshot` is `7b0a388` and is an ancestor of HEAD.
+- Archival and the push follow this record; see the archive's `STATE--*.txt`
+  for the final commit and test numbers.
+
+## 7 Manual acceptance focus
+
+The user reported **manual acceptance passed** on 2026-11-04. Keep these areas
+in mind for the next regression:
 
 1. Volumetric Light: first run downloads the depth model (online); offline
    falls back without a crash; Extract Depth produces a depth layer; colour
