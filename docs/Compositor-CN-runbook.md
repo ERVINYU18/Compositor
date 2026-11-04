@@ -9,7 +9,7 @@
 ## 0 开工前自查（只读，不改任何东西）
 
 ```bash
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN"
 git status --short --branch
 git log -1 --format='%H %s'
 test -f .git/MERGE_HEAD && echo "⚠️ 有未完成的合并" || echo "无 MERGE_HEAD"
@@ -47,7 +47,7 @@ grep -m2 -E "MARKETING_VERSION|CURRENT_PROJECT_VERSION" Compositor-<版本>/Comp
 建快照（**父提交必须是上一个快照**，这样祖先链不断）：
 
 ```bash
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN"
 export GIT_INDEX_FILE=/tmp/cn-merge-<版本>/snap.idx
 rm -f "$GIT_INDEX_FILE"
 git --work-tree=/tmp/cn-merge-<版本>/Compositor-<版本> add -A .
@@ -65,7 +65,7 @@ git log --oneline -2 compositor-upstream-snapshot
 ## 3 合并
 
 ```bash
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN"
 git branch backup-cn-<版本>-merge-$(git rev-parse --short HEAD)
 git merge --no-ff --no-commit <新快照sha>
 grep -rn -E "^(<<<<<<<|=======|>>>>>>>)" Compositor CompositorTests CompositorUITests Compositor.xcodeproj
@@ -105,7 +105,7 @@ git diff HEAD -- Compositor/UI/ | grep -E "^-.*localizedString" || echo "没被�
 脚本在仓库内 `tools/localization/`（随仓库走，换机器不用重建）：
 
 ```bash
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN/tools/localization
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN/tools/localization"
 cp add_<上一版>_keys.py add_<版本>_keys.py    # 改 TRANSLATIONS / OBSOLETE / docstring
 python3 add_<版本>_keys.py
 python3 audit_strings.py
@@ -134,7 +134,7 @@ grep -rnE "\b(Text|Button|Picker|Menu|Label)\([a-zA-Z_$][a-zA-Z0-9_.$]*\)" Compo
 cat > /tmp/wb-run.sh <<'SH'
 #!/bin/zsh
 exec > /tmp/wb-run.log 2>&1
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN || exit 1
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN" || exit 1
 echo "=== START $(date) ==="
 xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Release \
   -destination 'platform=macOS,arch=arm64' build 2>&1 | tail -20
@@ -197,7 +197,7 @@ PID=$(/usr/bin/lsappinfo info -only pid "com.wonderassembly.compositor.cn" | gre
 ## 8 标签、归档、推送
 
 ```bash
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN"
 git add -A && git commit -F - <<'MSG'
 docs: record the v<版本> merge and its <N>-test baseline
 MSG
@@ -295,7 +295,7 @@ cp -R "/Applications/Compositor-CN Updater.app" ~/Desktop/AI/AI Project/Composit
 bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/update.command"
 bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh"
 cd "/Users/yi/Desktop/AI/AI Project/Compositor CN"
-cd ~/Desktop/AI/AI Project/Compositor CN/Compositor-CN
+cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN"
 bash "tools/updater/test-handoff-parks-merge.sh"        # 期望 REHEARSAL_OK
 bash "tools/updater/test-handoff-refuses-conflict.sh"   # 期望 REHEARSAL2_OK
 codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
