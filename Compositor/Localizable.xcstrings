@@ -15887,6 +15887,36 @@
           }
         }
       }
+    },
+    "How many pixels to expand, contract or feather the selection by": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "扩展、收缩或羽化选区时的像素数"
+          }
+        }
+      }
+    },
+    " · Feather %lld px": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": " · 羽化 %lld 像素"
+          }
+        }
+      }
+    },
+    "Reset colors to black and white (D)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "重置为黑白 (D)"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

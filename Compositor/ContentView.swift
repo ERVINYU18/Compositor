@@ -355,7 +355,8 @@ struct ContentView: View {
                 if let draft = session.shapeDraft, let size = session.dragOutSize {
                     Text(verbatim: "\(localizedString(draft.kind == .line ? "Line" : "Shape")) \(size.text)").accessibilityIdentifier("shapeDimensions")
                 } else if let size = session.selectionSize {
-                    Text(verbatim: String(format: localizedString("Selection %lld × %lld px"), Int64(size.width), Int64(size.height)))
+                    Text(verbatim: String(format: localizedString("Selection %lld × %lld px"), Int64(size.width), Int64(size.height))
+                        + (session.selectionFeather.map { String(format: localizedString(" · Feather %lld px"), Int64($0)) } ?? ""))
                         .accessibilityIdentifier("selectionDimensions")
                 }
                 Text("sRGB · Transparent")
