@@ -16,7 +16,7 @@
 | 目标语言 | zh-Hans（简体中文） |
 | 交付形态 | 独立 .app，ad-hoc 签名，独立更新器 |
 | 上游 | github.com/robbietilton/Compositor |
-| 当前基线版本 | 1.6.3（build 62）—— 每轮适配后更新 |
+| 当前基线版本 | 1.6.4（build 63）—— 每轮适配后更新 |
 
 ## 1 背景与目标
 
@@ -158,7 +158,7 @@ Compositor-CN Updater 会拒绝脏工作区。合并提交后工作区干净，�
 
 ## 9 术语参考（节选）
 
-> 完整术语以 `Compositor/Localizable.xcstrings` 的 zh-Hans 词条为准（当前 1559 条）。
+> 完整术语以 `Compositor/Localizable.xcstrings` 的 zh-Hans 词条为准（当前 1562 条）。
 > 本节只列容易翻错、或历史上改过译法的核心词。
 
 译文一致性是验收项之一。下列为核心术语的既定译法：
