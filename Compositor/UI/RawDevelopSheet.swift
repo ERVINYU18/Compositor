@@ -99,7 +99,7 @@ struct RawDevelopSheet: View {
             // Not Text(title): title is an English literal ("Exposure"), and Text with a String
             // variable doesn't look the catalog up — it would show English. Width follows upstream.
             Text(verbatim: localizedString(title)).frame(width: 110, alignment: .leading)
-            Slider(value: value, in: range).frame(width: 300)
+            AppSlider(value: value, in: range).frame(width: 300)
             Text(String(format: "%.\(precision)f%@", value.wrappedValue, unit))
                 .monospacedDigit().foregroundStyle(.secondary)
                 .frame(width: 80, alignment: .trailing)
