@@ -818,8 +818,12 @@ echo "✅ Localizable.xcstrings 的 zh-Hans 翻译完整"
 AUDIT_KEYS_SCRIPT="$REPO/tools/localization/audit_keys.py"
 if [ -f "$AUDIT_KEYS_SCRIPT" ]; then
     KEYS_REPORT="$STATE_DIR/audit-keys-gaps.txt"
-    COMPOSITOR_CN_REPO="$REPO" python3 "$AUDIT_KEYS_SCRIPT" > "$STATE_DIR/audit-keys.log" 2>&1
-    KEYS_RESULT=$?
+    # UpdaterCore.sh installs an ERR trap under `set -Eeuo pipefail`. A bare
+    # nonzero python exit would fire that trap and roll back the whole merge
+    # before we could hand it off. Absorb the status so this gate stays a
+    # handoff rather than becoming an accidental rollback.
+    KEYS_RESULT=0
+    COMPOSITOR_CN_REPO="$REPO" python3 "$AUDIT_KEYS_SCRIPT" > "$STATE_DIR/audit-keys.log" 2>&1 || KEYS_RESULT=$?
 
     if [ "$KEYS_RESULT" -ne 0 ]; then
         # Extract the human-readable gap section for the handoff report.
@@ -972,22 +976,10 @@ defaults write \
     AppleLanguages \
     -array "zh-Hans"
 
-# V2.4.0: keep the previous app as a rollback point instead of deleting it.
-# Project standard 6.4 requires two rollback points to survive acceptance.
-# The transaction left it beside /Applications as .rollback.<pid>; move it
-# into the project backups directory now that the transaction has committed,
-# so /Applications does not accumulate one stale bundle per round.
-if [ -d "$INSTALL_BACKUP" ]; then
-    BACKUP_DIR="$HOME/Desktop/AI/AI Project/Compositor CN/.Compositor-CN-Backups/pre-${LATEST_TAG#v}-install-$(date +%Y%m%d-%H%M%S)"
-    mkdir -p "$BACKUP_DIR"
-    OLD_VER="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$INSTALL_BACKUP/Contents/Info.plist" 2>/dev/null || echo unknown)"
-    if sudo mv "$INSTALL_BACKUP" "$BACKUP_DIR/Compositor-CN-${OLD_VER}.app"; then
-        sudo chown -R "$(id -u):$(id -g)" "$BACKUP_DIR"
-        echo "✅ 旧版已归档为回滚点：$BACKUP_DIR/Compositor-CN-${OLD_VER}.app"
-    else
-        echo "⚠️ 旧版未能归档，仍留在：$INSTALL_BACKUP"
-    fi
-fi
+# The transaction left the old app beside /Applications as .rollback.<pid>.
+# Keep that path until the transaction is committed below — the rollback
+# handler needs it. Archiving happens after TRANSACTION_ACTIVE=0.
+ROLLBACK_SOURCE="$INSTALL_BACKUP"
 
 INSTALL_OLD_MOVED=0
 INSTALL_SWAPPED=0
@@ -997,6 +989,25 @@ INSTALL_BACKUP=""
 # 源码和正式 App 都已经成功，事务至此正式提交
 TRANSACTION_ACTIVE=0
 MERGE_ACTIVE=0
+
+# V2.4.0: archive the old app now that the transaction is committed. This is
+# housekeeping, not part of the transaction — a failure here must NOT fire
+# the ERR trap and roll back an already-verified install. Every step is
+# therefore guarded; the old app is simply left in place if archiving fails.
+if [ -d "$ROLLBACK_SOURCE" ]; then
+    BACKUP_DIR="$HOME/Desktop/AI/AI Project/Compositor CN/.Compositor-CN-Backups/pre-${LATEST_TAG#v}-install-$(date +%Y%m%d-%H%M%S)"
+    if mkdir -p "$BACKUP_DIR" 2>/dev/null; then
+        OLD_VER="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$ROLLBACK_SOURCE/Contents/Info.plist" 2>/dev/null || echo unknown)"
+        if sudo mv "$ROLLBACK_SOURCE" "$BACKUP_DIR/Compositor-CN-${OLD_VER}.app"; then
+            sudo chown -R "$(id -u):$(id -g)" "$BACKUP_DIR" 2>/dev/null || true
+            echo "✅ 旧版已归档为回滚点：$BACKUP_DIR/Compositor-CN-${OLD_VER}.app"
+        else
+            echo "⚠️ 旧版未能归档，仍留在：$ROLLBACK_SOURCE"
+        fi
+    else
+        echo "⚠️ 无法创建归档目录，旧版仍留在：$ROLLBACK_SOURCE"
+    fi
+fi
 
 # 成功后安全备份分支不再需要
 git branch -D "$BACKUP_BRANCH" >/dev/null 2>&1 || true

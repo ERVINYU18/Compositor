@@ -164,6 +164,24 @@ chk "诊断日志落 STATE_DIR" "$(grep -c 'codesign-strict.log' "$SRC_DIR/Updat
 chk "strict 行不再吞 stderr" "$(grep -c 'codesign -v --deep --strict "\$APP" 2>/dev/null' "$SRC_DIR/UpdaterCore.sh")" "0"
 chk "strict 输出重定向到日志" "$(grep -c 'codesign -v --deep --strict "\$APP" >"\$seal_log" 2>&1' "$SRC_DIR/UpdaterCore.sh")" "1"
 
+# ------------------------------------------------------------------
+# 9. audit_keys gate must absorb the exit status under ERR trap, and the
+#    archive block must sit after the transaction commits.
+#    (Behavioural control-flow is covered by test-audit-keys-gate.sh.)
+# ------------------------------------------------------------------
+echo
+echo "--- gate control flow + archive safety ---"
+chk "门禁吸收退出码（不触发 ERR trap）" "$(grep -c '|| KEYS_RESULT=\$?' "$SRC_DIR/update.command")" "1"
+chk "归档块在事务提交之后" "$(python3 - "$SRC_DIR/update.command" <<'PY'
+import sys
+s = open(sys.argv[1]).read()
+print('yes' if s.index('TRANSACTION_ACTIVE=0') < s.index('# V2.4.0: archive the old app') else 'no')
+PY
+)" "yes"
+chk "归档 mkdir 有兜底" "$(grep -c 'if mkdir -p "\$BACKUP_DIR" 2>/dev/null' "$SRC_DIR/update.command")" "1"
+chk "归档 chown 不中止" "$(grep -c 'sudo chown -R.*|| true' "$SRC_DIR/update.command")" "1"
+chk "归档用 ROLLBACK_SOURCE" "$(grep -c 'ROLLBACK_SOURCE' "$SRC_DIR/update.command")" "6"
+
 echo
 if [ "$FAIL" = 0 ]; then echo "STAGE0_REHEARSAL_OK"; else echo "STAGE0_REHEARSAL_FAILED"; fi
 exit "$FAIL"
