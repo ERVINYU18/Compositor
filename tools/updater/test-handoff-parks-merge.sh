@@ -4,7 +4,9 @@
 # and checks that a localization gate parks the merge instead of discarding it.
 set -u
 
-CORE="/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh"
+# CORE can be overridden to rehearse a development copy:
+#   UPDATER_CORE=tools/updater/src/UpdaterCore.sh bash tools/updater/test-handoff-parks-merge.sh
+CORE="${UPDATER_CORE:-/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh}"
 ROOT="/tmp/handoff-rehearsal"
 rm -rf "$ROOT"; mkdir -p "$ROOT"; cd "$ROOT" || exit 1
 

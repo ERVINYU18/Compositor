@@ -3,7 +3,9 @@
 # back to the old rollback path, leaving no wip branch and a clean tree.
 set -u
 
-CORE="/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh"
+# CORE can be overridden to rehearse a development copy:
+#   UPDATER_CORE=tools/updater/src/UpdaterCore.sh bash tools/updater/test-handoff-refuses-conflict.sh
+CORE="${UPDATER_CORE:-/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh}"
 ROOT="/tmp/handoff-rehearsal2"
 rm -rf "$ROOT"; mkdir -p "$ROOT"; cd "$ROOT" || exit 1
 
