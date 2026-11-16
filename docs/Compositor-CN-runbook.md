@@ -257,7 +257,7 @@ rm -rf /tmp/cn-merge-<版本> ~/Library/Developer/Xcode/DerivedData/Compositor-*
 
 ## 10 更新器（Compositor-CN Updater）
 
-**位置**：`/Applications/Compositor-CN Updater.app`，当前 **V2.2.1 / 221**。
+**位置**：`/Applications/Compositor-CN Updater.app`，当前 **V2.4.0 / 240**（2026-11-16 装入并短路冒烟通过）。权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本——**改完必须同步两处并提交**，否则工作区脏会被更新器的干净门禁挡下版本 bump 要改 `update.command` 的 `VERSION` 和 `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion` 两处。完整记录见工作区 `更新器V2.4实施记录.md`。
 资源在 `Contents/Resources/`：`update.command`（入口）、`UpdaterCore.sh`（主逻辑）、`Scripts/`、`Tests/`。
 
 **它做什么**：查 GitHub API 拿官方最新 tag → 下载 tarball → 建快照 → 合并 → 构建 → 测试 →
@@ -274,32 +274,44 @@ rm -rf /tmp/cn-merge-<版本> ~/Library/Developer/Xcode/DerivedData/Compositor-*
 而是提交到 `wip-cn-<版本>-needs-localization`、仓库回到更新前干净状态、正式版不动、退出码 3。
 这叫 `handoff_for_localization`。有未解决冲突时仍退回回滚，绝不提交冲突标记。
 
-### 已知缺陷：`APP_PATCH_FAILED`
+### V2.4.0 已修的历史缺陷（V2.2.1 行为，勿再当作现状）
 
-`CompositorApp.swift` **一冲突就必报 `APP_PATCH_FAILED`**。原因：CN 补丁脚本对「被 git 标为冲突」
-的该文件有一组「6 条中文规则必须已恢复」的校验，但校验跑在冲突解决**之前**，文件里还是
-`<<<<<<<`，替换全部匹配不上，6 条全命中 → 中止。
-
-两个后果：
-
-- 这一轮必然白跑，得手工接手。
-- 它**连 `last-conflicts.txt` 都不写**，文件里留着上一轮的旧内容 —— 别把旧内容当本轮冲突。
-
-修法二选一：见 `<<<<<<<` 就跳过校验；或把校验挪到冲突解决之后。
+- `APP_PATCH_FAILED`：CN 补丁对冲突文件的一组精确字符串校验失配就硬中止，且 `last-conflicts.txt` 留着上一轮旧内容。**V2.4.0 改为 `*_DRIFT` 留痕**——写 `patch-drift.txt` 并复制到 `last-conflicts.txt`，提示「上游原文已变，需 AI 接手」，不再拿旧清单误报。
+- 装机成功即 `sudo rm -rf` 删旧 App、无 strict 校验、装 Debug 包、签名四要素被上游冲掉——V2.4.0 全修。
+- ⚠️ **errexit 陷阱**：门禁里跑会返回非 0 的脚本必须 `KEYS_RESULT=0; python3 ... || KEYS_RESULT=$?` 吸收退出码。直接取 `$?` 会触发 ERR trap 回滚整笔合并（复核二轮实测）。**静态断言证明不了控制流**，用 `test-audit-keys-gate.sh` 做行为级验证。
 
 ### 改更新器的流程
 
+权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本。改完必须同步两处并提交，否则工作区脏会被干净门禁挡下。版本号改 `VERSION` + `Info.plist` 两处（`CFBundleShortVersionString` / `CFBundleVersion`）。
+
 ```bash
-cp -R "/Applications/Compositor-CN Updater.app" ~/Desktop/AI/AI Project/Compositor CN/.Compositor-CN-Backups/Updater-历史版本/Compositor-CN\ Updater-<旧版本>.app
-# 改 Contents/Resources/update.command 或 UpdaterCore.sh
-bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/update.command"
-bash -n "/Applications/Compositor-CN Updater.app/Contents/Resources/UpdaterCore.sh"
-cd "/Users/yi/Desktop/AI/AI Project/Compositor CN"
-cd "$HOME/Desktop/AI/AI Project/Compositor CN/Compositor-CN"
-bash "tools/updater/test-handoff-parks-merge.sh"        # 期望 REHEARSAL_OK
-bash "tools/updater/test-handoff-refuses-conflict.sh"   # 期望 REHEARSAL2_OK
+cd "$HOME/Desktop/AI/AI Project/Compositor CN"
+cp -R "/Applications/Compositor-CN Updater.app" ".Compositor-CN-Backups/Updater-历史版本/Compositor-CN Updater-<旧版本>.app"
+cd "Compositor-CN"
+
+# 改 tools/updater/src/update.command 与 UpdaterCore.sh，然后：
+bash -n tools/updater/src/update.command
+bash -n tools/updater/src/UpdaterCore.sh
+
+# 四个演练（对权威源码）
+bash tools/updater/test-handoff-parks-merge.sh        # REHEARSAL_OK
+bash tools/updater/test-handoff-refuses-conflict.sh   # REHEARSAL2_OK
+bash tools/updater/test-stage0-safety.sh              # STAGE0_REHEARSAL_OK
+bash tools/updater/test-audit-keys-gate.sh            # AUDIT_GATE_REHEARSAL_OK
+
+# 同步到部署副本 + bump 两处版本号 + 重签
+cp tools/updater/src/update.command "/Applications/Compositor-CN Updater.app/Contents/Resources/"
+cp tools/updater/src/UpdaterCore.sh "/Applications/Compositor-CN Updater.app/Contents/Resources/"
+# 提交仓库改动（含 VERSION bump），否则工作区脏
 codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
+
+# 对部署副本再跑一遍（演练支持 UPDATER_CORE / UPDATER_SRC_DIR 覆盖）
+BUNDLE="/Applications/Compositor-CN Updater.app/Contents/Resources"
+UPDATER_SRC_DIR="$BUNDLE" bash tools/updater/test-stage0-safety.sh
+UPDATER_SRC_DIR="$BUNDLE" bash tools/updater/test-audit-keys-gate.sh
 ```
+
+最后在「已是最新」状态双击更新器跑短路冒烟（须先确认四要素满足，否则会触发完整合并）。
 
 最后在「已是最新」状态下跑一次真实短路冒烟（会在「当前已经包含官方最新版」处退出，不建事务）。
 

@@ -113,7 +113,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - ⚠️ **每次合并官方快照都会把上游 pbxproj 带进来，极易覆盖上述 Release 修复**——合并后必须重新核对这两个配置是否还在。
 - 替换正式版前必须对产物做启动冒烟测试（open 后进程存活 ≥5 秒），不要只看 BUILD SUCCEEDED。
 - 安装必须可回滚：先备份旧 App 并校验，旧版保留至新版验收通过。
-- ⚠️ **装机必须先移走旧 App 再 `ditto`，不能直接 `ditto` 覆盖**（2026-11-16 v1.6.7 实测）：`ditto` 对目录是「合并」语义，直接覆盖会把旧包里新包没有的文件（Debug 构建的 `Compositor.debug.dylib`、`__preview.dylib`）留下，破坏签名 seal。App 仍能启动（ad-hoc 签名不在启动时强制校验），但 `codesign -v --deep --strict` 会报 `a sealed resource is missing or invalid` / `file added: ...debug.dylib`。**装机后必须跑 `codesign -v --deep --strict` 并把通过作为完成条件**，不能只查版本号。正确顺序：`sudo mv /Applications/Compositor-CN.app /Applications/Compositor-CN.app.old-<时间戳>` → `sudo ditto <新包> /Applications/Compositor-CN.app` → strict 校验 → 启动冒烟。工作区 `构建装机-1.6.7.sh` 是修正后的模板。
+- ⚠️ **装机必须先移走旧 App 再 `ditto`，不能直接 `ditto` 覆盖**（2026-11-16 v1.6.7 实测）：`ditto` 对目录是「合并」语义，直接覆盖会把旧包里新包没有的文件（Debug 构建的 `Compositor.debug.dylib`、`__preview.dylib`）留下，破坏签名 seal。App 仍能启动（ad-hoc 签名不在启动时强制校验），但 `codesign -v --deep --strict` 会报 `a sealed resource is missing or invalid` / `file added: ...debug.dylib`。**装机后必须跑 `codesign -v --deep --strict` 并把通过作为完成条件**，不能只查版本号。正确顺序：`sudo mv /Applications/Compositor-CN.app /Applications/Compositor-CN.app.old-<时间戳>` → `sudo ditto <新包> /Applications/Compositor-CN.app` → strict 校验 → 启动冒烟。**这套流程 V2.4.0 更新器已全自动执行**（Release 构建 + 旧包归档 + strict 门禁 + 冒烟）；上面是应急手动兜底的步骤说明。
 
 ## 上游继承的约定（仍适用）
 
@@ -124,12 +124,15 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 
 ## 更新器（Compositor-CN Updater）
 
-**位置与版本**：`/Applications/Compositor-CN Updater.app`，当前 **V2.2.1 / 221**。主逻辑在 `Contents/Resources/UpdaterCore.sh`，入口 `update.command`。
+**位置与版本**：`/Applications/Compositor-CN Updater.app`，当前 **V2.4.0 / 240**（2026-11-16 装入并短路冒烟通过）。主逻辑在 `Contents/Resources/UpdaterCore.sh`，入口 `update.command`。**权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本；改更新器必须同步两处并提交**，否则工作区脏会被更新器的干净门禁挡下（+V2.4.0 首装就踩过）。完整记录见工作区 `更新器V2.4实施记录.md`。
 
 - **判「已是最新」四要素**：已装 App 版本 == 官方最新 tag、`snapshot-tag` == 最新 tag、快照分支存在、**且是 HEAD 祖先**。手工合并完必须补查后两条，否则更新器会重跑整个合并。
-- **本地化门禁是 `handoff_for_localization` 不是回滚**：命中「新增动态英文」或「词条缺 zh-Hans」时提交到 `wip-cn-<版本>-needs-localization`、仓库回到干净状态、正式版不动、退出码 3。有未解决冲突时仍回滚，绝不提交冲突标记。
-- ⚠️ **已知缺陷：`CompositorApp.swift` 一冲突就必报 `APP_PATCH_FAILED`。** CN 补丁脚本对「被标为冲突」的该文件有一组「6 条中文规则已恢复」的校验，但校验跑在冲突解决**之前**，文件里还是 `<<<<<<<` → 替换全不匹配 → 6 条全命中 → 中止。**它连 `last-conflicts.txt` 都不写**，文件里留着上一轮的旧内容，别当本轮冲突。修法二选一：见 `<<<<<<<` 就跳过校验，或把校验挪到冲突解决之后。
-- **改更新器**：备份到 `Updater-历史版本/` → 改 `update.command` 或 `UpdaterCore.sh` → `bash -n` 两个文件 → 跑 `tools/updater/` 的两个演练（期望 `REHEARSAL_OK` / `REHEARSAL2_OK`）→ `codesign --force --deep --sign -` 重签 → 在「已是最新」状态跑一次短路冒烟。命令见运行手册第 10 节。
+- **本地化门禁是 `handoff_for_localization` 不是回滚**：命中「新增动态英文 / 缺 zh-Hans / 键承载缺口」时提交到 `wip-cn-<版本>-needs-localization`、仓库回到干净状态、正式版不动、退出码 3。有未解决冲突时仍回滚，绝不提交冲突标记。
+- ⚠️ **errexit 陷阱（V2.4.0 踩过并修）**：`update.command` 是 `set -Eeuo pipefail`，`UpdaterCore.sh` 装了 ERR trap → `on_unexpected_error` 回滚。门禁里跑会返回非 0 的脚本**必须吸收退出码**：`KEYS_RESULT=0; python3 ... || KEYS_RESULT=$?`。直接取 `$?` 会先触发 ERR trap 回滚整笔合并，handoff 根本到不了。**静态断言证明不了控制流**，这类修法必须有行为级 fixture（见 `tools/updater/test-audit-keys-gate.sh`，它提取真实代码跑，带旧写法反证）。
+- **V2.4.0 已修**：装机即删旧 App（改为归档留两级回滚点）、无 strict 校验（加 `codesign -v --deep --strict`，诊断落 `STATE_DIR/codesign-strict.log`）、装 Debug 包（改 Release）、签名四要素被冲掉（自动恢复含错误 identity 归一化）、`APP_PATCH_FAILED` 硬中止（改 `*_DRIFT` 留痕）。**新增 `audit_keys.py` 门禁**覆盖 `LocalizedStringKey` switch 与三元承载的键（`Text` 键曾漏四轮）。
+- **⚠️ 新代码尚未实跑**：短路冒烟只验证「已是最新」路径。Release 构建、strict 门禁、归档路径在下一轮真实上游版本才第一次实跑——那轮盯 `codesign-strict.log`、`pre-*-install-*` 是否产出、装机产物是否 Release、键缺口是否正确走 handoff 而非回滚。
+- **改更新器**：备份到 `Updater-历史版本/` → 改仓库 `tools/updater/src/` 两脚本 → `bash -n` → 跑 `tools/updater/` 的**四个**演练（parks-merge / refuses-conflict / stage0-safety / audit-keys-gate）→ 同步部署到 app bundle + bump 两处版本号（`VERSION` 与 `Info.plist`）+ 重签 → 在「已是最新」状态跑短路冒烟。演练支持 `UPDATER_CORE=` / `UPDATER_SRC_DIR=` 指向部署副本验证。命令见运行手册第 10 节。
+- **版本 bump 要改两处**：`update.command` 的 `VERSION` 和 applet `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion`，漏一处「关于」里版本对不上。
 - ⚠️ **V2.3 Dev 不要装**：是另一个工具（`--rehearse` 默认、`/private/tmp` 隔离、遇内容冲突直接 fail、从不安装、目标硬编码 v1.4.7、**无 CN 补丁**），装上去功能倒退。
 
 ## 禁止事项
