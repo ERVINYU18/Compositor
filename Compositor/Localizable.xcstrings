@@ -61,12 +61,32 @@
         }
       }
     },
+    "Smooth edges; turn off for hard pixel edges, like a pencil": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "平滑边缘；关闭后保留清晰的像素边缘，就像铅笔一样"
+          }
+        }
+      }
+    },
     "Start see-through, or with a white or black Background layer. Click to switch.": {
       "localizations": {
         "zh-Hans": {
           "stringUnit": {
             "state": "translated",
             "value": "以透明开始，或以白色或黑色背景图层开始。点击切换。"
+          }
+        }
+      }
+    },
+    "Text": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文本"
           }
         }
       }
