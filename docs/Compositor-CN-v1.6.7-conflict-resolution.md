@@ -161,13 +161,33 @@ Deliberately **not** translated: the layer defaults `"Folder 1"`,
   **`d7dfd82`**.
 - **Pushed.** Branch `adapt-compositor-1.4.1` → `d7dfd82`; tag
   **`v1.6.7-cn`** → `d7dfd82` (annotated). Both CI runs are green.
-- **Still missing:** the `post-1.6.7-cn-*` archive (bundle + tar.gz with
-  `.git` + `SHA256SUMS` + STATE, on the desktop and mirrored to iCloud)
-  and the `pre-1.6.7-install-*` rollback point. The backup taken before
+- **Still missing:** the `post-1.6.7-cn-*` archive and the
+  `pre-1.6.7-install-*` rollback point. The backup taken before
   the signing fix lives at
   `.Compositor-CN-Backups/pre-1.6.7-signing-fix-20261116-122847/`.
 - Installed app: **1.6.7 / 66**, launch smoke test passed on 2026-11-16
   (process alive ≥6 s).
+
+### Archive
+
+`post-1.6.7-cn-20261116-125628/` — bundle + tar.gz with `.git` +
+`SHA256SUMS.txt` + `STATE--20261116-125628.txt`, on the desktop and mirrored
+to iCloud, both copies passing `shasum -c`. The bundle verifies
+("The bundle records a complete history") and carries `v1.6.7-cn`,
+`adapt-compositor-1.4.1` and `compositor-upstream-snapshot`.
+
+### Rollback point
+
+`pre-1.6.8-install-20261116-125750/Compositor-CN-1.6.7.app` — the app
+installed on 2026-11-16, ad-hoc signature verified with
+`codesign -v --deep --strict`, confirmed to open and stay alive.
+
+Note the version: this is the rollback point for the **next** install, not
+a pre-1.6.7 point. The bundle that 1.6.7 replaced is gone — the updater
+installs straight over `/Applications/Compositor-CN.app` and keeps no copy
+of the previous app, so no `pre-1.6.7-install-*` point could be made from
+it. The older points still on disk are `pre-1.6.6-install-*` (1.6.4) and
+`pre-1.6.4-install-*` (1.6.3).
 
 ## 7 Manual acceptance focus
 
