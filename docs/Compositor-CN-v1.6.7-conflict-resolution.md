@@ -153,32 +153,63 @@ Deliberately **not** translated: the layer defaults `"Folder 1"`,
 - **Launch smoke test:** the installed 1.6.7 was opened and the process
   stayed alive ≥6 s.
 
-### What was not verified
+### What was not verified from the WorkBuddy process
 
-- **A local Release build.** The build runs in CI and in the updater, but
-  never from a WorkBuddy session: nested `sandbox-exec` is refused
-  outright (`sandbox_apply: Operation not permitted` even for
-  `sandbox-exec -p '(version 1)(allow default)' /bin/echo`). See the
-  "环境限制" section in `.workbuddy-ai/memory/MEMORY.md` for every
-  workaround tried and why each one fails.
-- **A local launch smoke test of the signed-and-fixed build.** The
-  installed bundle predates `29bc654`; the signing fix changes the build
-  settings, not the running code, but the installed app should still be
-  reinstalled from a fresh Release build.
-- **Manual acceptance** of the new v1.6.7 behaviour (see §7).
+Only one thing: running `xcodebuild` there. Nested `sandbox-exec` is
+refused outright (`sandbox_apply: Operation not permitted` even for
+`sandbox-exec -p '(version 1)(allow default)' /bin/echo`), and this still
+fails with `dangerouslyDisableSandbox: true` — the seatbelt is attached to
+the WorkBuddy process itself. See "环境限制" in
+`.workbuddy-ai/memory/MEMORY.md` for every workaround tried.
+
+Everything that needed a real build was done by the user in a real
+Terminal, using `构建装机-1.6.7.sh` and `修正装机-1.6.7.sh` in the workspace
+root:
+
+- Local **Release build** with the restored signing configuration:
+  `~/Library/Caches/Compositor-CN-Build-Release/Build/Products/Release/Compositor.app`,
+  version 1.6.7 / 66, bundle ID `com.wonderassembly.compositor.cn`.
+- **Signature check** on the build product: `codesign -v --deep --strict`
+  passed, ad-hoc, no Team ID.
+- **Build-product smoke test** and **installed-app smoke test**: both
+  passed, process alive ≥7 s.
+- **Manual acceptance** of all seven v1.6.7 behaviours (§7) passed on
+  2026-11-16.
+
+### The install snag, and its fix
+
+The first install used `ditto "$APP" "$TARGET"` on top of the existing
+bundle. `ditto` merges directories rather than replacing them, so the old
+Debug build's `Compositor.debug.dylib` and `__preview.dylib` survived
+inside the Release bundle and broke its signature seal
+(`codesign -v --deep --strict` → "a sealed resource is missing or
+invalid", with both files reported as `file added`). The app still
+launched and passed functional acceptance — an ad-hoc signature is not
+enforced at launch — but a broken seal is not acceptable as a release.
+
+Fixed by `修正装机-1.6.7.sh`: move the existing bundle aside first, then
+`ditto` the clean Release product, then require
+`codesign -v --deep --strict` to pass before considering the install done.
+The original `构建装机-1.6.7.sh` was corrected the same way (move aside +
+seal check), so the mistake is not repeated.
+
+The mixed bundle was kept at
+`/Applications/Compositor-CN.app.mixed-20261116-144908/` for inspection;
+it is not installed and can be trashed once the current install is
+signed off.
 
 ## 6 Release
 
-- Merge commit `683b1a1`, fix commit **`29bc654`**, docs commit
-  **`d7dfd82`**.
-- **Pushed.** Branch `adapt-compositor-1.4.1` → `d7dfd82`; tag
-  **`v1.6.7-cn`** → `d7dfd82` (annotated). Both CI runs are green.
-- **Still missing:** the `post-1.6.7-cn-*` archive and the
-  `pre-1.6.7-install-*` rollback point. The backup taken before
-  the signing fix lives at
-  `.Compositor-CN-Backups/pre-1.6.7-signing-fix-20261116-122847/`.
-- Installed app: **1.6.7 / 66**, launch smoke test passed on 2026-11-16
-  (process alive ≥6 s).
+- Merge commit `683b1a1`, fix commit **`29bc654`**, docs commits
+  `d7dfd82`, `b84f9c7`, `5bd8ff2`, `88976a0`.
+- **Pushed.** Branch `adapt-compositor-1.4.1` → `88976a0`; tag
+  **`v1.6.7-cn`** → `d7dfd82` (annotated, deliberately not moved for the
+  later doc-only commits). All CI runs on `88976a0` are green.
+- **Archive:** `post-1.6.7-cn-20261116-125628/` on the desktop and in
+  iCloud, both passing `shasum -c`.
+- **Rollback point:** `pre-1.6.8-install-20261116-125750/` (1.6.7).
+- **Installed app: 1.6.7 / 66, ad-hoc, signature seal verified valid,
+  launch smoke passed, manual acceptance passed. This round is complete.**
 
 ### Archive
 

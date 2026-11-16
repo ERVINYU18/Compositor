@@ -91,7 +91,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 1. **AppKit 裸字面量**：`NSMenuItem(title:)`、`toolTip`、`accessibilityDescription`、`labelWithString` 等不自动本地化 → 显式 `localizedString()`。
 2. **运行时拼接**：如 `"\(w) × \(h) px"`，静态扫描看不到 → 改为 `String(format: localizedString("..."))` 格式串。
 3. **词条缺失**：源码有、目录没有 → 补 `Localizable.xcstrings`。
-4. **SF Symbol 语言变体**：系统按 bundle 语言替换字形（`textformat` →「格式」）。文字类界面禁用字母类符号；文字图层徽标用 `NativeLayerList.textLayerIcon`（自行绘制字母 T）。
+4. **SF Symbol 语言变体**：系统按 bundle 语言替换字形（`textformat` →「格式」）。文字类界面禁用字母类符号；文字图层徽标用 `NativeLayerList.textLayerIcon`（自行绘制字母 T），**工具栏文字工具用 `ToolRail.TextToolIcon`（`Text(verbatim: "T")`）**——2026-11-16 实测工具栏曾显示「格式」，`EditorSession.NavigationTool.symbol` 里的 `textformat` 是上游行为层不动，在 `ToolRail.toolButton` 显示层拦截。新增字母类图标后要跑 `audit_strings.py`，它把 `Text(verbatim:)` 列入「有意不翻译（复核）」，确认是 T 这类标识符即可。
 
 规则：
 
@@ -113,6 +113,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - ⚠️ **每次合并官方快照都会把上游 pbxproj 带进来，极易覆盖上述 Release 修复**——合并后必须重新核对这两个配置是否还在。
 - 替换正式版前必须对产物做启动冒烟测试（open 后进程存活 ≥5 秒），不要只看 BUILD SUCCEEDED。
 - 安装必须可回滚：先备份旧 App 并校验，旧版保留至新版验收通过。
+- ⚠️ **装机必须先移走旧 App 再 `ditto`，不能直接 `ditto` 覆盖**（2026-11-16 v1.6.7 实测）：`ditto` 对目录是「合并」语义，直接覆盖会把旧包里新包没有的文件（Debug 构建的 `Compositor.debug.dylib`、`__preview.dylib`）留下，破坏签名 seal。App 仍能启动（ad-hoc 签名不在启动时强制校验），但 `codesign -v --deep --strict` 会报 `a sealed resource is missing or invalid` / `file added: ...debug.dylib`。**装机后必须跑 `codesign -v --deep --strict` 并把通过作为完成条件**，不能只查版本号。正确顺序：`sudo mv /Applications/Compositor-CN.app /Applications/Compositor-CN.app.old-<时间戳>` → `sudo ditto <新包> /Applications/Compositor-CN.app` → strict 校验 → 启动冒烟。工作区 `构建装机-1.6.7.sh` 是修正后的模板。
 
 ## 上游继承的约定（仍适用）
 

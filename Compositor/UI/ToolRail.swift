@@ -63,7 +63,11 @@ struct ToolRailStack: View {
     private func toolButton(_ tool: NavigationTool) -> some View {
         Button { session.selectTool(tool) } label: {
             Group {
-                if tool == .gradient { GradientToolIcon().frame(width: 18, height: 18) }
+                // The `textformat` SF Symbol is localized by macOS to a glyph drawn in the
+                // bundle's language — under zh-Hans it reads "格式", not the letter T that
+                // identifies the text tool. Draw the T directly, as NativeLayerList does.
+                if tool == .type { TextToolIcon().frame(width: 18, height: 18) }
+                else if tool == .gradient { GradientToolIcon().frame(width: 18, height: 18) }
                 else if tool == .cloneStamp { CloneStampToolIcon().frame(width: 18, height: 18) }
                 else if tool == .lasso, session.lassoKind == .polygonal { PolygonalLassoToolIcon().frame(width: 18, height: 18) }
                 else if tool == .wand, session.wandMode == .object { ObjectSelectionToolIcon().frame(width: 18, height: 18) }
@@ -86,5 +90,16 @@ struct ToolRailStack: View {
         .buttonStyle(.plain).help(tool.label).accessibilityLabel(tool.label)
         .foregroundStyle(.primary)
         .accessibilityAddTraits(session.tool == tool ? .isSelected : [])
+    }
+}
+
+/// The text tool's rail icon is the letter T, drawn directly. macOS substitutes the
+/// `textformat` SF Symbol with a localized glyph ("格式" under zh-Hans), so it cannot
+/// be used here — the letter is the tool's identifier and must stay T in every locale.
+struct TextToolIcon: View {
+    var body: some View {
+        Text(verbatim: "T") // an identifier, never a string to localize
+            .font(.system(size: 17, weight: .medium))
+            .accessibilityHidden(true) // the button's label already describes the tool
     }
 }
