@@ -95,8 +95,11 @@ Deliberately **not** translated: the layer defaults `"Folder 1"`,
 ## 4 Localization verification
 
 - `tools/localization/audit_strings.py`: **1566** catalog keys, **0** UI
-  literals outside the catalog, **0** `Text(verbatim:)` literals. The one
-  key "lacking zh-Hans" is the baseline empty-string key, not a gap.
+  literals outside the catalog. The one key "lacking zh-Hans" is the
+  baseline empty-string key, not a gap. There is now **one** `Text(verbatim:)`
+  literal — `Text(verbatim: "T")` in `ToolRail.TextToolIcon` — which the
+  audit lists under "intentionally untranslated (review)". That is correct:
+  the letter T is the text tool's identifier and must never be translated.
 - `LocalizedStringKey` sweep across the whole tree: **0** missing keys.
 - Ternary-expression sweep (the other documented blind spot): the literals
   in `BrushControls`, `ColorPaletteControls`, `ColorRangeSheet`,
@@ -146,12 +149,42 @@ Deliberately **not** translated: the layer defaults `"Folder 1"`,
   `xcresulttool`'s `totalTestCount` remains the authority for the next
   round.
 - **Localization:** `audit_strings.py` reports 1566 keys, 0 UI literals
-  outside the catalog, 0 `Text(verbatim:)` literals; the
+  outside the catalog, and one intentional `Text(verbatim: "T")`; the
   `LocalizedStringKey` sweep finds 0 missing keys; the ternary-expression
   sweep finds every literal in the catalog; the catalog still round-trips
   byte-identically through its own serialisation.
 - **Launch smoke test:** the installed 1.6.7 was opened and the process
   stayed alive ≥6 s.
+
+### The text tool's "格式" icon (commit `233540f`)
+
+During manual acceptance the user spotted the text tool in the left rail
+showing **「格式」** instead of the letter **T**. Cause: `ToolRail` drew
+`NavigationTool.type` with the SF Symbol `textformat`, and macOS substitutes
+a glyph drawn in the bundle language — under zh-Hans that symbol renders as
+"格式". The layer-list badge was already protected by a hand-drawn T
+(`NativeLayerList.textLayerIcon`); the rail was not. This is the fourth
+class of localization leak from AGENTS.md, newly exposed by v1.6.7's
+upstream UI rework.
+
+Fix: `ToolRail.TextToolIcon` draws `Text(verbatim: "T")`, and `toolButton`
+intercepts `.type` before the `systemSymbol` path. `Text(verbatim:)` states
+explicitly that this is an identifier, never a string to translate.
+`EditorSession.NavigationTool.symbol` is left returning `textformat` — that
+is upstream behaviour, and this branch only changes presentation; its one
+call site is the rail, which now intercepts `.type`.
+
+Verified: `xcrun swiftc -parse` passes; the audit classifies the single
+`Text(verbatim:)` as intentional; a fresh Release build
+(`~/Library/Caches/Compositor-CN-Build-TIcon/...`, a separate derivedData
+path so no stale object files) reports `** BUILD SUCCEEDED **`; the product
+passes `codesign --deep --strict`; the installed copy passes the same
+strict check; a backup was taken at
+`.Compositor-CN-Backups/pre-1.6.8-ticon-20261116-145445/` and the previous
+bundle kept at `/Applications/Compositor-CN.app.old-20261116-145445`.
+
+The user's confirmation that the rail now shows T is pending; CI run
+`43819837694` on `233540f` was still running when this note was written.
 
 ### What was not verified from the WorkBuddy process
 
