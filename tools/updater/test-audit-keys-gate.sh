@@ -9,7 +9,8 @@ set -u
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$HERE/../.." && pwd)"
-SRC_DIR="$REPO_ROOT/tools/updater/src"
+# SRC_DIR can be overridden to verify the deployed bundle after install.
+SRC_DIR="${UPDATER_SRC_DIR:-$REPO_ROOT/tools/updater/src}"
 ROOT="/tmp/v24-audit-gate-rehearsal"
 rm -rf "$ROOT"; mkdir -p "$ROOT"; cd "$ROOT" || exit 1
 
