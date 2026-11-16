@@ -320,6 +320,7 @@ codesign --force --deep --sign - "/Applications/Compositor-CN Updater.app"
 | 更新器报 `APP_PATCH_FAILED` | 见第 10 节，手工接手合并 |
 | 更新器报 `HTTP 422: Actions has been disabled` | 与本项目无关，是 fork 的 Actions 被关，需在网页启用 |
 | 测试数对不上 | 用 `xcresulttool` 顶层 `totalTestCount`，别用 device 级数字 |
+| CI `unit` 跑满 60 分钟后 `cancelled`，日志停在某个批次后再无输出 | 先看 diff：若只有 markdown/文档，就是 runner 卡住，不是回归。直接重跑：`env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy gh run rerun <run-id> -R ERVINYU18/Compositor --failed`。若某次 run 显示 `cancelled` 且紧接着有新 run，是 `concurrency.cancel-in-progress`（连续 push 的正常行为），只需看最新那次。别为这种偶发故障改代码或 workflow |
 | 界面出现英文 | 先跑审计，再按项目规范 4.7 补扫四类盲区 |
 | 装了新版启动即崩 | 查 `ENABLE_HARDENED_RUNTIME` 是否被上游 pbxproj 覆盖 |
 

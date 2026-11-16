@@ -122,6 +122,18 @@ Deliberately **not** translated: the layer defaults `"Folder 1"`,
   batches all reported `** TEST EXECUTE SUCCEEDED **` — `first` (90 s),
   `rest` (89 s), `windows` (70 s), `filters` (70 s, with the filter suites
   enabled because the version bump touches `project.pbxproj`).
+- **CI flake on the last two doc-only commits.** Run `43806890294`
+  (`b84f9c7`) was auto-cancelled by `concurrency.cancel-in-progress` when
+  `5bd8ff2` was pushed. Run `43808022896` (`5bd8ff2`) then hit the
+  `timeout-minutes: 60` limit: build-for-testing succeeded and the `first`
+  batch passed, after which the job went silent for ~53 minutes and was
+  cancelled. The diff from the fully green `d7dfd82` is **two markdown
+  files only** — no source, project or workflow change — so this was a
+  stuck runner, not a regression. `gh run rerun --failed` cleared it: the
+  rerun's `unit` and `screenshots` both succeeded, with `first` (68 s),
+  `rest` (69 s), `windows` (45 s) all passing. `filters` was skipped on
+  the rerun because `scripts/ci-tests.sh` scopes it to changes in the
+  covered paths; the full filter suite already ran green on `d7dfd82`.
 - **Test baseline: 809.** The full run cannot be executed from a
   WorkBuddy session, so the number was taken from the CI logs and
   cross-checked by counting `@Test` declarations: v1.6.6 declares exactly
