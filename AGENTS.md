@@ -58,24 +58,30 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   -destination 'platform=macOS,arch=arm64' build
 ```
 
-- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806（历史「452 项」是 1.3.7 的，早已作废）。
+- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806（历史「452 项」是 1.3.7 的，早已作废）。**1.6.7 = 待重取**（v1.6.7 新增 3 个 `@Test`：`PencilTests` 2 个 + `ScrollZoomTests` 1 个；本轮无法在 WorkBuddy 进程内构建，基线未验证）。
 - 取数用 `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准；同一份结果里 device 级的数字会偏大，不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 - 本机开着 Stage Manager：系统会把置前的浮动窗口限制在左边缘边距之外（本显示器为 x ≥ 221），**窗口坐标类测试不要把面板停在屏幕左边缘**；`NSApp.activate` 在 xcodebuild 下不可靠，别依赖它。文件通知类断言在全量负载下会晚到，等待窗口要留足余量。
 
-### 在 WorkBuddy 会话里跑构建：必须借真实 Terminal
+### 在 WorkBuddy 会话里跑构建：当前环境不可行
 
-`xcodebuild` **不能在 WorkBuddy 的进程里跑**：解析 SwiftPM 依赖时它自己会起 `sandbox-exec`，而外层已经是 seatbelt，于是固定失败 `sandbox-exec: sandbox_apply: Operation not permitted`（2026-10-27 复验：加任何参数、`dangerouslyDisableSandbox: true` 都一样）。`open -a Terminal <脚本>`、`launchctl submit`、`osascript ... do script` 也都走不通（前两个被静默吞掉，AppleScript 缺 Automation 授权）。
+`xcodebuild` **不能在 WorkBuddy 的进程里跑**：解析 SwiftPM 依赖时它自己会起 `sandbox-exec`，而外层已经是 seatbelt，于是固定失败 `sandbox-exec: sandbox_apply: Operation not permitted`（2026-10-27 首次复验，2026-11-16 再次复验）。
 
-**可行路径**（2026-10-27 实证，1.5.11 全流程跑通）：
+**2026-11-16 定位到更底层的原因**：不是 SwiftPM 的问题，是**嵌套 `sandbox-exec` 整个不可用**——在 WorkBuddy 进程里执行 `sandbox-exec -p '(version 1)(allow default)' /bin/echo` 同样返回 `sandbox_apply: Operation not permitted`。已实测**全部无效**的绕过手段，别再重复试：
 
-1. 把要跑的命令写成脚本，**所有输出重定向到文件**（`exec > /tmp/wb-run.log 2>&1`），并在末尾 `echo "TEST_EXIT=$?"` 之类的标记，便于轮询。
-2. `open -n -a Terminal` —— 必须带 `-n`。Terminal 已在运行但没有窗口时，`open -a Terminal` 只会把它激活、不会新建窗口，GUI 自动化也就拿不到 `window_id`。
-3. 用 computer-use 的 `gui_list_windows` 取到那个终端窗口的 `window_id`，`create_task` 让它输入 `zsh /tmp/wb-run.sh` 并回车。
-4. 回到 shell 侧轮询日志文件（`grep -q "^TEST_EXIT="`）。**不要用一个长循环死等**——超过 600 秒会被 SIGTERM 打断，脚本本身不受影响，分段轮询即可。
-5. `xcresulttool` 在沙箱内可用，测试数照常取。
+- `dangerouslyDisableSandbox: true`（外层沙箱摘掉后仍失败，嵌套照样被拒）
+- `-disableAutomaticPackageResolution`、`-onlyUsePackageVersionsFromResolvedFile`
+- `-clonedSourcePackagesDirPath ~/Library/Caches/Compositor-CN-Build/SourcePackages`（复用已解析的 Sparkle 包）
+- `SWIFTPM_DISABLE_SANDBOX=1`
+- 复用已有 derivedDataPath（`~/Library/Caches/Compositor-CN-Build`）
 
-注意 GUI 自动化会真的动用户屏幕（会有一个终端窗口弹出来），也会改 Terminal 的字号（它按 ⌘-/⌘0 找缩放）。跑之前先说一声。
+**AppleScript 驱动 Terminal 这条路也已失效**（2026-11-16 实测）：`osascript -e 'tell application "Terminal" to do script ...'` → 权限违例 (-10004)；`tell application "System Events"` → 同样 -10004。`open -n -a Terminal` 本身返回 0，但拿不到窗口 id、也无法输入。
+
+⇒ **原先「借真实 Terminal + computer-use」的方案在当前环境不可执行**：computer-use 插件未安装，`search_plugins` 也无对应连接器（可装的只剩 peekaboo / screen-automation 之类）。
+
+**当前唯一能跑 `xcodebuild` 的路径**：由用户在终端触发更新器 —— `update.command` 内部的 xcodebuild 不受 WorkBuddy 沙箱约束。Agent 侧能做的是：改代码、补词条、跑 `audit_strings.py` 等纯脚本审计、`xcresulttool` 读结果、推送、归档、写文档。**构建、全量测试、启动冒烟这三件必须交回给用户**，或先解决 GUI 自动化通路（装 computer-use 插件 / 授权 AppleScript Automation）。
+
+> 备注：`update.command` **只做 `build`，从不跑 test**。全量测试历来靠手工补，这一条别忘。
 
 ## 本地化：四类泄漏必须全部清零
 
