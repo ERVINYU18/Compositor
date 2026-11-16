@@ -16,7 +16,7 @@
 | 目标语言 | zh-Hans（简体中文） |
 | 交付形态 | 独立 .app，ad-hoc 签名，独立更新器 |
 | 上游 | github.com/robbietilton/Compositor |
-| 当前基线版本 | 1.6.6（build 65）—— 每轮适配后更新 |
+| 当前基线版本 | 1.6.7（build 66）—— 每轮适配后更新 |
 
 ## 1 背景与目标
 
@@ -69,7 +69,7 @@
 | ① AppKit 裸字面量 | `NSMenuItem`、`toolTip`、`accessibilityDescription`、`labelWithString` 等直接给字符串，不自动本地化 | 必须显式包 `localizedString()` |
 | ② 运行时拼接 | 如 `"\(w) × \(h) px"`，静态扫描看不到 | 改为 `String(format: localizedString(...))` 格式串 |
 | ③ 词条缺失 | 源码有、目录没有 | 补 `Localizable.xcstrings` 词条 |
-| ④ 系统本地化资源 | SF Symbol 按 bundle 语言替换字形（如 `textformat` 在 zh-Hans 下为「格式」） | 改绘或改用非文字类符号 |
+| ④ 系统本地化资源 | SF Symbol 按 bundle 语言替换字形（如 `textformat` 在 zh-Hans 下为「格式」） | 改绘或改用非文字类符号。**现有两处自绘 T**：图层徽标 `NativeLayerList.textLayerIcon`、工具栏 `ToolRail.TextToolIcon`（`Text(verbatim: "T")`）。字母 T 是文字工具标识，永远保持 T，禁止翻成中文 |
 
 **词条与格式规则：**
 
@@ -158,7 +158,7 @@ Compositor-CN Updater 会拒绝脏工作区。合并提交后工作区干净，�
 
 ## 9 术语参考（节选）
 
-> 完整术语以 `Compositor/Localizable.xcstrings` 的 zh-Hans 词条为准（当前 1564 条）。
+> 完整术语以 `Compositor/Localizable.xcstrings` 的 zh-Hans 词条为准（当前 1566 条）。
 > 本节只列容易翻错、或历史上改过译法的核心词。
 
 译文一致性是验收项之一。下列为核心术语的既定译法：
