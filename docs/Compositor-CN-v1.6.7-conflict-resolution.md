@@ -112,34 +112,59 @@ Deliberately **not** translated: the layer defaults `"Folder 1"`,
   already uses (`json.dumps(..., ensure_ascii=False, indent=2)` plus a
   trailing newline); a re-serialise-and-compare check passes.
 
-## 5 Not verified in this round
+## 5 Verification
 
-The Release build, the full test run and the launch smoke test could not be
-run from the WorkBuddy session: `xcodebuild` cannot start there at all,
-because nested `sandbox-exec` is refused outright
-(`sandbox_apply: Operation not permitted` even for
-`sandbox-exec -p '(version 1)(allow default)' /bin/echo`). See the
-"环境限制" section in `.workbuddy-ai/memory/MEMORY.md` for every workaround
-tried and why each one fails.
+### What was verified
 
-Consequences for this round:
+- **CI: green.** Runs `43805717395` (branch `adapt-compositor-1.4.1`) and
+  `43805733435` (tag `v1.6.7-cn`), both on `d7dfd82`. All four jobs
+  succeeded: `unit` and `screenshots` in each. The `unit` job's four test
+  batches all reported `** TEST EXECUTE SUCCEEDED **` — `first` (90 s),
+  `rest` (89 s), `windows` (70 s), `filters` (70 s, with the filter suites
+  enabled because the version bump touches `project.pbxproj`).
+- **Test baseline: 809.** The full run cannot be executed from a
+  WorkBuddy session, so the number was taken from the CI logs and
+  cross-checked by counting `@Test` declarations: v1.6.6 declares exactly
+  **806**, matching its reported baseline, and v1.6.7 declares **809** —
+  the three new cases (`aPencilStrokeHasNoSoftPixels`,
+  `theCPUFallbackPencilIsHardToo`,
+  `theWheelTurnedAwayZoomsInWithNaturalScrollingOnOrOff`) are all
+  non-parameterised and count 1 each. The CI log confirms the new
+  `PencilTests` and `ScrollZoomTests` suites both ran and passed.
+  `xcresulttool`'s `totalTestCount` remains the authority for the next
+  round.
+- **Localization:** `audit_strings.py` reports 1566 keys, 0 UI literals
+  outside the catalog, 0 `Text(verbatim:)` literals; the
+  `LocalizedStringKey` sweep finds 0 missing keys; the ternary-expression
+  sweep finds every literal in the catalog; the catalog still round-trips
+  byte-identically through its own serialisation.
+- **Launch smoke test:** the installed 1.6.7 was opened and the process
+  stayed alive ≥6 s.
 
-- The **806-test baseline is stale**. v1.6.7 adds 3 `@Test` cases, so the
-  real number must be re-taken with
-  `xcrun xcresulttool get test-results summary --path <xcresult>` (read the
-  top-level `totalTestCount`, not the device-level figure).
-- The updater never runs tests at all: `update.command` only ever calls
-  `xcodebuild ... build`. Every round so far has been tested by hand.
-- A launch smoke test still has to be redone after the signing fix is
-  applied, since the installed bundle predates it.
+### What was not verified
+
+- **A local Release build.** The build runs in CI and in the updater, but
+  never from a WorkBuddy session: nested `sandbox-exec` is refused
+  outright (`sandbox_apply: Operation not permitted` even for
+  `sandbox-exec -p '(version 1)(allow default)' /bin/echo`). See the
+  "环境限制" section in `.workbuddy-ai/memory/MEMORY.md` for every
+  workaround tried and why each one fails.
+- **A local launch smoke test of the signed-and-fixed build.** The
+  installed bundle predates `29bc654`; the signing fix changes the build
+  settings, not the running code, but the installed app should still be
+  reinstalled from a fresh Release build.
+- **Manual acceptance** of the new v1.6.7 behaviour (see §7).
 
 ## 6 Release
 
-- Merge commit `683b1a1`, fix commit **`29bc654`** (signed by Yuyi).
-- **Not pushed.** `origin/adapt-compositor-1.4.1` is still at `25822f9`
-  (the v1.6.6 release commit). No `v1.6.7-cn` tag exists yet.
-- No `post-1.6.7-cn-*` archive and no `pre-1.6.7-install-*` rollback point.
-  The backup taken before the signing fix lives at
+- Merge commit `683b1a1`, fix commit **`29bc654`**, docs commit
+  **`d7dfd82`**.
+- **Pushed.** Branch `adapt-compositor-1.4.1` → `d7dfd82`; tag
+  **`v1.6.7-cn`** → `d7dfd82` (annotated). Both CI runs are green.
+- **Still missing:** the `post-1.6.7-cn-*` archive (bundle + tar.gz with
+  `.git` + `SHA256SUMS` + STATE, on the desktop and mirrored to iCloud)
+  and the `pre-1.6.7-install-*` rollback point. The backup taken before
+  the signing fix lives at
   `.Compositor-CN-Backups/pre-1.6.7-signing-fix-20261116-122847/`.
 - Installed app: **1.6.7 / 66**, launch smoke test passed on 2026-11-16
   (process alive ≥6 s).

@@ -58,7 +58,8 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   -destination 'platform=macOS,arch=arm64' build
 ```
 
-- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806（历史「452 项」是 1.3.7 的，早已作废）。**1.6.7 = 待重取**（v1.6.7 新增 3 个 `@Test`：`PencilTests` 2 个 + `ScrollZoomTests` 1 个；本轮无法在 WorkBuddy 进程内构建，基线未验证）。
+- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806，1.6.7 = 809（历史「452 项」是 1.3.7 的，早已作废）。
+- **1.6.7 = 809 的来源**：本机跑不了全量测试（见上），基线取自 CI run 43805717395 / 43805733435（`d7dfd82`，四个 job 全绿），并按「`@Test` 声明数」交叉核算 —— 1.6.6 的 `@Test` 声明数正好 806，与其报告基线一致；v1.6.7 为 809（新增 `aPencilStrokeHasNoSoftPixels`、`theCPUFallbackPencilIsHardToo`、`theWheelTurnedAwayZoomsInWithNaturalScrollingOnOrOff`，均非参数化，各计 1）。CI 日志确认 `PencilTests`、`ScrollZoomTests` 两个新 suite 都跑过并通过。**下轮仍以 `xcresulttool` 的 `totalTestCount` 为准。**
 - 取数用 `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准；同一份结果里 device 级的数字会偏大，不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 - 本机开着 Stage Manager：系统会把置前的浮动窗口限制在左边缘边距之外（本显示器为 x ≥ 221），**窗口坐标类测试不要把面板停在屏幕左边缘**；`NSApp.activate` 在 xcodebuild 下不可靠，别依赖它。文件通知类断言在全量负载下会晚到，等待窗口要留足余量。
