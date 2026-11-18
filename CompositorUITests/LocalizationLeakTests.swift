@@ -34,25 +34,27 @@ final class LocalizationLeakTests: XCTestCase {
         inspect("Start", in: app)
 
         // The menu bar is where English leaks most often: AppKit titles come from raw values and
-        // are not covered by the SwiftUI catalog lookup.
+        // are not covered by the SwiftUI catalog lookup. Only the menu's own items are read —
+        // a blanket app.menuItems scan walks every item of every menu on each open, which took
+        // 14 minutes on the first run. One menu at a time is the same coverage, much cheaper.
         let menus = app.menuBars.menuBarItems
-        let count = menus.count
-        for index in 0..<count {
+        for index in 0..<menus.count {
             let item = menus.element(boundBy: index)
             let title = item.label
             if isLeak(title) { leaks.append((screen: "menu bar", label: title)) }
             item.click()
             Thread.sleep(forTimeInterval: 0.4)
-            inspect("menu \(title)", in: app)
+            // The open menu's own items, scoped to the menu bar rather than the whole app.
+            inspect("menu \(title)", in: app, scope: app.menuBars.firstMatch)
             app.typeKey(.escape, modifierFlags: [])
-            Thread.sleep(forTimeInterval: 0.3)
+            Thread.sleep(forTimeInterval: 0.2)
         }
 
         // The sheets most likely to show untranslated text, by their own shortcuts.
-        for (name, keys) in [("Image Size", ["i", "command", "option"]),
-                             ("Hue Saturation", ["u", "command"])] {
-            app.typeKey(keys[0], modifierFlags: modifiers(keys))
-            Thread.sleep(forTimeInterval: 1)
+        for (name, key, extra) in [("Image Size", "i", XCUIElement.KeyModifierFlags([.command, .option])),
+                                   ("Hue Saturation", "u", XCUIElement.KeyModifierFlags.command)] {
+            app.typeKey(key, modifierFlags: extra)
+            Thread.sleep(forTimeInterval: 1.5)
             inspect(name, in: app)
             app.typeKey(.escape, modifierFlags: [])
             Thread.sleep(forTimeInterval: 0.5)
@@ -61,19 +63,25 @@ final class LocalizationLeakTests: XCTestCase {
         report()
     }
 
-    /// Collects the labels of everything on screen, recording the ones that look like English.
+    /// Collects the labels of the elements on screen, recording the ones that look like English.
+    ///
+    /// `scope` limits the walk to one subtree. Without it the app-wide element queries are
+    /// `allElementsBoundByIndex`, which enumerates every candidate — fine once, far too slow
+    /// per menu when the accessibility tree holds hundreds of items.
     @MainActor
-    private func inspect(_ screen: String, in app: XCUIApplication) {
-        // staticTexts covers Text/Label/menu item titles; buttons covers Button; the menuItems
-        // query picks up menu titles that are not inside a menuBars element.
-        for element in app.staticTexts.allElementsBoundByIndex {
+    private func inspect(_ screen: String, in app: XCUIApplication, scope: XCUIElement? = nil) {
+        let root = scope ?? app
+        for element in root.staticTexts.allElementsBoundByIndex {
             let label = element.label
             if isLeak(label) { leaks.append((screen: screen, label: label)) }
         }
-        for element in app.buttons.allElementsBoundByIndex {
+        for element in root.buttons.allElementsBoundByIndex {
             let label = element.label
             if isLeak(label) { leaks.append((screen: screen, label: label)) }
         }
+        // Menu titles are covered by the menuBarItems loop and by the scoped walk above; a
+        // separate app-wide menuItems query here is what made the first run take 14 minutes.
+        guard scope == nil else { return }
         for element in app.menuItems.allElementsBoundByIndex {
             let label = element.label
             if isLeak(label) { leaks.append((screen: screen, label: label)) }
@@ -112,14 +120,6 @@ final class LocalizationLeakTests: XCTestCase {
     /// and the multiplication sign appear in English labels.
     private let cjkPattern = "[\u{3000}-\u{303F}\u{3040}-\u{30FF}\u{3400}-\u{4DBF}"
         + "\u{4E00}-\u{9FFF}\u{F900}-\u{FAFF}\u{FF00}-\u{FFEF}]"
-
-    private func modifiers(_ keys: [String]) -> XCUIElement.KeyModifierFlags {
-        var flags: XCUIElement.KeyModifierFlags = []
-        if keys.contains("command") { flags.insert(.command) }
-        if keys.contains("option") { flags.insert(.option) }
-        if keys.contains("shift") { flags.insert(.shift) }
-        return flags
-    }
 
     private func report() {
         guard !leaks.isEmpty else { return }
