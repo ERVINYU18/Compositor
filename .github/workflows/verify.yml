@@ -317,27 +317,35 @@ jobs:
                  --jq "[.workflow_runs[] | select(.id != ${{ github.run_id }})][0].id // empty" 2>/dev/null || true)
           if [ -z "$id" ]; then
             echo "No previous successful run; the comparison is skipped."
-            echo "run=" >> "$GITHUB_OUTPUT"
+            echo "dir=" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           mkdir -p previous
-          if gh run download "$id" -n screenshots-macos-26 -D previous 2>/dev/null; then
-            echo "run=$id" >> "$GITHUB_OUTPUT"
-            # The artifact unzips into a subdirectory.
-            dir=$(find previous -name '*.png' -maxdepth 2 | head -1 | xargs -r dirname)
-            echo "dir=$dir" >> "$GITHUB_OUTPUT"
-          else
-            echo "run=" >> "$GITHUB_OUTPUT"
+          if ! gh run download "$id" -n screenshots-macos-26 -D previous; then
+            echo "The previous run has no screenshots artifact; the comparison is skipped."
+            echo "dir=" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          # The artifact unzips into a subdirectory; find it rather than assuming its name.
+          dir=$(find previous -type f -name '*.png' -print -quit | sed 's#/[^/]*$##')
+          if [ -z "$dir" ]; then
+            echo "The previous screenshots artifact holds no PNG; the comparison is skipped."
+            echo "dir=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "Comparing against run $id ($dir)"
+          echo "dir=$dir" >> "$GITHUB_OUTPUT"
 
       - name: Compare with the previous run
-        if: ${{ !cancelled() && steps.previous.outputs.run != '' }}
+        if: ${{ !cancelled() && steps.previous.outputs.dir != '' }}
         run: |
-          python3 -c 'import PIL' 2>/dev/null || pip install --quiet Pillow
+          # Pillow is often unavailable on the runner (no network to PyPI, or a managed Python).
+          # The script falls back to file sizes when it is missing, so this never fails here.
+          python3 -c 'import PIL' 2>/dev/null || pip install --quiet Pillow 2>/dev/null || true
           python3 tools/compare-screenshots.py "${{ steps.previous.outputs.dir }}" screenshots screenshot-diff
 
       - name: Upload the comparison
-        if: ${{ !cancelled() && steps.previous.outputs.run != '' }}
+        if: ${{ !cancelled() && steps.previous.outputs.dir != '' }}
         uses: actions/upload-artifact@v7
         with:
           name: screenshot-diff
