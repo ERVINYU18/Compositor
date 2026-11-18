@@ -121,7 +121,11 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - 处理 `.comp` 项目文件：读 [docs/writing-comp-files.md](docs/writing-comp-files.md)。
 - 项目文件格式：见 [docs/project-format.md](docs/project-format.md)；改动存档格式须同步 bump 格式版本号。
 - 代码与注释用英文美式拼写（"color"）；**但 UI 字符串一律中文**（此条覆盖上游 AGENTS.md 的 "American spelling in UI"）。
-- CI 在 push 时跑 CompositorTests。**push 后要确认真的触发了**（`gh api repos/ERVINYU18/Compositor/actions/runs?per_page=3`）—— Actions 被关过两次，`actions/permissions` 在关闭时也显示 `enabled: true`，靠它判断不出来。关闭期间推的提交需 `gh workflow run verify.yml -R ERVINYU18/Compositor --ref <分支或标签>` 手动补。
+- CI 在 push 时跑 `verify.yml`。**push 后要确认真的触发了**（`gh api repos/ERVINYU18/Compositor/actions/runs?per_page=3`）—— Actions 被关过两次，`actions/permissions` 在关闭时也显示 `enabled: true`，靠它判断不出来。关闭期间推的提交需 `gh workflow run verify.yml -R ERVINYU18/Compositor --ref <分支或标签>` 手动补。
+- **四个 job**：`unit`（CompositorTests 分 first / rest / windows / filters 四批，各批一个 `.xcresult`）、`release-build`（Release 构建 + 产物无 `*.debug.dylib` / `__preview.dylib` + `codesign -v --deep --strict`）、`localization-leak`（zh-Hans 启动扫界面英文，`CompositorUITests/LocalizationLeakTests.swift`）、`screenshots`（强制 `-AppleLanguages (zh-Hans)` 截图，与上一次成功 run 的 PNG 做像素 diff，artifact 为 informational 不阻断）。
+- **`unit` 的静态门禁**：`tools/localization/assert_text_tool_icon.py`（T 图标不变量，`233540f` 之前失败、之后通过）、`tools/localization/test-leak-rules.py`（泄漏规则 24 个 fixture）、`audit_strings.py` + `audit_keys.py`。
+- **测试数核对**：`tools/ci-test-count.py` 对多批次 `.xcresult` 求和（**顶层四桶相加，`summary` 没有 `totalTestCount`，device 级数字会重复计数**）并与 `@Test` 声明数核对。filters 批次被 scope 跳过时 `scripts/ci-tests.sh` 传 `--exclude-suites`，否则 747 vs 838 必然误报（`5190d99` 修）。
+- **FILTERS 范围**：workflow 按 diff 决定要不要跑 filters 批次（Camera Raw / Hue-Saturation / Levels / 各 Filter 套件）；改动 `Compositor.xcodeproj/`、`verify.yml`、`scripts/ci-tests.sh` 会让它全量跑一遍。
 
 ## 更新器（Compositor-CN Updater）
 

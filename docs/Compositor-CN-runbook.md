@@ -159,12 +159,24 @@ for i in $(seq 1 40); do grep -q "^TEST_EXIT=" /tmp/wb-run.log 2>/dev/null && br
 grep -E "^(RELEASE_EXIT=|TEST_EXIT=|\*\* BUILD|\*\* TEST)" /tmp/wb-run.log
 ```
 
-取测试数：
+核对测试数（多批次时求和，并与 `@Test` 声明数交叉核对）：
 
 ```bash
-xcrun xcresulttool get test-results summary --path "$HOME/Desktop/AI/AI Project/Compositor CN/build-logs/<版本>-tests.xcresult" \
-  | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['totalTestCount'], d['passedTests'], d['failedTests'])"
+python3 tools/ci-test-count.py --declared "$HOME/Desktop/AI/AI Project/Compositor CN/build-logs/<版本>-tests.xcresult"
 ```
+
+`xcresulttool` 的 `summary` 顶层**没有** `totalTestCount`：执行总数是 `passedTests + failedTests + skippedTests + expectedFailures`。device 级数字会重复计数（838 的真实值在 device 级显示 962），不要直接用。CI 里 `scripts/ci-tests.sh` 会在末尾自动跑这一步。
+
+### CI 门禁（`verify.yml`）
+
+| job | 拦什么 |
+| --- | --- |
+| `unit` | CompositorTests 四批（first / rest / windows / filters）+ 静态门禁（T 图标不变量、泄漏规则 fixture、目录审计）+ 测试数与 `@Test` 声明核对 |
+| `release-build` | Release 产物混入 `*.debug.dylib` / `__preview.dylib`，或 `codesign -v --deep --strict` 不过 |
+| `localization-leak` | zh-Hans 界面出现英文标签（SwiftUI 查表之外的运行时泄漏） |
+| `screenshots` | 强制 zh-Hans 截图，与上一次成功 run 的 PNG 做像素 diff（informational，不阻断） |
+
+filters 批次只在 diff 命中 Camera Raw / Hue-Saturation / Levels / Filter 相关路径、或改了 `Compositor.xcodeproj/`、`verify.yml`、`scripts/ci-tests.sh` 时才跑；其余提交会跳过它，测试数核对也会相应排除这些套件。
 
 ---
 
@@ -332,7 +344,10 @@ UPDATER_SRC_DIR="$BUNDLE" bash tools/updater/test-audit-keys-gate.sh
 | `zsh: parse error near '\n'` | 多行命令粘贴时 `\` 后带了空格。全部改单行 |
 | 更新器报 `APP_PATCH_FAILED` | 见第 10 节，手工接手合并 |
 | 更新器报 `HTTP 422: Actions has been disabled` | 与本项目无关，是 fork 的 Actions 被关，需在网页启用 |
-| 测试数对不上 | 用 `xcresulttool` 顶层 `totalTestCount`，别用 device 级数字 |
+| 测试数对不上 | 跑 `python3 tools/ci-test-count.py --declared <各批次.xcresult>`：顶层四桶求和并核对 `@Test` 声明数。别用 device 级数字或 `totalTestCount`（顶层没有） |
+| `unit` 红在「test counts did not reconcile」 | 先看是不是 filters 批次被 scope 跳过了（跳过时 `ci-tests.sh` 会传 `--exclude-suites`）；若没跳过，就是真漏跑了一个套件 |
+| `localization-leak` 红 | 界面上有英文标签。按提示翻成中文，或确属标准 §4.5 的数据名就加进 `tools/localization/ui-allowlist.txt` 并写明原因 |
+| `release-build` 红 | Release 产物里混进了 `*.debug.dylib` / `__preview.dylib`，或 strict 校验不过（常见是装机/合并带进了 Debug 文件） |
 | CI `unit` 跑满 60 分钟后 `cancelled`，日志停在某个批次后再无输出 | 先看 diff：若只有 markdown/文档，就是 runner 卡住，不是回归。直接重跑：`env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy gh run rerun <run-id> -R ERVINYU18/Compositor --failed`。若某次 run 显示 `cancelled` 且紧接着有新 run，是 `concurrency.cancel-in-progress`（连续 push 的正常行为），只需看最新那次。别为这种偶发故障改代码或 workflow |
 | 界面出现英文 | 先跑审计，再按项目规范 4.7 补扫四类盲区 |
 | 装了新版启动即崩 | 查 `ENABLE_HARDENED_RUNTIME` 是否被上游 pbxproj 覆盖 |
