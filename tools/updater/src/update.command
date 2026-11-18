@@ -132,6 +132,27 @@ echo "官方最新版本：${LATEST_TAG#v}"
 echo
 
 # --------------------------------------------------
+# V2.4.1: resume a pending handoff BEFORE the up-to-date short-circuit.
+# The AI has finished its part; just validate, re-run gates, restore state.
+# --------------------------------------------------
+
+RESUMED=0
+if pending_handoff; then
+    echo "发现上次未完成的更新交接（到 WorkBuddy 说「继续更新」处理完的部分）。"
+    printf '继续上次未完成的更新？[y/N] '
+    read -r RESUME_ANSWER || RESUME_ANSWER=""
+    if [ "$RESUME_ANSWER" = "y" ] || [ "$RESUME_ANSWER" = "Y" ]; then
+        if resume_from_handoff; then
+            echo "✅ 续跑准备完成，进入构建。"
+        else
+            echo "⚠️ 续跑未通过，已生成新一轮交接包或需人工处理。"
+            echo "到 WorkBuddy 说「继续更新」处理完后，再回到这里。"
+            pause_exit 1
+        fi
+    fi
+fi
+
+# --------------------------------------------------
 # 如果源码和安装包都已经是最新版，直接结束
 # --------------------------------------------------
 
@@ -146,6 +167,10 @@ if [ "$LOCAL_VERSION" = "${LATEST_TAG#v}" ] &&
     pause_exit 0
 fi
 
+# --------------------------------------------------
+# V2.4.1: skip download/merge/patch when resuming a handoff.
+# --------------------------------------------------
+if [ "$RESUMED" -eq 0 ]; then
 # --------------------------------------------------
 # V2.1：建立完整事务恢复点
 # --------------------------------------------------
@@ -325,24 +350,17 @@ done < "$CONFLICTS_FILE"
 
 if [ -n "$UNKNOWN_CONFLICTS" ]; then
     echo
-    echo "⚠️ 官方本次修改涉及新的冲突位置："
+    echo "⚠️ 官方本次修改涉及白名单外的冲突位置："
     echo
     printf '%s' "$UNKNOWN_CONFLICTS"
+    echo
+    echo "V2.4.1：不再丢弃合并结果，交给 AI 逐文件取舍。"
 
     cp "$CONFLICTS_FILE" \
        "$STATE_DIR/last-conflicts.txt"
 
-    rollback
-
-    echo
-    echo "当前稳定版没有受到影响。"
-    echo
-    echo "冲突清单已保存到："
-    echo "$STATE_DIR/last-conflicts.txt"
-    echo
-    echo "把上面的冲突文件发给 ChatGPT 即可继续处理。"
-
-    pause_exit 1
+    # V2.4.1: park the conflicted tree instead of throwing it away.
+    handoff_for_conflicts "$CONFLICTS_FILE"
 fi
 
 # --------------------------------------------------
@@ -688,12 +706,16 @@ else
 fi
 
 if [ "$PATCH_RESULT" -ne 0 ]; then
-    # V2.4.0: patch drift means upstream changed its source text. Leave a
-    # fresh handoff trace and say so plainly, rather than a generic error
-    # that points at last round's last-conflicts.txt.
+    # V2.4.1: patch drift means upstream changed its source text. Park the
+    # merged tree on a wip branch so the merge is not lost (V2.4.0 rolled
+    # back here, forcing a full redo). The tree has no conflict markers at
+    # this point, so the localization-style handoff applies.
     if [ -s "$STATE_DIR/patch-drift.txt" ]; then
         cp "$STATE_DIR/patch-drift.txt" "$STATE_DIR/last-conflicts.txt"
-        fail "上游原文已变，中文规则未能自动恢复，需要 AI 接手（见 last-conflicts.txt）。当前稳定版未受影响。"
+        handoff_for_localization \
+            "上游原文已变，中文规则未能自动恢复，需要 AI 接手。" \
+            "$STATE_DIR/patch-drift.txt" \
+            "patch-drift"
     fi
     fail "自动恢复中文版定制失败，当前稳定版未受影响。"
 fi
@@ -710,6 +732,7 @@ fi
 echo "✅ 已自动处理已知冲突"
 echo "✅ 已恢复中文版固定设置"
 echo "✅ 已恢复现有简体中文翻译"
+fi
 
 # --------------------------------------------------
 # V2.1：检查新增明显动态英文
@@ -775,7 +798,8 @@ if [ "$DYNAMIC_NEW_COUNT" -gt 0 ]; then
 
     handoff_for_localization \
         "发现 $DYNAMIC_NEW_COUNT 个新增动态 UI 英文模式，需要人工确认。" \
-        "$DYNAMIC_REPORT"
+        "$DYNAMIC_REPORT" \
+        "dynamic-english"
 fi
 
 echo "✅ 未发现新增明显动态英文"
@@ -804,7 +828,8 @@ if [ "$MISSING_COUNT" -gt 0 ]; then
 
     handoff_for_localization \
         "缺少 $MISSING_COUNT 条 zh-Hans 词条，需要补齐翻译。" \
-        "$MISSING_FILE"
+        "$MISSING_FILE" \
+        "missing-keys"
 fi
 
 echo "✅ Localizable.xcstrings 的 zh-Hans 翻译完整"
@@ -835,12 +860,13 @@ if [ -f "$AUDIT_KEYS_SCRIPT" ]; then
 
         handoff_for_localization \
             "LocalizedStringKey / 三元表达式承载的界面字面量缺少词条，需要补齐。" \
-            "$KEYS_REPORT"
+            "$KEYS_REPORT" \
+            "key-carriers"
     fi
 
     echo "✅ 键承载盲区审计通过"
 else
-    echo "⚠️ 未找到 $AUDIT_KEYS_SCRIPT，跳过键承载盲区审计"
+    echo "⚠️ 未找到 ${AUDIT_KEYS_SCRIPT}，跳过键承载盲区审计"
 fi
 
 # --------------------------------------------------
@@ -1018,6 +1044,11 @@ echo " ✅ 更新完成"
 echo "================================================"
 echo "Compositor-CN：$TEST_VERSION ($TEST_BUILD)"
 echo
+
+# V2.4.1: archive the handoff after a successful resume (wip branch kept).
+if [ "${RESUMED:-0}" -eq 1 ]; then
+    archive_handoff
+fi
 
 open "$APP"
 

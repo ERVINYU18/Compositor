@@ -136,6 +136,24 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - **版本 bump 要改两处**：`update.command` 的 `VERSION` 和 applet `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion`，漏一处「关于」里版本对不上。
 - ⚠️ **V2.3 Dev 不要装**：是另一个工具（`--rehearse` 默认、`/private/tmp` 隔离、遇内容冲突直接 fail、从不安装、目标硬编码 v1.4.7、**无 CN 补丁**），装上去功能倒退。
 
+## 更新器交接协议（V2.4.1，用户说「继续更新」时执行）
+
+更新器遇到白名单外的冲突、或补丁/本地化门禁时，不再丢弃合并结果，而是把带冲突标记（如需）的合并树停在 `wip-cn-<版本>-needs-*` 分支，并在 `~/Library/Application Support/Compositor-CN-Updater/handoff/` 写交接包。用户到会话里说「继续更新」，按下面做：
+
+1. **读交接包**：`manifest.json`（`round`/`stage`/`wip_branch`/`latest_tag`/各 HEAD/backup）、`INSTRUCTIONS.md`（与本协议一致）、`evidence/`（门禁报告、冲突清单、`upstream-changes.diff` 上游完整 diff、`audit.json`）。
+2. **切到 wip 分支**：`cd <仓库> && git checkout <wip_branch>`。该分支含完整合并结果；`stage=conflicts` 时文件里**保留 `<<<<<<<` 标记**，那是要你解的，不是损坏。
+3. **逐文件取舍**：按本文档「本地化」与「签名与发布」的规则——**显示层保留中文，行为层保留上游**。禁止「全部 ours / 全部 theirs」或整文件覆盖。上游新增 UI 若用裸 `.help("literal")` / `.accessibilityLabel("literal")`，那在本项目走 `LocalizedStringKey` 自动查表，是既定惯例，**不要**改成 `localizedString()`；只有参数已是 `String`（三元结果、拼接、变量）时才显式包装。
+4. **补词条**：照 `docs/Compositor-CN-requirements.md` 术语表，用 `tools/localization/add_<版本>_keys.py` 模板（备份 + 字节级序列化守卫 + 追加不覆盖）。
+5. **自查**：跑 `audit_strings.py` + `audit_keys.py`，再人工扫三类盲区（枚举/变量承载的键、三元表达式、AppKit setter）；SF Symbol 字母类符号按文档规则处理（T 保持 T）。
+6. **提交 + 写回**：在 wip 分支提交（写清每个冲突取了哪边、为什么），起草本轮冲突记录草稿放工作区，然后写 `handoff/DONE.json`：
+   ```json
+   {"round": <与 manifest 一致>, "changed_files": ["..."], "decisions": ["文件: 取哪边/为什么"], "unresolved": []}
+   ```
+   `unresolved` 非空如实写，交用户判断。
+7. **交还**：告诉用户「回更新器按回车续跑」。**你不构建、不推送、不装机、不打标签**——更新器会重跑门禁、恢复状态、快进主分支，再走构建装机，成功后归档交接包（wip 分支保留复核）。
+
+轮次上限 3：门禁连续不过时更新器给编号菜单（重试 / 中止回滚 / 保留现场转人工），不会无限循环。
+
 ## 禁止事项
 
 - 不恢复官方 Sparkle 更新入口。

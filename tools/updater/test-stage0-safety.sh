@@ -137,7 +137,7 @@ chk "产物路径不是 Debug" "$(grep -c 'Build/Products/Debug/Compositor.app' 
 # ------------------------------------------------------------------
 echo
 echo "--- patch drift trace ---"
-chk "drift 清单由补丁写入" "$(grep -c 'patch-drift.txt' "$SRC_DIR/update.command")" "5"
+chk "drift 清单由补丁写入" "$(grep -c 'patch-drift.txt' "$SRC_DIR/update.command")" "6"
 chk "drift 命中时写 last-conflicts" "$(grep -c 'cp "$STATE_DIR/patch-drift.txt" "$STATE_DIR/last-conflicts.txt"' "$SRC_DIR/update.command")" "1"
 chk "不再硬报 APP_PATCH_FAILED:" "$(grep -c 'APP_PATCH_FAILED:' "$SRC_DIR/update.command")" "0"
 chk "BLEND 补丁同构 drift 留痕" "$(grep -c 'BLEND_PATCH_DRIFT' "$SRC_DIR/update.command")" "2"
@@ -184,6 +184,25 @@ PY
 chk "归档 mkdir 有兜底" "$(grep -c 'if mkdir -p "\$BACKUP_DIR" 2>/dev/null' "$SRC_DIR/update.command")" "1"
 chk "归档 chown 不中止" "$(grep -c 'sudo chown -R.*|| true' "$SRC_DIR/update.command")" "1"
 chk "归档用 ROLLBACK_SOURCE" "$(grep -c 'ROLLBACK_SOURCE' "$SRC_DIR/update.command")" "6"
+
+# ------------------------------------------------------------------
+# 10. Stage 2 wiring (behaviour covered by test-handoff-resume-e2e.sh).
+# ------------------------------------------------------------------
+echo
+echo "--- stage2 wiring ---"
+CORE_SRC="$SRC_DIR/UpdaterCore.sh"
+[ -f "$CORE_SRC" ] || CORE_SRC="$REPO_ROOT/tools/updater/src/UpdaterCore.sh"
+chk "write_handoff_bundle 已定义" "$(grep -c '^write_handoff_bundle()' "$CORE_SRC")" "1"
+chk "resume_from_handoff 已定义" "$(grep -c '^resume_from_handoff()' "$CORE_SRC")" "1"
+chk "handoff_for_conflicts 已定义" "$(grep -c '^handoff_for_conflicts()' "$CORE_SRC")" "1"
+chk "未知冲突改走 handoff" "$(grep -c 'handoff_for_conflicts "\$CONFLICTS_FILE"' "$SRC_DIR/update.command")" "1"
+chk "patch-drift 接入 handoff" "$(grep -c '"patch-drift"' "$SRC_DIR/update.command")" "1"
+chk "resume 在短路前调用" "$(python3 - "$SRC_DIR/update.command" <<'PY'
+import sys
+s=open(sys.argv[1]).read()
+print('yes' if s.index('if pending_handoff; then') < s.index('当前已经包含官方最新版') else 'no')
+PY
+)" "yes"
 
 echo
 if [ "$FAIL" = 0 ]; then echo "STAGE0_REHEARSAL_OK"; else echo "STAGE0_REHEARSAL_FAILED"; fi
