@@ -12,9 +12,15 @@ anything) and to a JSON artifact. `--declared` cross-checks the total against th
 declaration count and the executed count drifting apart is how a silently-skipped suite
 gets noticed.
 
+The workflow runs the filter suites only when something they cover changed, so a scoped run
+executes fewer tests than the sources declare. `--exclude-suites` names the suites that were
+not run — their files are left out of the declaration count, so the check compares like with
+like instead of failing on a correct scoped run.
+
 Usage:
   tools/ci-test-count.py first.xcresult rest.xcresult [more.xcresult ...]
   tools/ci-test-count.py --declared first.xcresult rest.xcresult
+  tools/ci-test-count.py --declared --exclude-suites "FilterTests LevelsTests" rest.xcresult
 """
 import json
 import os
@@ -73,12 +79,19 @@ def counts(s):
 DECL = re.compile(r'^\s*(?:@[\w()\s,.=:"-]+\s+)*@Test\b', re.M)
 
 
-def declared_tests():
-    """How many `@Test` declarations the test sources hold, for the cross-check."""
+def declared_tests(exclude=()):
+    """How many `@Test` declarations the executed suites hold, for the cross-check.
+
+    `exclude` names suites this run did not execute (the filter suites, when the workflow
+    scoped them out); their files are left out so the check compares like with like.
+    """
     if not TESTS_DIR.is_dir():
         return None
+    excluded = set(exclude)
     count = 0
     for path in TESTS_DIR.rglob("*.swift"):
+        if path.stem in excluded:
+            continue
         try:
             count += len(DECL.findall(path.read_text(encoding="utf-8")))
         except OSError:
@@ -86,11 +99,38 @@ def declared_tests():
     return count
 
 
+def parse(argv):
+    """Split the arguments into the declared flag, the excluded suites, and the bundles."""
+    bundles, exclude = [], []
+    check_declared = False
+    i = 0
+    while i < len(argv):
+        a = argv[i]
+        if a == "--declared":
+            check_declared = True
+        elif a == "--exclude-suites":
+            i += 1
+            if i >= len(argv):
+                print("--exclude-suites needs a suite list", file=sys.stderr)
+                return None
+            exclude += argv[i].split()
+        elif a.startswith("--"):
+            print(f"unknown option {a}", file=sys.stderr)
+            return None
+        else:
+            bundles.append(a)
+        i += 1
+    return check_declared, exclude, bundles
+
+
 def main(argv):
-    check_declared = "--declared" in argv
-    bundles = [a for a in argv if not a.startswith("--")]
+    parsed = parse(argv)
+    if parsed is None:
+        return 2
+    check_declared, exclude, bundles = parsed
     if not bundles:
-        print("usage: tools/ci-test-count.py [--declared] <bundle.xcresult> ...", file=sys.stderr)
+        print("usage: tools/ci-test-count.py [--declared] [--exclude-suites \"A B\"] "
+              "<bundle.xcresult> ...", file=sys.stderr)
         return 2
 
     print("Test counts")
@@ -114,11 +154,13 @@ def main(argv):
     print(f"  {'failed':28} {totals['failed']:5}")
     print(f"  {'skipped':28} {totals['skipped']:5}")
 
-    declared = declared_tests() if check_declared else None
+    declared = declared_tests(exclude) if check_declared else None
     mismatch = False
     if declared is not None:
         print()
         print(f"  {'@Test declarations':28} {declared:5}")
+        if exclude:
+            print(f"  {'excluded suites':28} {len(exclude):5}  ({', '.join(sorted(exclude))})")
         if declared != totals["total"]:
             mismatch = True
             print(f"  FAIL: executed {totals['total']} but {declared} @Test declarations — "
@@ -149,6 +191,8 @@ def main(argv):
     if declared is not None:
         verdict = "matches the declarations" if not mismatch else "DIFFERS from the declarations"
         summary_lines.append(f"`@Test` declarations: {declared} — {verdict}")
+        if exclude:
+            summary_lines.append(f"Excluded (not run): {', '.join(sorted(exclude))}")
         summary_lines.append("")
     summary_lines.append(f"Result: {'PASS' if ok else 'FAIL'}")
     summary_lines.append("")
@@ -159,7 +203,7 @@ def main(argv):
             f.write("\n".join(summary_lines) + "\n")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    json.dump({"per_bundle": per_bundle, "totals": totals,
+    json.dump({"per_bundle": per_bundle, "totals": totals, "excluded_suites": sorted(exclude),
                "declared": declared, "mismatch": mismatch, "ok": ok},
               open(OUT, "w", encoding="utf-8"), ensure_ascii=False, indent=2)
 

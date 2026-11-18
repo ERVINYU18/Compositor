@@ -89,7 +89,14 @@ done
 # xcresulttool has no total across them; tools/ci-test-count.py sums the top-level counts
 # (never the per-device ones, which double-count) and cross-checks the total against the
 # `@Test` declarations. It also writes the table to $GITHUB_STEP_SUMMARY.
-if ! python3 tools/ci-test-count.py --declared "${names[@]/%/.xcresult}"; then
+#
+# The filter suites are left out of the declaration count when this run skipped them, so the
+# check compares the suites that ran against the declarations they hold.
+declared_args=(--declared)
+if [[ "${FILTERS:-true}" != true ]]; then
+  declared_args+=(--exclude-suites "${FILTER_SUITES[*]}")
+fi
+if ! python3 tools/ci-test-count.py "${declared_args[@]}" "${names[@]/%/.xcresult}"; then
   echo "::error::test counts did not reconcile — see the group above."
   failed=1
 fi
