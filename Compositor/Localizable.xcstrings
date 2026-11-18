@@ -15957,6 +15957,146 @@
           }
         }
       }
+    },
+    "Changes": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "更改"
+          }
+        }
+      }
+    },
+    "Layers, folders and masks kept · sRGB": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "保留图层、文件夹和蒙版 · sRGB"
+          }
+        }
+      }
+    },
+    "Other formats: TIFF, PDF, GIF and PSD to keep the layers, EXR to keep light brighter than white, and Channel Pack for game textures": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他格式：TIFF、PDF、GIF，以及可保留图层的 PSD；EXR 可保留比白色更亮的光；Channel Pack 用于游戏纹理"
+          }
+        }
+      }
+    },
+    "Other formats: TIFF, PDF, GIF and PSD to keep the layers, and Channel Pack for game textures": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "其他格式：TIFF、PDF、GIF，以及可保留图层的 PSD；Channel Pack 用于游戏纹理"
+          }
+        }
+      }
+    },
+    "Color of the selected line": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选线条的颜色"
+          }
+        }
+      }
+    },
+    "Color of the next line": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "下一条线条的颜色"
+          }
+        }
+      }
+    },
+    "Fill color of the selected shape": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选形状的填充颜色"
+          }
+        }
+      }
+    },
+    "Stroke color": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "描边颜色"
+          }
+        }
+      }
+    },
+    "Stroke drawn inside the shape, in pixels. 0 draws none": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "在形状内侧绘制的描边，单位为像素；0 表示不绘制"
+          }
+        }
+      }
+    },
+    "Dashes of the selected line; they grow with its width": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "所选线条的虚线；长度随线宽增加"
+          }
+        }
+      }
+    },
+    "How this line's ends are finished": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "此线条两端的收尾方式"
+          }
+        }
+      }
+    },
+    "Round this rectangle's corners by this many pixels; 0 keeps them square": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "以指定像素数圆化此矩形的角；0 表示保持直角"
+          }
+        }
+      }
+    },
+    "Color Picker (Fill Color)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "颜色选择器（填充颜色）"
+          }
+        }
+      }
+    },
+    "Color Picker (Stroke Color)": {
+      "localizations": {
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "颜色选择器（描边颜色）"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

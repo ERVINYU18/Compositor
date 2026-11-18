@@ -12,7 +12,7 @@ struct ExportAsSheet: View {
     /// The document's layers, which Channel Pack and GIF read; without it, neither is offered.
     let snapshot: ProjectSnapshot?
     private var formats: [ExportFormat] {
-        ExportFormat.allCases.filter { ($0 != .exr || hdrRaster != nil) && (($0 != .channelPack && $0 != .gif) || snapshot != nil) }
+        ExportFormat.allCases.filter { ($0 != .exr || hdrRaster != nil) && (($0 != .channelPack && $0 != .gif && $0 != .psd) || snapshot != nil) }
     }
     let session: EditorSession
     let finish: ((data: Data, format: ExportFormat)?) -> Void
@@ -47,7 +47,7 @@ struct ExportAsSheet: View {
         }
         _options = State(initialValue: start)
         _gifOptions = State(initialValue: GIFExportOptions())
-        _format = State(initialValue: (format == .exr && hdrRaster == nil) || (format == .channelPack && snapshot == nil) ? .png : format)
+        _format = State(initialValue: (format == .exr && hdrRaster == nil) || ((format == .channelPack || format == .psd) && snapshot == nil) ? .png : format)
         _width = State(initialValue: raster.image.width)
         _height = State(initialValue: raster.image.height)
     }
@@ -150,6 +150,8 @@ struct ExportAsSheet: View {
                         moreFormats
                     }
                 }
+                // A Photoshop file keeps every layer as it is, at the document's size.
+                if format != .psd {
                 GridRow {
                     Text("Size")
                     HStack(spacing: 6) {
@@ -163,6 +165,14 @@ struct ExportAsSheet: View {
                             }
                         }
                         .fixedSize().help(localizedString("Scale the export: the document stays as it is"))
+                    }
+                }
+                }
+                if format == .psd, let notes = snapshot.flatMap({ PSDWriter.summary(PSDWriter.notes(for: $0)) }) {
+                    GridRow {
+                        Text("Changes")
+                        Text(notes).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+                            .frame(maxWidth: 420, alignment: .leading)
                     }
                 }
                 if format == .jpeg {
@@ -238,7 +248,8 @@ struct ExportAsSheet: View {
                 }
             }
             HStack(spacing: 12) {
-                Text(verbatim: format == .channelPack ? localizedString("Each channel from a layer, read as grayscale · PNG")
+                Text(verbatim: format == .psd ? localizedString("Layers, folders and masks kept · sRGB")
+                     : format == .channelPack ? localizedString("Each channel from a layer, read as grayscale · PNG")
                      : format == .gif ? localizedString("Up to 256 colors · sRGB")
                      : format == .exr ? localizedString("Brighter than white kept · Transparency kept")
                      : takesCMYK && cmyk ? String(format: localizedString("CMYK – %@"), profile?.name ?? localizedString("No profile"))
@@ -297,6 +308,12 @@ struct ExportAsSheet: View {
                     result = Encoded(settings: requested, data: encoded.data, preview: encoded.preview, durations: encoded.durations)
                     return
                 }
+                if requested.format == .psd, let snapshot {
+                    let written = try await ImageExporter.shared.psdData(snapshot)
+                    try Task.checkCancellation()
+                    result = Encoded(settings: requested, data: written.data, preview: written.preview)
+                    return
+                }
                 if requested.format == .channelPack, let snapshot {
                     let packed = try await ImageExporter.shared.channelPack(snapshot, sources: requested.channels,
                                                                             width: requested.width, height: requested.height)
@@ -326,7 +343,7 @@ struct ExportAsSheet: View {
                     } else {
                         preview = try await ImageExporter.shared.flattened(sized, over: background)
                     }
-                case .gif: return
+                case .gif, .psd: return
                 }
                 try Task.checkCancellation()
                 result = Encoded(settings: requested, data: data, preview: preview)
@@ -408,8 +425,8 @@ struct ExportAsSheet: View {
         }
         .menuStyle(.button).fixedSize()
         .help(others.contains(.exr)
-              ? localizedString("Other formats: TIFF, PDF and GIF, EXR to keep light brighter than white, and Channel Pack for game textures")
-              : localizedString("Other formats: TIFF, PDF and GIF, and Channel Pack for game textures"))
+              ? localizedString("Other formats: TIFF, PDF, GIF and PSD to keep the layers, EXR to keep light brighter than white, and Channel Pack for game textures")
+              : localizedString("Other formats: TIFF, PDF, GIF and PSD to keep the layers, and Channel Pack for game textures"))
         if chosen { menu.buttonStyle(.borderedProminent) } else { menu.buttonStyle(.bordered) }
     }
 
