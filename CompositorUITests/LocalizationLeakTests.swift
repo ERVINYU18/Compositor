@@ -34,20 +34,24 @@ final class LocalizationLeakTests: XCTestCase {
         inspect("Start", in: app)
 
         // The menu bar is where English leaks most often: AppKit titles come from raw values and
-        // are not covered by the SwiftUI catalog lookup. Only the menu's own items are read —
-        // a blanket app.menuItems scan walks every item of every menu on each open, which took
-        // 14 minutes on the first run. One menu at a time is the same coverage, much cheaper.
+        // are not covered by the SwiftUI catalog lookup.
+        //
+        // One scan, not one per menu. AppKit puts the whole menu tree — every item of every menu —
+        // in the accessibility snapshot at once (the first run enumerated to index 257 across nine
+        // menus, which is ~28 items each: they cannot have come from one open menu). Each
+        // allElementsBoundByIndex call is a fresh snapshot costing ~0.3s per element, so scanning
+        // three element types per menu took 835s; once is 90s at worst and covers the same tree.
         let menus = app.menuBars.menuBarItems
         for index in 0..<menus.count {
-            let item = menus.element(boundBy: index)
-            let title = item.label
+            let title = menus.element(boundBy: index).label
             if isLeak(title) { leaks.append((screen: "menu bar", label: title)) }
-            item.click()
-            Thread.sleep(forTimeInterval: 0.4)
-            // The open menu's own items, scoped to the menu bar rather than the whole app.
-            inspect("menu \(title)", in: app, scope: app.menuBars.firstMatch)
-            app.typeKey(.escape, modifierFlags: [])
-            Thread.sleep(forTimeInterval: 0.2)
+        }
+
+        // Opening one menu materializes the tree in the snapshot; the scan then reads all of it.
+        if menus.count > 0 {
+            menus.element(boundBy: 0).click()
+            Thread.sleep(forTimeInterval: 0.8)
+            inspect("menus", in: app)
         }
 
         // The sheets most likely to show untranslated text, by their own shortcuts.
@@ -65,23 +69,18 @@ final class LocalizationLeakTests: XCTestCase {
 
     /// Collects the labels of the elements on screen, recording the ones that look like English.
     ///
-    /// `scope` limits the walk to one subtree. Without it the app-wide element queries are
-    /// `allElementsBoundByIndex`, which enumerates every candidate — fine once, far too slow
-    /// per menu when the accessibility tree holds hundreds of items.
+    /// Menu items are included: with a menu open, `app.menuItems` returns the whole menu tree, so
+    /// one call here covers every menu rather than only the open one.
     @MainActor
-    private func inspect(_ screen: String, in app: XCUIApplication, scope: XCUIElement? = nil) {
-        let root = scope ?? app
-        for element in root.staticTexts.allElementsBoundByIndex {
+    private func inspect(_ screen: String, in app: XCUIApplication) {
+        for element in app.staticTexts.allElementsBoundByIndex {
             let label = element.label
             if isLeak(label) { leaks.append((screen: screen, label: label)) }
         }
-        for element in root.buttons.allElementsBoundByIndex {
+        for element in app.buttons.allElementsBoundByIndex {
             let label = element.label
             if isLeak(label) { leaks.append((screen: screen, label: label)) }
         }
-        // Menu titles are covered by the menuBarItems loop and by the scoped walk above; a
-        // separate app-wide menuItems query here is what made the first run take 14 minutes.
-        guard scope == nil else { return }
         for element in app.menuItems.allElementsBoundByIndex {
             let label = element.label
             if isLeak(label) { leaks.append((screen: screen, label: label)) }
