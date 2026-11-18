@@ -84,4 +84,14 @@ for suite, seconds in sorted(suites.items(), key=lambda s: -s[1])[:10]: print(f"
   echo "::endgroup::"
   [[ $result == FAILED ]] && echo "::error::$name failed — open its group above for the log."
 done
+
+# One number for the whole run. Several app processes mean several result bundles, and
+# xcresulttool has no total across them; tools/ci-test-count.py sums the top-level counts
+# (never the per-device ones, which double-count) and cross-checks the total against the
+# `@Test` declarations. It also writes the table to $GITHUB_STEP_SUMMARY.
+if ! python3 tools/ci-test-count.py --declared "${names[@]/%/.xcresult}"; then
+  echo "::error::test counts did not reconcile — see the group above."
+  failed=1
+fi
+
 exit $failed

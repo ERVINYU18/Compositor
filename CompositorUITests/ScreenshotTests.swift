@@ -3,24 +3,34 @@ import XCTest
 
 /// Screenshots of the main screens, so how the app looks can be checked without launching it: CI keeps them with
 /// each run. Nothing is compared. A step that can't find what it needs records a failure, and the rest still run.
+///
+/// The app runs under zh-Hans. A CI runner is otherwise an English machine, so every screenshot showed the
+/// English UI — useless for checking the build this project actually ships, which is Chinese. Elements are
+/// therefore looked up by their Chinese labels, read from the app's own zh-Hans strings, never by English
+/// literals: an English literal in a zh-Hans run silently finds nothing, which is exactly the leak this
+/// project keeps having to chase.
 final class ScreenshotTests: XCTestCase {
     override func setUpWithError() throws { continueAfterFailure = true }
 
     @MainActor
     func testMainScreens() throws {
         let app = XCUIApplication()
-        // A fresh window at its default size, and no update check.
-        app.launchArguments = ["-ApplePersistenceIgnoreState", "YES", "-SUEnableAutomaticChecks", "NO"]
+        // A fresh window at its default size, no update check, and the language the shipped build uses.
+        app.launchArguments = [
+            "-ApplePersistenceIgnoreState", "YES", "-SUEnableAutomaticChecks", "NO",
+            "-AppleLanguages", "(zh-Hans)", "-AppleLocale", "zh_CN",
+        ]
         app.launch()
         let window = app.windows.firstMatch
         XCTAssertTrue(window.waitForExistence(timeout: 10), "the editor window")
         shoot("01 Start", window)
 
         try open(picture(), in: app)
+        // An accessibility identifier, not a label: it is the same in every language.
         XCTAssertTrue(app.staticTexts["canvasDimensions"].waitForExistence(timeout: 10), "the opened picture")
         shoot("02 Editor", window)
 
-        app.menuBars.menuBarItems["Filter"].click()
+        app.menuBars.menuBarItems[zh("Filter")].click()
         shoot("03 Filter menu")
         app.typeKey(.escape, modifierFlags: [])
 
@@ -32,8 +42,9 @@ final class ScreenshotTests: XCTestCase {
         shoot("05 Hue Saturation")
         dismiss(app)
 
-        app.menuBars.menuBarItems["Filter"].click()
-        app.menuItems["Camera Raw Filter…"].click()
+        app.menuBars.menuBarItems[zh("Filter")].click()
+        // The menu title is the localized filter name with an ellipsis appended, so it is built the same way.
+        app.menuItems[zh("Camera Raw Filter") + "…"].click()
         shoot("06 Camera Raw", settle: 2)
         dismiss(app)
 
@@ -53,23 +64,54 @@ final class ScreenshotTests: XCTestCase {
 
     /// Cancels the sheet or panel showing, by its Cancel button where it has one.
     private func dismiss(_ app: XCUIApplication) {
-        let cancel = app.buttons["Cancel"].firstMatch
+        let cancel = app.buttons[zh("Cancel")].firstMatch
         if cancel.exists { cancel.click() } else { app.typeKey(.escape, modifierFlags: []) }
         Thread.sleep(forTimeInterval: 0.5)
     }
 
     /// Opens a file in the app under test as the Finder would.
     private func open(_ file: URL, in app: XCUIApplication) throws {
-        // This bundle is …/Products/Debug/CompositorUITests-Runner.app/Contents/PlugIns/CompositorUITests.xctest.
-        var products = Bundle(for: Self.self).bundleURL
-        for _ in 0..<4 { products.deleteLastPathComponent() }
-        let compositor = products.appendingPathComponent("Compositor.app")
         let opened = expectation(description: "opened")
-        NSWorkspace.shared.open([file], withApplicationAt: compositor, configuration: NSWorkspace.OpenConfiguration()) { _, error in
+        NSWorkspace.shared.open([file], withApplicationAt: appUnderTest, configuration: NSWorkspace.OpenConfiguration()) { _, error in
             XCTAssertNil(error)
             opened.fulfill()
         }
         wait(for: [opened], timeout: 10)
+    }
+
+    // MARK: - The app's own Chinese strings
+
+    /// The app bundle under test.
+    private var appUnderTest: URL {
+        // This bundle is …/Products/Debug/CompositorUITests-Runner.app/Contents/PlugIns/CompositorUITests.xctest.
+        var products = Bundle(for: Self.self).bundleURL
+        for _ in 0..<4 { products.deleteLastPathComponent() }
+        return products.appendingPathComponent("Compositor.app")
+    }
+
+    /// The zh-Hans strings the app under test was built with. Loaded once; empty if the build has no Chinese
+    /// resources, in which case the lookups fall back to the English key and the run behaves as it used to.
+    private lazy var chineseStrings: [String: String] = {
+        let bundle = Bundle(url: appUnderTest)
+        guard let url = bundle?.url(forResource: "Localizable", withExtension: "strings", subdirectory: nil,
+                                    localization: "zh-Hans") else { return [:] }
+        // Compiled .strings are a property list, either XML (UTF-16) or binary.
+        if let table = NSDictionary(contentsOf: url) as? [String: String] { return table }
+        // A plain-text .strings table, in case the build emits one.
+        guard let text = try? String(contentsOf: url, encoding: .utf8) else { return [:] }
+        var table: [String: String] = [:]
+        for line in text.split(separator: "\n") {
+            let parts = line.split(separator: "\"")
+            guard parts.count >= 3, line.contains("=") else { continue }
+            table[String(parts[1])] = String(parts[parts.count - 2])
+        }
+        return table
+    }()
+
+    /// The Chinese label for an English key, as the app will render it. Falls back to the key so a missing
+    /// translation fails on the label (visible in the screenshot step) rather than crashing the run.
+    private func zh(_ key: String) -> String {
+        chineseStrings[key] ?? key
     }
 
     /// A made-up landscape, for something to edit: a sunset sky, a sun and two rows of hills.

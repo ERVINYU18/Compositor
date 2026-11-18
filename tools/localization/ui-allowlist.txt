@@ -1,0 +1,52 @@
+# Labels that are deliberately English in the Chinese UI, one per line.
+#
+# docs/Compositor-CN-project-standards.md §4.5 lists the values that must NOT be translated —
+# translating them silently breaks behaviour. Anything here is an exemption from
+# CompositorUITests/LocalizationLeakTests, which otherwise fails on any pure-ASCII English label
+# in a zh-Hans run.
+#
+# Format: a substring that, when a label contains it, exempts that label. `#` starts a comment.
+# Blank lines are ignored. Keep this list short: every line is a real English word on screen,
+# and should be there because a rule says so, not because it was inconvenient to translate.
+
+# The text tool's identifier. Never translated (it would render as "格式").
+T
+
+# ColorSync profile names, matched exactly by CMYK.generic — a translated name stops matching.
+Generic CMYK Profile
+Generic RGB Profile
+Generic Gray Profile
+
+# Font data names: PostScript names are loaded as-is; the display name is NSFont.displayName.
+Helvetica
+Courier
+Menlo
+SF Pro
+
+# Units, shown as symbols in every locale.
+px
+DPI
+PPI
+
+# Blend modes and colour spaces are format names shown verbatim.
+RGB
+CMYK
+Lab
+HSB
+sRGB
+
+# Standard image format names, kept as the acronyms they are.
+PSD
+PSB
+PNG
+JPEG
+TIFF
+HEIF
+WebP
+EXR
+HDR
+GIF
+PDF
+
+# macOS-provided UI: the system's own text, not ours to translate.
+OK

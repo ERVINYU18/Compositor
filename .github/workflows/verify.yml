@@ -14,6 +14,8 @@ concurrency:
 
 permissions:
   contents: read
+  # The screenshots job downloads the previous run's artifact to compare against.
+  actions: read
 
 jobs:
   unit:
@@ -94,6 +96,159 @@ jobs:
           retention-days: 7
           if-no-files-found: ignore
 
+      # The count of every batch, reconciled against the @Test declarations. Summary-only
+      # otherwise: it lives in the step summary, and this artifact lets a run be checked later.
+      - name: Upload test counts
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-counts
+          path: tools/localization/test-count-result.json
+          retention-days: 30
+          if-no-files-found: warn
+
+      # The static invariants, which need no app. Each fails the job, unlike the audits that
+      # only report: these are the two rules that regressions have silently broken before — the
+      # text tool's letter T turning into "格式", and a literal reaching a UI sink with no entry.
+      - name: Check the text tool's T icon
+        run: python3 tools/localization/assert_text_tool_icon.py
+
+      - name: Check the leak rules against their fixtures
+        run: python3 tools/localization/test-leak-rules.py
+
+      - name: Audit the catalog
+        run: |
+          python3 tools/localization/audit_strings.py
+          python3 tools/localization/audit_keys.py
+
+  # Release build, to catch what Debug hides: optimization-only compile errors, and a signing
+  # seal that is good enough to launch but fails `codesign -v --deep --strict`. The seal check
+  # is a hard failure — it is the check the app installer relies on. The artifact is for
+  # inspection only: a downloaded bundle carries quarantine, and the installer still builds
+  # Release locally.
+  release-build:
+    name: release-build
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Resolve Swift packages
+        run: >
+          xcodebuild -resolvePackageDependencies
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -onlyUsePackageVersionsFromResolvedFile
+
+      # Same configuration as the installer's local build: Release, ad-hoc, no certificate.
+      - name: Build Release
+        run: >
+          xcodebuild build
+          -project Compositor.xcodeproj
+          -scheme Compositor
+          -destination 'platform=macOS,arch=arm64'
+          -configuration Release
+          -derivedDataPath DerivedData
+          CODE_SIGN_IDENTITY=-
+          AD_HOC_CODE_SIGNING_ALLOWED=YES
+          CODE_SIGNING_REQUIRED=YES
+          CODE_SIGNING_ALLOWED=YES
+
+      - name: Check the signature seal
+        run: |
+          APP="$PWD/DerivedData/Build/Products/Release/Compositor.app"
+          test -d "$APP" || { echo "::error::no Release app at $APP"; exit 1; }
+
+          # The installed app must be Release: a Debug stub in MacOS/ alongside the real
+          # binary is what breaks the seal when an old bundle is overwritten.
+          ls "$APP/Contents/MacOS"
+          for stray in Compositor.debug.dylib __preview.dylib; do
+            if [ -e "$APP/Contents/MacOS/$stray" ]; then
+              echo "::error::Release app contains $stray — this is a Debug build"
+              exit 1
+            fi
+          done
+
+          codesign -dv "$APP" 2>&1 | sed -n '1,6p'
+          codesign -v --deep --strict "$APP" || {
+            echo "::error::the Release app fails codesign -v --deep --strict"
+            exit 1
+          }
+          echo "seal OK"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$APP/Contents/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Contents/Info.plist"
+
+      - name: Upload the Release app
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: compositor-release-app
+          # For inspection only — never used to install.
+          path: DerivedData/Build/Products/Release/Compositor.app
+          retention-days: 7
+          if-no-files-found: warn
+
+  # Runs CompositorUITests/LocalizationLeakTests: launches the app under zh-Hans and fails on any
+  # English label the accessibility layer exposes. Separate from `screenshots` because that job is
+  # informational (continue-on-error) while this one is a gate — an English UI is a release blocker,
+  # a missing screenshot is not. Separate from `unit` because UI tests need the automation permission
+  # and a desktop session, which the unit job does not.
+  localization-leak:
+    name: localization-leak
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.repository
+    runs-on: macos-26
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Select Xcode 26.6
+        run: sudo xcode-select -s /Applications/Xcode_26.6.app
+
+      - name: Allow UI automation
+        run: sudo automationmodetool enable-automationmode-without-authentication
+
+      # Its own scheme, because the Screenshots scheme pins SelectedTests to ScreenshotTests and
+      # -only-testing would fight that selection.
+      - name: Look for English in the Chinese UI
+        run: |
+          set -o pipefail
+          xcodebuild test \
+            -project Compositor.xcodeproj \
+            -scheme LocalizationLeak \
+            -destination 'platform=macOS,arch=arm64' \
+            -derivedDataPath DerivedData \
+            -resultBundlePath LocalizationLeak.xcresult \
+            CODE_SIGN_IDENTITY=- \
+            GCC_OPTIMIZATION_LEVEL=s \
+            SWIFT_OPTIMIZATION_LEVEL=-O 2>&1 | tee leak.log
+          status=${PIPESTATUS[0]}
+          # The labels that leaked are in the failure message; put them in the step summary so a
+          # red run says what to fix without downloading anything.
+          if [ "$status" -ne 0 ]; then
+            echo "## English labels in the zh-Hans interface" >> "$GITHUB_STEP_SUMMARY"
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            grep -E 'English label|^  \S+: "' leak.log | head -60 >> "$GITHUB_STEP_SUMMARY" || true
+            echo '```' >> "$GITHUB_STEP_SUMMARY"
+          fi
+          exit "$status"
+
+      - name: Upload the leak report
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: localization-leak-report
+          path: |
+            LocalizationLeak.xcresult
+            leak.log
+          retention-days: 7
+          if-no-files-found: ignore
+
   # Screenshots of the main screens (CompositorUITests/ScreenshotTests), kept with the run to look at. Informational:
   # a screen that couldn't be reached doesn't fail the run.
   screenshots:
@@ -148,3 +303,44 @@ jobs:
           path: screenshots
           retention-days: 30
           if-no-files-found: warn
+
+      # What changed since the last run of this branch. The previous run's screenshots are looked
+      # up by artifact name; a first run or an expired artifact just skips the comparison.
+      - name: Find the previous screenshots
+        id: previous
+        if: ${{ !cancelled() }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # The newest completed push run on this branch, excluding this one.
+          id=$(gh api "repos/${{ github.repository }}/actions/workflows/verify.yml/runs?branch=${{ github.ref_name }}&status=success&per_page=5" \
+                 --jq "[.workflow_runs[] | select(.id != ${{ github.run_id }})][0].id // empty" 2>/dev/null || true)
+          if [ -z "$id" ]; then
+            echo "No previous successful run; the comparison is skipped."
+            echo "run=" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          mkdir -p previous
+          if gh run download "$id" -n screenshots-macos-26 -D previous 2>/dev/null; then
+            echo "run=$id" >> "$GITHUB_OUTPUT"
+            # The artifact unzips into a subdirectory.
+            dir=$(find previous -name '*.png' -maxdepth 2 | head -1 | xargs -r dirname)
+            echo "dir=$dir" >> "$GITHUB_OUTPUT"
+          else
+            echo "run=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compare with the previous run
+        if: ${{ !cancelled() && steps.previous.outputs.run != '' }}
+        run: |
+          python3 -c 'import PIL' 2>/dev/null || pip install --quiet Pillow
+          python3 tools/compare-screenshots.py "${{ steps.previous.outputs.dir }}" screenshots screenshot-diff
+
+      - name: Upload the comparison
+        if: ${{ !cancelled() && steps.previous.outputs.run != '' }}
+        uses: actions/upload-artifact@v7
+        with:
+          name: screenshot-diff
+          path: screenshot-diff
+          retention-days: 30
+          if-no-files-found: ignore
