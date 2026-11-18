@@ -38,7 +38,7 @@ def main(argv):
     Image, ImageChops = load_pillow()
     if Image is None:
         print("Pillow is not installed; the screenshots are still uploaded unchanged.")
-        report_plain(baseline, current)
+        report_plain(baseline, current, out)
         return 0
 
     os.makedirs(out, exist_ok=True)
@@ -98,6 +98,8 @@ def main(argv):
     lines = ["## Screenshots", "", "| screen | what | moved |", "| --- | --- | --- |"]
     lines += [f"| {n} | {w} | {p} |" for n, w, p in rows]
     lines += ["", f"{changed} of {len(names)} screen(s) changed — informational, not a failure.", ""]
+    with open(os.path.join(out, "REPORT.md"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
     summary = os.environ.get("GITHUB_STEP_SUMMARY")
     if summary:
         with open(summary, "a", encoding="utf-8") as f:
@@ -105,21 +107,43 @@ def main(argv):
     return 0
 
 
-def report_plain(baseline, current):
-    """Without Pillow: say which files appeared, vanished, or kept the same size/bytes."""
+def report_plain(baseline, current, out):
+    """Without Pillow: say which files appeared, vanished, or changed size, and write a report.
+
+    The report file matters even in this mode: the CI step uploads `out` as an artifact, and an
+    empty directory fails that with "No files were found". Sizes are weak evidence but they still
+    say "something moved", which is what a reviewer needs to know.
+    """
     names = sorted({f for f in os.listdir(current) if f.endswith(".png")} |
                    {f for f in os.listdir(baseline) if f.endswith(".png")})
+    os.makedirs(out, exist_ok=True)
+    rows = []
     print("Screenshot comparison (no image library; sizes only)")
     print("=" * 72)
     for name in names:
         a, b = os.path.join(baseline, name), os.path.join(current, name)
         if not os.path.exists(a):
-            print(f"{name:32} new")
+            row = (name, "new")
         elif not os.path.exists(b):
-            print(f"{name:32} removed")
+            row = (name, "removed")
         else:
             sa, sb = os.path.getsize(a), os.path.getsize(b)
-            print(f"{name:32} {'same bytes' if sa == sb else f'{sa} → {sb} bytes'}")
+            row = (name, "same bytes" if sa == sb else f"{sa} → {sb} bytes")
+        rows.append(row)
+        print(f"{row[0]:32} {row[1]}")
+
+    lines = ["## Screenshots", "",
+             "Pillow was unavailable, so this compares file sizes, not pixels.", "",
+             "| screen | what |", "| --- | --- |"]
+    lines += [f"| {n} | {w} |" for n, w in rows]
+    lines += ["", f"{len(rows)} screen(s) compared — informational, not a failure.", ""]
+
+    with open(os.path.join(out, "REPORT.md"), "w", encoding="utf-8") as f:
+        f.write("\n".join(lines) + "\n")
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:
+        with open(summary, "a", encoding="utf-8") as f:
+            f.write("\n".join(lines) + "\n")
 
 
 if __name__ == "__main__":

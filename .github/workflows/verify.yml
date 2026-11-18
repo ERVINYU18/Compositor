@@ -339,9 +339,14 @@ jobs:
       - name: Compare with the previous run
         if: ${{ !cancelled() && steps.previous.outputs.dir != '' }}
         run: |
-          # Pillow is often unavailable on the runner (no network to PyPI, or a managed Python).
-          # The script falls back to file sizes when it is missing, so this never fails here.
-          python3 -c 'import PIL' 2>/dev/null || pip install --quiet Pillow 2>/dev/null || true
+          # Pillow makes a real pixel diff possible. When it cannot be installed (the runner's
+          # Python is managed and PEP 668 refuses), the script still writes a size-based report,
+          # which is why the install failure must not fail this step.
+          if ! python3 -c 'import PIL' 2>/dev/null; then
+            echo "Pillow is missing; trying to install it."
+            pip install --quiet Pillow || pip install --quiet --user --break-system-packages Pillow \
+              || echo "Pillow could not be installed; the comparison will report sizes only."
+          fi
           python3 tools/compare-screenshots.py "${{ steps.previous.outputs.dir }}" screenshots screenshot-diff
 
       - name: Upload the comparison
