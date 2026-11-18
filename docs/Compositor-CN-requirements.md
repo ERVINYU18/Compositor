@@ -158,7 +158,7 @@ Compositor-CN Updater 会拒绝脏工作区。合并提交后工作区干净，�
 
 ## 9 术语参考（节选）
 
-> 完整术语以 `Compositor/Localizable.xcstrings` 的 zh-Hans 词条为准（当前 1566 条）。
+> 完整术语以 `Compositor/Localizable.xcstrings` 的 zh-Hans 词条为准（当前 1580 条）。
 > 本节只列容易翻错、或历史上改过译法的核心词。
 
 译文一致性是验收项之一。下列为核心术语的既定译法：
