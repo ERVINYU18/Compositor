@@ -257,7 +257,7 @@ rm -rf /tmp/cn-merge-<版本> ~/Library/Developer/Xcode/DerivedData/Compositor-*
 
 ## 10 更新器（Compositor-CN Updater）
 
-**位置**：`/Applications/Compositor-CN Updater.app`，当前 **V2.4.0 / 240**（2026-11-16 装入并短路冒烟通过）。权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本——**改完必须同步两处并提交**，否则工作区脏会被更新器的干净门禁挡下版本 bump 要改 `update.command` 的 `VERSION` 和 `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion` 两处。完整记录见工作区 `更新器V2.4实施记录.md`。
+**位置**：`/Applications/Compositor-CN Updater.app`，当前 **V2.4.1 / 241**（2026-11-18 装入并短路冒烟通过）。权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本——**改完必须同步两处并提交**，否则工作区脏会被更新器的干净门禁挡下版本 bump 要改 `update.command` 的 `VERSION` 和 `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion` 两处。完整记录见工作区 `更新器V2.4实施记录.md`。
 资源在 `Contents/Resources/`：`update.command`（入口）、`UpdaterCore.sh`（主逻辑）、`Scripts/`、`Tests/`。
 
 **它做什么**：查 GitHub API 拿官方最新 tag → 下载 tarball → 建快照 → 合并 → 构建 → 测试 →
@@ -293,11 +293,12 @@ cd "Compositor-CN"
 bash -n tools/updater/src/update.command
 bash -n tools/updater/src/UpdaterCore.sh
 
-# 四个演练（对权威源码）
+# 五个演练（对权威源码）
 bash tools/updater/test-handoff-parks-merge.sh        # REHEARSAL_OK
 bash tools/updater/test-handoff-refuses-conflict.sh   # REHEARSAL2_OK
 bash tools/updater/test-stage0-safety.sh              # STAGE0_REHEARSAL_OK
 bash tools/updater/test-audit-keys-gate.sh            # AUDIT_GATE_REHEARSAL_OK
+bash tools/updater/test-handoff-resume-e2e.sh          # HANDOFF_E2E_OK
 
 # 同步到部署副本 + bump 两处版本号 + 重签
 cp tools/updater/src/update.command "/Applications/Compositor-CN Updater.app/Contents/Resources/"

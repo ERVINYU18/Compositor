@@ -125,14 +125,14 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 
 ## 更新器（Compositor-CN Updater）
 
-**位置与版本**：`/Applications/Compositor-CN Updater.app`，当前 **V2.4.0 / 240**（2026-11-16 装入并短路冒烟通过）。主逻辑在 `Contents/Resources/UpdaterCore.sh`，入口 `update.command`。**权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本；改更新器必须同步两处并提交**，否则工作区脏会被更新器的干净门禁挡下（+V2.4.0 首装就踩过）。完整记录见工作区 `更新器V2.4实施记录.md`。
+**位置与版本**：`/Applications/Compositor-CN Updater.app`，当前 **V2.4.1 / 241**（2026-11-18 装入并短路冒烟通过）。主逻辑在 `Contents/Resources/UpdaterCore.sh`，入口 `update.command`。**权威源码在仓库 `tools/updater/src/`，app bundle 是部署副本；改更新器必须同步两处并提交**，否则工作区脏会被更新器的干净门禁挡下（+V2.4.0 首装就踩过）。完整记录见工作区 `更新器V2.4实施记录.md`。
 
 - **判「已是最新」四要素**：已装 App 版本 == 官方最新 tag、`snapshot-tag` == 最新 tag、快照分支存在、**且是 HEAD 祖先**。手工合并完必须补查后两条，否则更新器会重跑整个合并。
 - **本地化门禁是 `handoff_for_localization` 不是回滚**：命中「新增动态英文 / 缺 zh-Hans / 键承载缺口」时提交到 `wip-cn-<版本>-needs-localization`、仓库回到干净状态、正式版不动、退出码 3。有未解决冲突时仍回滚，绝不提交冲突标记。
 - ⚠️ **errexit 陷阱（V2.4.0 踩过并修）**：`update.command` 是 `set -Eeuo pipefail`，`UpdaterCore.sh` 装了 ERR trap → `on_unexpected_error` 回滚。门禁里跑会返回非 0 的脚本**必须吸收退出码**：`KEYS_RESULT=0; python3 ... || KEYS_RESULT=$?`。直接取 `$?` 会先触发 ERR trap 回滚整笔合并，handoff 根本到不了。**静态断言证明不了控制流**，这类修法必须有行为级 fixture（见 `tools/updater/test-audit-keys-gate.sh`，它提取真实代码跑，带旧写法反证）。
 - **V2.4.0 已修**：装机即删旧 App（改为归档留两级回滚点）、无 strict 校验（加 `codesign -v --deep --strict`，诊断落 `STATE_DIR/codesign-strict.log`）、装 Debug 包（改 Release）、签名四要素被冲掉（自动恢复含错误 identity 归一化）、`APP_PATCH_FAILED` 硬中止（改 `*_DRIFT` 留痕）。**新增 `audit_keys.py` 门禁**覆盖 `LocalizedStringKey` switch 与三元承载的键（`Text` 键曾漏四轮）。
 - **⚠️ 新代码尚未实跑**：短路冒烟只验证「已是最新」路径。Release 构建、strict 门禁、归档路径在下一轮真实上游版本才第一次实跑——那轮盯 `codesign-strict.log`、`pre-*-install-*` 是否产出、装机产物是否 Release、键缺口是否正确走 handoff 而非回滚。
-- **改更新器**：备份到 `Updater-历史版本/` → 改仓库 `tools/updater/src/` 两脚本 → `bash -n` → 跑 `tools/updater/` 的**四个**演练（parks-merge / refuses-conflict / stage0-safety / audit-keys-gate）→ 同步部署到 app bundle + bump 两处版本号（`VERSION` 与 `Info.plist`）+ 重签 → 在「已是最新」状态跑短路冒烟。演练支持 `UPDATER_CORE=` / `UPDATER_SRC_DIR=` 指向部署副本验证。命令见运行手册第 10 节。
+- **改更新器**：备份到 `Updater-历史版本/` → 改仓库 `tools/updater/src/` 两脚本 → `bash -n` → 跑 `tools/updater/` 的**五个**演练（parks-merge / refuses-conflict / stage0-safety / audit-keys-gate / handoff-resume-e2e）→ 同步部署到 app bundle + bump 两处版本号（`VERSION` 与 `Info.plist`）+ 重签 → 在「已是最新」状态跑短路冒烟。演练支持 `UPDATER_CORE=` / `UPDATER_SRC_DIR=` 指向部署副本验证。命令见运行手册第 10 节。
 - **版本 bump 要改两处**：`update.command` 的 `VERSION` 和 applet `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion`，漏一处「关于」里版本对不上。
 - ⚠️ **V2.3 Dev 不要装**：是另一个工具（`--rehearse` 默认、`/private/tmp` 隔离、遇内容冲突直接 fail、从不安装、目标硬编码 v1.4.7、**无 CN 补丁**），装上去功能倒退。
 

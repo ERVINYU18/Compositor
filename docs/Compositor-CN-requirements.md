@@ -39,7 +39,7 @@
 | 架构 | Apple Silicon（arm64） |
 | 签名 | ad-hoc（CodeDirectory flags=0x2），不使用开发者证书、不公证 |
 | Hardened Runtime | 关闭（见 NFR-2 与 §8.1） |
-| 更新 | Compositor-CN Updater（**V2.4.0 / 240**；旧版 V2.2.1 的回滚包在 `Updater-历史版本/`） |
+| 更新 | Compositor-CN Updater（**V2.4.1 / 241**；旧版 V2.4.0、V2.2.1 的回滚包在 `Updater-历史版本/`） |
 | 语言目录 | `Localizable.xcstrings`（SwiftUI 自动查表）+ `Localization.swift` 的 `localizedString()` |
 
 ## 3 功能性需求（FR）
