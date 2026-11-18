@@ -59,9 +59,9 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 ```
 
 - 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806，1.6.7 = 809，1.6.13 = 838（历史「452 项」是 1.3.7 的，早已作废）。
-- **1.6.13 = 838 的来源**：由用户在真实终端跑 `构建验证装机-1.6.13.sh` 取得——`xcrun xcresulttool get test-results summary`（`build-logs/1.6.13-tests.xcresult`）顶层 `totalTestCount = 838`、`passedTests = 838`、`failedTests = 0`；device 级 962 是偏大值，不用。交叉核对 `CompositorTests/` 的 `@Test` 声明数也是 838。
-- **1.6.7 = 809 的来源（历史）**：本机跑不了全量测试，基线取自 CI run 43805717395 / 43805733435（`d7dfd82`，四个 job 全绿），并按「`@Test` 声明数」交叉核算。**下轮仍以 `xcresulttool` 的 `totalTestCount` 为准。**
-- 取数用 `xcrun xcresulttool get test-results summary --path <xcresult>`，以顶层 `totalTestCount` / `passedTests` 为准；同一份结果里 device 级的数字会偏大，不要用。
+- **1.6.13 = 838 的来源**：由用户在真实终端跑 `构建验证装机-1.6.13.sh` 取得——`xcrun xcresulttool get test-results summary`（`build-logs/1.6.13-tests.xcresult`）顶层 `totalTestCount = 838`、`passedTests = 838`、`failedTests = 0`；device 级 962 是偏大值，不用。交叉核对 `CompositorTests/` 的 `@Test` 声明数也是 838。**原始产物已于 2026-11-18 清理（182 MB），摘要存工作区 `01-merge-scene-evidence/v1.6.13-test-summary-20261118.txt`；之后取数走 `tools/ci-test-count.py`。**
+- **1.6.7 = 809 的来源（历史）**：本机跑不了全量测试，基线取自 CI run 43805717395 / 43805733435（`d7dfd82`，四个 job 全绿），并按「`@Test` 声明数」交叉核算。取数方式现已统一到 `tools/ci-test-count.py`。
+- 取数用 `python3 tools/ci-test-count.py --declared <各批次.xcresult>`（多批次求和 + 与 `@Test` 声明核对；scoped run 跳过 filters 时加 `--exclude-suites`）。`summary` 顶层**不一定有** `totalTestCount`，没有时按 `passed + failed + skipped + expected` 相加；device 级数字会偏大（838 显示 962），不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 - 本机开着 Stage Manager：系统会把置前的浮动窗口限制在左边缘边距之外（本显示器为 x ≥ 221），**窗口坐标类测试不要把面板停在屏幕左边缘**；`NSApp.activate` 在 xcodebuild 下不可靠，别依赖它。文件通知类断言在全量负载下会晚到，等待窗口要留足余量。
 
@@ -124,7 +124,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - CI 在 push 时跑 `verify.yml`。**push 后要确认真的触发了**（`gh api repos/ERVINYU18/Compositor/actions/runs?per_page=3`）—— Actions 被关过两次，`actions/permissions` 在关闭时也显示 `enabled: true`，靠它判断不出来。关闭期间推的提交需 `gh workflow run verify.yml -R ERVINYU18/Compositor --ref <分支或标签>` 手动补。
 - **四个 job**：`unit`（CompositorTests 分 first / rest / windows / filters 四批，各批一个 `.xcresult`）、`release-build`（Release 构建 + 产物无 `*.debug.dylib` / `__preview.dylib` + `codesign -v --deep --strict`）、`localization-leak`（zh-Hans 启动扫界面英文，`CompositorUITests/LocalizationLeakTests.swift`）、`screenshots`（强制 `-AppleLanguages (zh-Hans)` 截图，与上一次成功 run 的 PNG 做像素 diff，artifact 为 informational 不阻断）。
 - **`unit` 的静态门禁**：`tools/localization/assert_text_tool_icon.py`（T 图标不变量，`233540f` 之前失败、之后通过）、`tools/localization/test-leak-rules.py`（泄漏规则 24 个 fixture）、`audit_strings.py` + `audit_keys.py`。
-- **测试数核对**：`tools/ci-test-count.py` 对多批次 `.xcresult` 求和（**顶层四桶相加，`summary` 没有 `totalTestCount`，device 级数字会重复计数**）并与 `@Test` 声明数核对。filters 批次被 scope 跳过时 `scripts/ci-tests.sh` 传 `--exclude-suites`，否则 747 vs 838 必然误报（`5190d99` 修）。
+- **测试数核对**：`tools/ci-test-count.py` 对多批次 `.xcresult` 求和（**用顶层计数：`summary` 不一定有 `totalTestCount`，没有时按 `passed+failed+skipped+expected`；device 级数字会重复计数**）并与 `@Test` 声明数核对。filters 批次被 scope 跳过时 `scripts/ci-tests.sh` 传 `--exclude-suites`，否则 747 vs 838 必然误报（`5190d99` 修）。
 - **FILTERS 范围**：workflow 按 diff 决定要不要跑 filters 批次（Camera Raw / Hue-Saturation / Levels / 各 Filter 套件）；改动 `Compositor.xcodeproj/`、`verify.yml`、`scripts/ci-tests.sh` 会让它全量跑一遍。
 
 ## 更新器（Compositor-CN Updater）
