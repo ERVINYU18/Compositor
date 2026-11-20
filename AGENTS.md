@@ -58,18 +58,21 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
   -destination 'platform=macOS,arch=arm64' build
 ```
 
-- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806，1.6.7 = 809，1.6.13 = 838（历史「452 项」是 1.3.7 的，早已作废）。
+- 完整测试须 0 失败；记录本轮通过数。**每轮官方合并都会增删用例，数字必须重新取，不可沿用上一轮**。已知基线：1.4.7 = 539，1.4.9 = 569，1.4.10 = 577，1.5.3 = 654，1.5.5 = 687，1.5.6 = 707，1.5.7 = 720，1.5.8 = 723，1.5.9 = 734，1.5.11 = 745，1.5.12 = 752，1.6.3 = 794，1.6.4 = 798，1.6.6 = 806，1.6.7 = 809，1.6.13 = 838，1.6.14 = 839（历史「452 项」是 1.3.7 的，早已作废）。
 - **1.6.13 = 838 的来源**：由用户在真实终端跑 `构建验证装机-1.6.13.sh` 取得——`xcrun xcresulttool get test-results summary`（`build-logs/1.6.13-tests.xcresult`）顶层 `totalTestCount = 838`、`passedTests = 838`、`failedTests = 0`；device 级 962 是偏大值，不用。交叉核对 `CompositorTests/` 的 `@Test` 声明数也是 838。**原始产物已于 2026-11-18 清理（182 MB），摘要存工作区 `01-merge-scene-evidence/v1.6.13-test-summary-20261118.txt`；之后取数走 `tools/ci-test-count.py`。**
+- **1.6.14 = 839 的来源**：Agent 会话内（完全访问模式）自己跑的全量测试取得——`build-logs/1.6.14-tests-run2.xcresult` 顶层 `totalTestCount = 839`、`passedTests = 839`、`failedTests = 0`；`tools/ci-test-count.py --declared` 与 `@Test` 声明数 839 一致。**首跑是 835/839**：`LayerRowDragTests` 4 项在全量并发下每个耗时 144 秒、合成鼠标事件没能拖动图层；该套件单独跑 6/6 全过（各约 3 秒），代码本轮未动，属全量负载下的时序抖动。全量失败时先单独重跑该套件再判断。
 - **1.6.7 = 809 的来源（历史）**：本机跑不了全量测试，基线取自 CI run 43805717395 / 43805733435（`d7dfd82`，四个 job 全绿），并按「`@Test` 声明数」交叉核算。取数方式现已统一到 `tools/ci-test-count.py`。
 - 取数用 `python3 tools/ci-test-count.py --declared <各批次.xcresult>`（多批次求和 + 与 `@Test` 声明核对；scoped run 跳过 filters 时加 `--exclude-suites`）。`summary` 顶层**不一定有** `totalTestCount`，没有时按 `passed + failed + skipped + expected` 相加；device 级数字会偏大（838 显示 962），不要用。
 - 系统区域为 zh_CN，测试宿主解析 zh-Hans，任何新增本地化都会命中硬编码英文断言——**测试断言必须用 `localizedString()`，禁止硬编码英文**。
 - 本机开着 Stage Manager：系统会把置前的浮动窗口限制在左边缘边距之外（本显示器为 x ≥ 221），**窗口坐标类测试不要把面板停在屏幕左边缘**；`NSApp.activate` 在 xcodebuild 下不可靠，别依赖它。文件通知类断言在全量负载下会晚到，等待窗口要留足余量。
 
-### 在 WorkBuddy 会话里跑构建：当前环境不可行
+### 在 Agent 会话里跑构建：先看会话有没有被沙箱包裹
 
-`xcodebuild` **不能在 WorkBuddy 的进程里跑**：解析 SwiftPM 依赖时它自己会起 `sandbox-exec`，而外层已经是 seatbelt，于是固定失败 `sandbox-exec: sandbox_apply: Operation not permitted`（2026-10-27 首次复验，2026-11-16 再次复验）。
+**2026-11-20 更新（当前有效）**：DoubaoWork「完全访问」模式下，Agent 的命令直接在真实系统上执行，不再套 seatbelt，嵌套 `sandbox-exec` 恢复正常——已实测 Debug 构建 `BUILD SUCCEEDED`、单套件与全量 839 项测试全过。**判断方法**：先跑一句 `sandbox-exec -p '(version 1)(allow default)' /bin/echo ok`。返回 `ok` 就能直接构建/测试；返回 `sandbox_apply: Operation not permitted` 就是被套了沙箱，按下面的历史结论交回用户。
 
-**2026-11-16 定位到更底层的原因**：不是 SwiftPM 的问题，是**嵌套 `sandbox-exec` 整个不可用**——在 WorkBuddy 进程里执行 `sandbox-exec -p '(version 1)(allow default)' /bin/echo` 同样返回 `sandbox_apply: Operation not permitted`。已实测**全部无效**的绕过手段，别再重复试：
+以下为历史记录（2026-10-27 / 2026-11-16，WorkBuddy 沙箱模式），**只对被沙箱包裹的会话成立，不要当成所有环境都这样**：
+
+`xcodebuild` 在那种会话里跑不了：解析 SwiftPM 依赖时它自己会起 `sandbox-exec`，而外层已经是 seatbelt，于是固定失败 `sandbox-exec: sandbox_apply: Operation not permitted`。根因不是 SwiftPM，是**嵌套 `sandbox-exec` 整个不可用**——`sandbox-exec -p '(version 1)(allow default)' /bin/echo` 同样被拒。已实测**全部无效**的绕过手段，别再重复试：
 
 - `dangerouslyDisableSandbox: true`（外层沙箱摘掉后仍失败，嵌套照样被拒）
 - `-disableAutomaticPackageResolution`、`-onlyUsePackageVersionsFromResolvedFile`
@@ -79,9 +82,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 
 **AppleScript 驱动 Terminal 这条路也已失效**（2026-11-16 实测）：`osascript -e 'tell application "Terminal" to do script ...'` → 权限违例 (-10004)；`tell application "System Events"` → 同样 -10004。`open -n -a Terminal` 本身返回 0，但拿不到窗口 id、也无法输入。
 
-⇒ **原先「借真实 Terminal + computer-use」的方案在当前环境不可执行**：computer-use 插件未安装，`search_plugins` 也无对应连接器（可装的只剩 peekaboo / screen-automation 之类）。
-
-**当前唯一能跑 `xcodebuild` 的路径**：由用户在终端触发更新器 —— `update.command` 内部的 xcodebuild 不受 WorkBuddy 沙箱约束。Agent 侧能做的是：改代码、补词条、跑 `audit_strings.py` 等纯脚本审计、`xcresulttool` 读结果、推送、归档、写文档。**构建、全量测试、启动冒烟这三件必须交回给用户**，或先解决 GUI 自动化通路（装 computer-use 插件 / 授权 AppleScript Automation）。
+⇒ **被沙箱包裹时，唯一能跑 `xcodebuild` 的路径**：由用户在终端触发更新器 —— `update.command` 内部的 xcodebuild 不受那层沙箱约束。Agent 侧只能改代码、补词条、跑纯脚本审计、读 `xcresult`、推送、归档、写文档。**不被沙箱包裹时没有这个限制，构建、全量测试、启动冒烟都可以由 Agent 做。**
 
 > 备注：`update.command` **只做 `build`，从不跑 test**。全量测试历来靠手工补，这一条别忘。
 
@@ -135,7 +136,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 - **本地化门禁是 `handoff_for_localization` 不是回滚**：命中「新增动态英文 / 缺 zh-Hans / 键承载缺口」时提交到 `wip-cn-<版本>-needs-localization`、仓库回到干净状态、正式版不动、退出码 3。有未解决冲突时仍回滚，绝不提交冲突标记。
 - ⚠️ **errexit 陷阱（V2.4.0 踩过并修）**：`update.command` 是 `set -Eeuo pipefail`，`UpdaterCore.sh` 装了 ERR trap → `on_unexpected_error` 回滚。门禁里跑会返回非 0 的脚本**必须吸收退出码**：`KEYS_RESULT=0; python3 ... || KEYS_RESULT=$?`。直接取 `$?` 会先触发 ERR trap 回滚整笔合并，handoff 根本到不了。**静态断言证明不了控制流**，这类修法必须有行为级 fixture（见 `tools/updater/test-audit-keys-gate.sh`，它提取真实代码跑，带旧写法反证）。
 - **V2.4.0 已修**：装机即删旧 App（改为归档留两级回滚点）、无 strict 校验（加 `codesign -v --deep --strict`，诊断落 `STATE_DIR/codesign-strict.log`）、装 Debug 包（改 Release）、签名四要素被冲掉（自动恢复含错误 identity 归一化）、`APP_PATCH_FAILED` 硬中止（改 `*_DRIFT` 留痕）。**新增 `audit_keys.py` 门禁**覆盖 `LocalizedStringKey` switch 与三元承载的键（`Text` 键曾漏四轮）。
-- **⚠️ 新代码尚未实跑**：短路冒烟只验证「已是最新」路径。Release 构建、strict 门禁、归档路径在下一轮真实上游版本才第一次实跑——那轮盯 `codesign-strict.log`、`pre-*-install-*` 是否产出、装机产物是否 Release、键缺口是否正确走 handoff 而非回滚。
+- **✅ V2.4.1 首次真实实跑（2026-11-20，1.6.13 → 1.6.14，无冲突）**：Release 构建成功并装的是 Release 包（`Contents/MacOS/` 只有 `Compositor`，无 debug dylib）；`pre-1.6.14-install-20261120-172108` 旧包归档已产出；`codesign-strict.log` 为空（strict 通过）；`audit-keys.log` 报 0 个键承载缺口，`DynamicEnglish.txt` / `MissingTranslations.txt` / `patch-drift.txt` 均为空；无冲突所以没走 handoff。**但这一轮没有新建备份分支**——回滚点是合并前的提交 `43b3d62`（origin 上也有）。下一轮仍要盯 handoff 分支路径，它还没被真实冲突验证过。`last-conflicts.txt` 不会被清空，看到旧内容不代表本轮有冲突，以时间戳为准。
 - **改更新器**：备份到 `Updater-历史版本/` → 改仓库 `tools/updater/src/` 两脚本 → `bash -n` → 跑 `tools/updater/` 的**五个**演练（parks-merge / refuses-conflict / stage0-safety / audit-keys-gate / handoff-resume-e2e）→ 同步部署到 app bundle + bump 两处版本号（`VERSION` 与 `Info.plist`）+ 重签 → 在「已是最新」状态跑短路冒烟。演练支持 `UPDATER_CORE=` / `UPDATER_SRC_DIR=` 指向部署副本验证。命令见运行手册第 10 节。
 - **版本 bump 要改两处**：`update.command` 的 `VERSION` 和 applet `Info.plist` 的 `CFBundleShortVersionString` / `CFBundleVersion`，漏一处「关于」里版本对不上。
 - ⚠️ **V2.3 Dev 不要装**：是另一个工具（`--rehearse` 默认、`/private/tmp` 隔离、遇内容冲突直接 fail、从不安装、目标硬编码 v1.4.7、**无 CN 补丁**），装上去功能倒退。
