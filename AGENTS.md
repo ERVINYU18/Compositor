@@ -222,7 +222,7 @@ xcodebuild -project Compositor.xcodeproj -scheme Compositor -configuration Relea
 ### 删除方式（硬性）
 
 - **禁止 `rm`**：一律走废纸篓（`trash`），保证可恢复。
-- iCloud Drive 内的文件用 `trash` 会报权限错误（NSCocoaErrorDomain 513），改用 `mv <文件> ~/.Trash/<新名字>`。
+- iCloud Drive 内的文件**直接 `trash <路径>` 即可**（2026-11-20 实测）：它落到 iCloud 自己的 `~/Library/Mobile Documents/.Trash/`，可恢复。反过来 `mv <文件> ~/.Trash/<新名字>` 会失败并报 `Resource deadlock avoided`——网上流传的「iCloud 用 mv」对本机不成立。
 - 涉及个人目录时，删除前必须列出完整路径与影响范围并经用户确认；小批量（≤10 项）执行，每批完成后复核。
 
 ### 定期维护节奏

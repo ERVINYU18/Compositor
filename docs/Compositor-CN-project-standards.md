@@ -356,7 +356,7 @@ env -u HTTPS_PROXY -u HTTP_PROXY -u https_proxy -u http_proxy git -c http.proxy=
 | 工作区 | `~/Desktop/AI/AI Project/Compositor CN/` | 文档、审计脚本、证据；**不是 git 仓库** |
 | 构建中间产物 | Xcode DerivedData、工作区 `build-logs/` | 用完即清 |
 
-- 删除**必须**走废纸篓（`/usr/bin/trash`），**禁止** `rm`。iCloud 内的文件用 `trash` 会报 NSCocoaErrorDomain 513，改 `mv` 到 `~/.Trash/`。
+- 删除**必须**走废纸篓（`/usr/bin/trash`），**禁止** `rm`。iCloud 内的文件也可直接用 `trash`（落 iCloud 自己的 `.Trash`，可恢复）；`mv` 到 `~/.Trash/` 会报 `Resource deadlock avoided`，别用。
 - **禁止清空废纸篓**：里面长期混着个人文件。只按名单逐项删本项目的东西。
 - 删 `.xcresult` 之前先把摘要存到 `01-merge-scene-evidence/v1.5.x-test-summary-<日期>.txt`。
 - 归档与回滚点之外，工作区**不保留**一次性分析产物（`audit-output-*.txt`、`*.json` 中间结果）。
