@@ -113,3 +113,6 @@ Upstream's change is one painting fix, so acceptance is narrow:
 2. Paint the same area in several short strokes: no seams between strokes.
 3. Mask edges stay crisp (no darkened fringe) where the stroke meets the mask's
    existing values.
+
+**2026-11-20: the user reported all three acceptance checks passed.** This round
+is closed.
