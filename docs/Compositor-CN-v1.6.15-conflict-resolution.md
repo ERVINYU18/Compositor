@@ -136,5 +136,17 @@ only the app target is ad-hoc signed. Nothing else drifted: `git diff --stat
 5. With the Layers panel focused, press F → toggles fullscreen.
 6. Camera RAW / PSD-PSB import and export still behave as before.
 
-Status: merged, built, installed, full suite green. Manual acceptance and
-tag/archive/push/CI are pending the user's check.
+## 7 Outcome
+
+- Merged, built and installed: 1.6.15 / 74, strict signature check passed.
+- Full test suite: **844 / 844**, 0 failures.
+- Tag `v1.6.15-cn` → `86c8405`, archives on desktop and iCloud (both
+  `shasum -c` green), branch and tag pushed.
+- CI: branch run `44888566357` green; tag run `44888569896` needed one
+  `--failed` rerun (`localization-leak` menu flake, and the new
+  `LayerRowDragTests` case under load) → attempt 2 green; the follow-up docs
+  run `44890961255` hit the same leak flake and also went green on rerun.
+- **Manual acceptance passed on 2026-11-21** — the user reported 验收成功
+  after checking the six items above (version/Chinese UI, clipping-stack
+  hide and restore, Option-drag duplicate, Return focus, F fullscreen,
+  Camera RAW / PSD-PSB). Round closed.
