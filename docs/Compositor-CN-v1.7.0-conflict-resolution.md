@@ -82,7 +82,9 @@ Test/UI-test targets keep upstream's team and Automatic signing, as before.
 - Full suite (this session, `caffeinate`-wrapped):
   **844 / 844 passed, 0 failed**, `totalTestCount = 844`;
   `tools/ci-test-count.py --declared` reports executed == declared == 844.
-  Result bundle `build-logs/1.7.0-tests.xcresult`.
+  Result bundle `build-logs/1.7.0-tests.xcresult` (cleaned after the round;
+  the summary is kept in the workspace at
+  `01-merge-scene-evidence/v1.7.0-test-summary-20261122.txt`).
 
 ## 6 Manual acceptance (for the user)
 
@@ -98,4 +100,6 @@ Test/UI-test targets keep upstream's team and Automatic signing, as before.
 - Merged, built, installed, full suite green.
 - Tag `v1.7.0-cn` → the round-closing documentation commit, archives on
   desktop and iCloud (both `shasum -c` green), branch and tag pushed.
+- CI both green on the first attempt (no flake this round): branch run
+  `45023335353` = success, tag run `45023339494` = success.
 - Manual acceptance: pending the user's check.
