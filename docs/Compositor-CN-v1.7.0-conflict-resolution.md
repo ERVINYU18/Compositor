@@ -101,5 +101,14 @@ Test/UI-test targets keep upstream's team and Automatic signing, as before.
 - Tag `v1.7.0-cn` → the round-closing documentation commit, archives on
   desktop and iCloud (both `shasum -c` green), branch and tag pushed.
 - CI both green on the first attempt (no flake this round): branch run
-  `45023335353` = success, tag run `45023339494` = success.
-- Manual acceptance: pending the user's check.
+  `45023335353` = success, tag run `45023339494` = success. The CI-note
+  commit `a95e6ca` hit the known `localization-leak` menu-snapshot flake on
+  its first run (`45024707742`, index 257, no English entries in the log);
+  `rerun --failed` made it green.
+- Manual acceptance: **passed, reported by the user on 2026-11-22** — all
+  four items of section 6 checked: 1.7.0 (75) with Chinese UI and no
+  “Check for Updates…”, Up/Down stepping in adjustment and filter numeric
+  fields (last-digit step, range clamp, panel step), Color Balance unchanged,
+  Camera RAW and PSD/PSB import/export unchanged.
+- Round closed. Next round starts from `a95e6ca`; the tag stays on the
+  round-closing documentation commit and is not moved.
