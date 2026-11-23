@@ -204,6 +204,30 @@ PID=$(/usr/bin/lsappinfo info -only pid "com.wonderassembly.compositor.cn" | gre
 /usr/bin/sample "$PID" 1 -file /tmp/smoke.txt >/dev/null 2>&1; grep -c "ReceiveNextEventCommon" /tmp/smoke.txt
 ```
 
+**归档惯例（2026-11-23 起）：备份的 `.app` 要压成 `.app.zip`。** Spotlight 会把
+`.Compositor-CN-Backups` 里的 `.app` 当成可启动的应用收录，搜索里会出现好几个
+「Compositor-CN」；压成 zip 后它们不再是应用包，回滚能力不变。备份做完就压、校验、删原包：
+
+```bash
+ditto -c -k --sequesterRsrc --keepParent "$BK/Compositor-CN-<旧版本>.app" "$BK/Compositor-CN-<旧版本>.app.zip"
+unzip -tqq "$BK/Compositor-CN-<旧版本>.app.zip" >/dev/null && echo "zip OK"
+trash "$BK/Compositor-CN-<旧版本>.app"
+```
+
+回滚时（把 zip 还原成应用）：
+
+```bash
+T=$(mktemp -d /tmp/cn-rollback.XXXXXX)
+ditto -x -k "$BK/Compositor-CN-<旧版本>.app.zip" "$T"
+codesign -v --deep --strict "$T/Compositor-CN-<旧版本>.app" && echo "strict OK"
+mv "/Applications/Compositor-CN.app" "/tmp/Compositor-CN-new-old.app"
+ditto "$T/Compositor-CN-<旧版本>.app" "/Applications/Compositor-CN.app"
+open "/Applications/Compositor-CN.app"
+```
+
+> 注意：更新器每轮仍会自己产出 `.app` 形式的旧包归档（`pre-<版本>-install-<时间戳>/`）。
+> 它只 build 不装完就归档，压不压缩是收尾时的人工步骤；按上面三条命令压掉再继续下一轮。
+
 ---
 
 ## 8 标签、归档、推送
